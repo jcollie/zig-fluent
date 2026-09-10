@@ -109,11 +109,59 @@ needs two, that 21 takes the same form as 1 while 11 does not, or that Japanese
 counts photos with 枚. All of that lives in the `.ftl` files, where the person
 who speaks the language can reach it.
 
-The example also shows the parts that are the application's job rather than the
-library's: POSIX spreads "what language does this user read" over `LANGUAGE`,
-`LC_ALL`, `LC_MESSAGES` and `LANG`, none of which are language tags, and
-negotiating a ranked list of those against the translations you shipped is a
-dozen lines. Both are written out and tested there.
+Reading the environment is `fluent.posix`, since every application needs it:
+
+```zig
+var buffer: [8]fluent.Locale = undefined;
+const wanted = fluent.posix.fromEnviron(&buffer, init.environ_map);
+```
+
+POSIX spreads "what language does this user read" over `LANGUAGE`, `LC_ALL`,
+`LC_MESSAGES` and `LANG`, ranks them, and answers in something that is not a
+language tag — `de_DE.UTF-8@euro` is `de-DE`, and `sr_RS@latin` really is
+Serbian in Latin script rather than Cyrillic. `C` and `POSIX` mean "no
+translation, thank you", and `LANGUAGE` is deliberately ignored when they are
+in force, so a list left over in a shell profile cannot undo `LC_ALL=C`. The
+rules are applied to a `Variables` struct rather than read from the process, so
+they work equally on values from a config file or a request header;
+`fromEnviron` is the adapter for a real environment.
+
+POSIX does not ask what your locale is but what it is *for a given category*,
+and a user may well answer differently for each. `LANG=en_US.UTF-8
+LC_TIME=en_GB.UTF-8 LC_NUMERIC=de_DE.UTF-8` means English messages, a
+twenty-four hour clock and German number punctuation, and all three are this
+library's business:
+
+```zig
+const c = fluent.posix.categoriesFromEnviron(init.environ_map);
+if (c.numeric)  |l| bundle.setNumberLocale(l);
+if (c.monetary) |l| bundle.setCurrencyLocale(l);
+if (c.time)     |l| bundle.setDateLocale(l);
+```
+
+```console
+$ LANG=en_US.UTF-8 LC_TIME=en_GB.UTF-8 LC_NUMERIC=de_DE.UTF-8 zig build example
+showing:   en-US  (numbers: de-DE)  (dates: en-GB)
+
+  One new photo
+  Ada shared 3 photos with you on 14 February 2026.
+  12.345,7 GB of 50.000 GB used
+```
+
+`Bundle.init` still sets all three from the one locale it is given, so an
+application with only one never sees any of this. And **plural rules stay with
+the message locale**: `[one]` and `[few]` are keys the translator wrote in the
+language of the text, so choosing among them by the reader's number-formatting
+preference would select variants the translation does not have. "One new photo"
+above is English because the message is.
+
+`LC_COLLATE` and `LC_CTYPE` are the two categories this deliberately does not
+read — they govern sorting and character classification, and this library does
+neither.
+
+Choosing among the bundles you shipped is left to the application, and the
+example writes it out: each requested locale in turn, and for each, the closest
+bundle by tag, then by language and script, then by language.
 
 ### Just the parser
 

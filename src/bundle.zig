@@ -356,6 +356,14 @@ pub const Bundle = struct {
     percent_pattern: number_format.Pattern = .{},
     currency_pattern: number_format.Pattern = .{},
 
+    /// The locale numbers are punctuated for: `LC_NUMERIC`, where POSIX is
+    /// being honoured. Set from the bundle's own locale by `init`.
+    number_locale: Locale = .root,
+    /// The locale amounts of money are written for: `LC_MONETARY`.
+    currency_locale: Locale = .root,
+    /// The locale dates are written for: `LC_TIME`.
+    date_locale: Locale = .root,
+
     /// The names and patterns this locale writes dates with. Set once at
     /// `init` from the CLDR tables.
     date_names: datetime_format.Names = .{},
@@ -380,19 +388,14 @@ pub const Bundle = struct {
         var self: Bundle = .{ .gpa = gpa, .locale = locale };
         errdefer self.deinit();
 
-        // Resolved once here rather than on every format call. A locale CLDR
-        // does not cover keeps the root defaults, which are ISO-like and never
-        // wrong so much as unidiomatic.
-        const numbers = @import("cldr/numbers.zig");
-        if (locale.lookup(numbers.keys)) |i| {
-            self.number_symbols = numbers.symbols[i];
-            self.decimal_pattern = numbers.decimal_patterns[i];
-            self.percent_pattern = numbers.percent_patterns[i];
-            self.currency_pattern = numbers.currency_patterns[i];
-        }
-
-        const dates = @import("cldr/dates.zig");
-        if (locale.lookup(dates.keys)) |i| self.date_names = dates.names[i];
+        // Resolved once here rather than on every format call, and all three
+        // from the one locale, which is what an application that has only one
+        // wants. `setNumberLocale`, `setCurrencyLocale` and `setDateLocale`
+        // are how a caller honouring `LC_NUMERIC`, `LC_MONETARY` or `LC_TIME`
+        // separates them afterwards.
+        self.setNumberLocale(locale);
+        self.setCurrencyLocale(locale);
+        self.setDateLocale(locale);
 
         try @import("builtins.zig").install(&self);
         return self;
@@ -503,6 +506,100 @@ pub const Bundle = struct {
             return;
         }
         try into.put(self.gpa, name, entry);
+    }
+
+    /// Punctuate numbers the way `locale` does.
+    ///
+    /// For an application honouring `LC_NUMERIC`, which POSIX lets a user set
+    /// apart from the language they read: English messages with German numbers
+    /// is an ordinary thing to want, and `1.234,5` is what it should print.
+    ///
+    /// The separators, the digits and the grouping all come from here, and so
+    /// does the currency *pattern* unless `setCurrencyLocale` is called after
+    /// it. Plural rules do not: those follow the bundle's own locale, because
+    /// `[one]` and `[few]` are keys the translator wrote in the language of
+    /// the text.
+    pub fn setNumberLocale(self: *Bundle, locale: Locale) void {
+        self.number_locale = locale;
+        self.currency_locale = locale;
+
+        const numbers = @import("cldr/numbers.zig");
+        // A locale CLDR does not cover keeps the root defaults, which are
+        // ISO-like and never wrong so much as unidiomatic.
+        const i = locale.lookup(numbers.keys) orelse return;
+        self.number_symbols = numbers.symbols[i];
+        self.decimal_pattern = numbers.decimal_patterns[i];
+        self.percent_pattern = numbers.percent_patterns[i];
+        self.currency_pattern = numbers.currency_patterns[i];
+    }
+
+    test setNumberLocale {
+        var bundle: Bundle = try .init(std.testing.allocator, try .parse("en-US"));
+        defer bundle.deinit();
+        bundle.setNumberLocale(try .parse("de-DE"));
+
+        var buffer: [64]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+        try bundle.numberFormatter(.{}).format(1234.5, &w);
+        try std.testing.expectEqualStrings("1.234,5", w.buffered());
+
+        // The language is untouched, and so are its plural rules: English
+        // still has `one` where German-the-number-format has no say.
+        try std.testing.expectEqualStrings("en-US", bundle.locale.tag());
+    }
+
+    /// Write amounts of money the way `locale` does: `LC_MONETARY`.
+    ///
+    /// Only the currency pattern -- where the sign goes and how a negative
+    /// amount is bracketed. CLDR keeps one set of separators per locale rather
+    /// than a separate monetary set, so the decimal and grouping characters
+    /// still come from `setNumberLocale`. POSIX does distinguish them
+    /// (`mon_decimal_point`), and a locale pair that disagrees about it is not
+    /// served exactly.
+    pub fn setCurrencyLocale(self: *Bundle, locale: Locale) void {
+        self.currency_locale = locale;
+
+        const numbers = @import("cldr/numbers.zig");
+        const i = locale.lookup(numbers.keys) orelse return;
+        self.currency_pattern = numbers.currency_patterns[i];
+    }
+
+    test setCurrencyLocale {
+        var bundle: Bundle = try .init(std.testing.allocator, try .parse("en-US"));
+        defer bundle.deinit();
+        // English writes the sign in front; French writes it after.
+        bundle.setCurrencyLocale(try .parse("fr-FR"));
+
+        var buffer: [64]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+        try bundle.numberFormatter(.{ .style = .currency, .currency_text = "€" }).format(5, &w);
+        try std.testing.expect(std.mem.endsWith(u8, w.buffered(), "€"));
+    }
+
+    /// Write dates the way `locale` does: `LC_TIME`.
+    ///
+    /// The month and weekday names, the order of the fields and the clock all
+    /// come from here. `LANG=en_US.UTF-8 LC_TIME=en_GB.UTF-8` is the setting
+    /// this exists for -- English messages, a twenty-four hour clock -- and
+    /// without it that user is shown `2:03 PM`.
+    pub fn setDateLocale(self: *Bundle, locale: Locale) void {
+        self.date_locale = locale;
+
+        const dates = @import("cldr/dates.zig");
+        const i = locale.lookup(dates.keys) orelse return;
+        self.date_names = dates.names[i];
+    }
+
+    test setDateLocale {
+        var bundle: Bundle = try .init(std.testing.allocator, try .parse("en-US"));
+        defer bundle.deinit();
+        bundle.setDateLocale(try .parse("en-GB"));
+
+        var buffer: [64]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+        try bundle.dateTimeFormatter(.{ .time_style = .short }).format(0, &w);
+        // A twenty-four hour clock, which is the whole point of `LC_TIME`.
+        try std.testing.expectEqualStrings("00:00", w.buffered());
     }
 
     /// The message called `name`, or null.

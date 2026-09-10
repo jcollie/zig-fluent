@@ -20,10 +20,12 @@
 const std = @import("std");
 
 pub const Locale = struct {
+    /// The longest a canonical tag can be: three characters of language, four
+    /// of script, three of region, and the two hyphens between them.
+    pub const max_tag_len = 3 + 1 + 4 + 1 + 3;
+
     /// The canonical tag: language, then script, then region, joined by `-`.
-    /// Long enough for the longest of those -- three, four and three
-    /// characters -- with room to spare.
-    text: [15]u8 = undefined,
+    text: [max_tag_len]u8 = undefined,
     len: u8 = 0,
     language_len: u8 = 0,
     script_len: u8 = 0,

@@ -753,3 +753,50 @@ test "a percentage keeps the space the locale puts before its sign" {
         try testing.expectEqualStrings(expected, w.buffered());
     }
 }
+
+test "the formatting locale can differ from the message locale" {
+    // POSIX lets a user set these apart, and it is an ordinary thing to want:
+    // `LANG=en_US.UTF-8 LC_TIME=en_GB.UTF-8 LC_NUMERIC=de_DE.UTF-8` is English
+    // messages, a twenty-four hour clock and German number punctuation.
+    var bundle = try bundleFor("en",
+        \\count =
+        \\    { $n ->
+        \\        [one] One photo
+        \\       *[other] { $n } photos
+        \\    }
+        \\
+        \\when = { DATETIME($t, dateStyle: "long") }
+        \\size = { NUMBER($n, maximumFractionDigits: 1) } GB
+        \\
+    );
+    defer bundle.deinit();
+    bundle.setNumberLocale(try .parse("de-DE"));
+    bundle.setDateLocale(try .parse("en-GB"));
+
+    // German punctuation...
+    try expectMessage(&bundle, "size", &.{
+        .{ .name = "n", .value = .num(12345.678) },
+    }, "12.345,7 GB");
+    // ...British field order...
+    try expectMessage(&bundle, "when", &.{
+        .{ .name = "t", .value = .time(moment) },
+    }, "9 September 2026");
+
+    // ...and English plural rules, which must *not* follow `LC_NUMERIC`.
+    // `[one]` and `[few]` are keys the translator wrote in the language of the
+    // text; choosing among them by the reader's number-formatting preference
+    // would select variants the translation does not have.
+    try expectMessage(&bundle, "count", &.{.{ .name = "n", .value = .num(1) }}, "One photo");
+    try expectMessage(&bundle, "count", &.{.{ .name = "n", .value = .num(3) }}, "3 photos");
+    try testing.expectEqualStrings("en", bundle.locale.tag());
+}
+
+test "a bundle with one locale still uses it for everything" {
+    // The common case must not have got wordier: `init` sets all three.
+    var bundle: Bundle = try .init(testing.allocator, try .parse("de"));
+    defer bundle.deinit();
+
+    try testing.expectEqualStrings("de", bundle.number_locale.tag());
+    try testing.expectEqualStrings("de", bundle.currency_locale.tag());
+    try testing.expectEqualStrings("de", bundle.date_locale.tag());
+}

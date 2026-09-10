@@ -294,14 +294,40 @@ test "plural operands come out of any text" {
 // -- locale tags -------------------------------------------------------------
 
 const tag_seeds = [_][]const u8{
-    "en",  "en-US",   "sr-Latn-RS", "es-419", "PT_br",
-    "und", "x",       "toolongtag", "en-",    "-en",
-    "",    "en-Latn", "e",          "123",    "en-US-u-ca-buddhist",
+    "en",            "en-US",       "sr-Latn-RS",          "es-419",
+    "PT_br",         "und",         "x",                   "toolongtag",
+    "en-",           "-en",         "",                    "en-Latn",
+    "e",             "123",         "en-US-u-ca-buddhist",
+    // POSIX shapes, which `fluent.posix` has to reduce to the above.
+    "de_DE.UTF-8",
+    "de_DE@euro",    "sr_RS@latin", "uz@cyrillic",         "C",
+    "POSIX",         "C.UTF-8",     "de:fr:en",            "de::C:fr",
+    "@",             ".",           "a@b.c@d",             "x_Y.Z@w",
+    ":::::::::::::",
 };
 
 /// A tag either parses to something canonical or is refused; nothing in
 /// between, and nothing that walks off the end of the fixed buffer.
+///
+/// The POSIX reader is checked on the same input, because it takes text from
+/// the environment -- or, on a server, from wherever the caller found a
+/// language preference -- and reassembles a tag out of pieces of it.
 fn localeProperty(text: []const u8) !void {
+    var chain: [8]fluent.Locale = undefined;
+    for (fluent.posix.fromList(&chain, text)) |locale| {
+        try testing.expect(locale.tag().len > 0);
+        // Whatever came out is a tag that parses back to itself.
+        const again = try fluent.Locale.parse(locale.tag());
+        try testing.expectEqualStrings(locale.tag(), again.tag());
+    }
+    _ = fluent.posix.fromVariables(&chain, .{
+        .language = text,
+        .lc_all = text,
+        .lc_messages = text,
+        .lang = text,
+    });
+    _ = fluent.posix.isUnlocalized(text);
+
     const locale = fluent.Locale.parse(text) catch return;
     try testing.expect(locale.tag().len > 0);
     try testing.expect(locale.language().len >= 2 and locale.language().len <= 3);
@@ -358,6 +384,7 @@ fn dateOptions(smith: *Smith) fluent.datetime_format.Options {
     // what is generated is written down here: roughly half the fields set,
     // each to any of its values.
     const maybe = struct {
+        /// Read an optional value: about half of them are set.
         fn f(s: *Smith, T: type) ?T {
             return if (s.value(bool)) s.value(T) else null;
         }
@@ -381,6 +408,7 @@ fn dateOptions(smith: *Smith) fluent.datetime_format.Options {
     };
 }
 
+/// Drive `dateProperty` from a fuzzer's byte stream.
 fn fuzzDate(_: void, smith: *Smith) !void {
     const tag = date_locales[smith.index(date_locales.len)];
     // Every bit pattern, so the ends of the range and the moments before 1970
@@ -465,6 +493,7 @@ fn patternProperty(pattern: []const u8) !void {
     }
 }
 
+/// Drive `patternProperty` from a fuzzer's byte stream.
 fn fuzzPattern(_: void, smith: *Smith) !void {
     var buffer: [256]u8 = undefined;
     const len = smith.slice(&buffer);
@@ -501,6 +530,7 @@ fn jsonProperty(input: []const u8) !void {
     try testing.expectEqualStrings("Resource", parsed.value.object.get("type").?.string);
 }
 
+/// Drive `jsonProperty` from a fuzzer's byte stream.
 fn fuzzJson(_: void, smith: *Smith) !void {
     var buffer: [4096]u8 = undefined;
     const len = smith.slice(&buffer);
@@ -577,6 +607,7 @@ fn affixProperty(prefix: []const u8, suffix: []const u8) !void {
     }
 }
 
+/// Drive `affixProperty` from a fuzzer's byte stream.
 fn fuzzAffix(_: void, smith: *Smith) !void {
     var prefix_buffer: [128]u8 = undefined;
     const prefix_len = smith.slice(&prefix_buffer);
