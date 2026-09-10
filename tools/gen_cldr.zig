@@ -924,6 +924,7 @@ const DateLocale = struct {
     day_periods: [2][]const u8,
     eras: [2][]const u8,
     eras_wide: [2][]const u8,
+    eras_narrow: [2][]const u8,
     date_formats: [4][]const u8,
     time_formats: [4][]const u8,
     datetime_formats: [4][]const u8,
@@ -1021,6 +1022,8 @@ fn generateDates(
         locale.eras = .{ abbreviated.get("0").?.string, abbreviated.get("1").?.string };
         const wide = eras.get("eraNames").?.object;
         locale.eras_wide = .{ wide.get("0").?.string, wide.get("1").?.string };
+        const narrow = eras.get("eraNarrow").?.object;
+        locale.eras_narrow = .{ narrow.get("0").?.string, narrow.get("1").?.string };
 
         const date_formats = gregorian.get("dateFormats").?.object;
         const time_formats = gregorian.get("timeFormats").?.object;
@@ -1274,6 +1277,7 @@ fn writeDatesFile(arena: Allocator, io: std.Io, out_dir: std.Io.Dir, locales: []
         try writeNameArray(w, "day_periods", &locale.day_periods);
         try writeNameArray(w, "eras", &locale.eras);
         try writeNameArray(w, "eras_wide", &locale.eras_wide);
+        try writeNameArray(w, "eras_narrow", &locale.eras_narrow);
         try writeNameArray(w, "date_formats", &locale.date_formats);
         try writeNameArray(w, "time_formats", &locale.time_formats);
         try writeNameArray(w, "datetime_formats", &locale.datetime_formats);

@@ -196,6 +196,11 @@ pub const Names = struct {
     /// Before the common era, then within it.
     eras: [2][]const u8 = .{ "BCE", "CE" },
     eras_wide: [2][]const u8 = .{ "BCE", "CE" },
+    /// The narrow era, which `GGGGG` writes. Several locales' own patterns
+    /// ask for it -- French files `GyMEd` as `E dd/MM/y GGGGG` -- so leaving
+    /// it out did not mean it went unasked for, it meant the wide name was
+    /// written in its place: "après Jésus-Christ" where ICU says "ap. J.-C.".
+    eras_narrow: [2][]const u8 = .{ "BCE", "CE" },
 
     /// The four preset date formats, longest first.
     date_formats: [4][]const u8 = .{ "y MMMM d, EEEE", "y MMMM d", "y MMM d", "y-MM-dd" },
@@ -314,6 +319,33 @@ pub const Formatter = struct {
             .options = .{ .year = .numeric, .month = .short, .day = .numeric, .weekday = .long },
         }).format(0, &w);
         try testing.expectEqualStrings("1970-1-1 Thu", w.buffered());
+    }
+
+    test "the era takes the width that was asked for" {
+        // CLDR spells the era `G` in every `availableFormats` key while the
+        // patterns behind them use `G`, `GGGG` and `GGGGG`, so the key can
+        // never disagree with the request and the pattern's own width would
+        // otherwise always win. Russian files `yMEd`-with-an-era as a narrow
+        // `GGGGG`; a request for a short era has to widen it.
+        const names: Names = .{
+            .available_formats = &.{.{ .skeleton = "Gy", .pattern = "y GGGGG" }},
+            .eras = .{ "BCE", "n. e." },
+            .eras_wide = .{ "Before Common Era", "Common Era" },
+            .eras_narrow = .{ "B", "n.e." },
+        };
+        var buffer: [64]u8 = undefined;
+
+        var w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .names = names, .options = .{ .era = .short, .year = .numeric } }).format(0, &w);
+        try testing.expectEqualStrings("1970 n. e.", w.buffered());
+
+        w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .names = names, .options = .{ .era = .long, .year = .numeric } }).format(0, &w);
+        try testing.expectEqualStrings("1970 Common Era", w.buffered());
+
+        w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .names = names, .options = .{ .era = .narrow, .year = .numeric } }).format(0, &w);
+        try testing.expectEqualStrings("1970 n.e.", w.buffered());
     }
 
     test "Y is the week's year, not the calendar year" {
@@ -589,7 +621,17 @@ pub const Formatter = struct {
             const crosses_kind = (field == 'M' or field == 'L') and
                 (count >= 3) != (requested >= 3);
 
-            const adjust = requested != 0 and requested != declared and !crosses_kind;
+            // The era is the one field whose declared width says nothing.
+            // Every `availableFormats` key in CLDR spells it with a single
+            // `G` -- all 5486 of them -- while 259 of the patterns those keys
+            // map to write `GGGG` or `GGGGG`. So `requested != declared` can
+            // never fire for `G`, and Russian's `E, dd.MM.y GGGGG` kept its
+            // narrow era however wide a one was asked for: "н.э." where ICU,
+            // asked for a short era, says "н. э.". Take the request every
+            // time, since the key had no opinion to override.
+            const era = field == 'G';
+
+            const adjust = requested != 0 and (era or requested != declared) and !crosses_kind;
             w.splatByteAll(c, if (adjust) requested else count) catch return pattern;
         }
 
@@ -649,7 +691,13 @@ pub const Formatter = struct {
         switch (letter) {
             'G' => {
                 const era: usize = if (moment.year > 0) 1 else 0;
-                try w.writeAll(if (count >= 4) self.names.eras_wide[era] else self.names.eras[era]);
+                // UTS #35's three widths: one through three letters is the
+                // abbreviated name, four is the wide one, five is the narrow.
+                try w.writeAll(switch (count) {
+                    4 => self.names.eras_wide[era],
+                    5 => self.names.eras_narrow[era],
+                    else => self.names.eras[era],
+                });
             },
             'y', 'u' => {
                 // A year is written within its era, never as a negative
