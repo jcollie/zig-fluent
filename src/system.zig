@@ -118,10 +118,15 @@ test categories {
     try std.testing.expectEqualStrings("en-US", found.messages.?.tag());
     try std.testing.expectEqualStrings("en-GB", found.time.?.tag());
 
-    // Nothing set: off Windows there is nothing else to ask, so no preference.
+    // Nothing set: where there is no system to ask -- a POSIX machine that is
+    // neither macOS nor Windows -- that is the whole answer, so no preference.
+    // Where there is one, what comes back is that machine's own settings,
+    // which a test cannot predict; the runner has an `en-US` to offer and
+    // says so. Those readers are tested where they live, and the workflow
+    // runs the example against the real preferences.
     var empty: std.process.Environ.Map = .init(std.testing.allocator);
     defer empty.deinit();
-    if (!windows.available) {
+    if (!darwin.available and !windows.available) {
         try std.testing.expectEqual(@as(?Locale, null), categories(&empty).messages);
     }
 
