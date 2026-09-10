@@ -56,30 +56,55 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
-    // It takes the three CLDR package directories as arguments rather than as
-    // dependencies, and that is a deliberate retreat from the obvious design.
+    // `-Dcldr` is not a preference, it is the guard that keeps 138 MB of CLDR
+    // off everybody else's clean build, and it has to sit exactly here.
     //
-    // Declaring them in `build.zig.zon` and reaching them with
-    // `b.lazyDependency` reads better and does not work: a lazy dependency in
-    // the manifest is fetched by `zig build` whether or not any step asks for
-    // it -- measured, on 0.16.0, with the calls behind a `-D` flag that was
-    // switched off. Those three packages are 138 MB, and every consumer of
-    // this library was paying for them to regenerate files that change only
-    // when CLDR issues a release. Out of the manifest, a consumer's tree drops
-    // from 211 MB to 73 MB.
+    // `.lazy = true` in the manifest is not what makes a package optional.
+    // What makes it optional is whether `b.lazyDependency` is *called*: the
+    // call marks the package as needed, and `build()` runs in full during the
+    // configure phase of every `zig build`, whatever step was named on the
+    // command line. These three calls used to sit at the top level of this
+    // function, wanted only by a step that regenerates committed files when
+    // CLDR makes a release -- and so every consumer of this library fetched
+    // them, on every clean build, forever. Behind the option they are not
+    // fetched at all; that alone is the difference between a 211 MB dependency
+    // tree and a 73 MB one.
     //
-    // The README says where to get the data. It is a maintainer's errand run
-    // about twice a year, and it is worth an errand to keep it off everyone
-    // else's clean build.
+    // Measured rather than assumed, and assumed wrongly once before: a
+    // scratch project with two lazy dependencies, one called unconditionally
+    // and one behind an option defaulting to false, fetches exactly the first.
+    const with_cldr = b.option(
+        bool,
+        "cldr",
+        "Fetch the CLDR data packages so that `zig build gen-cldr` can read " ++
+            "them (138 MB; maintainers only, default false)",
+    ) orelse false;
+
     const gen_cldr_run = b.addRunArtifact(gen_cldr);
+    // It writes into the source tree, which is the point of it, so it must run
+    // every time it is asked for rather than being cached on its inputs.
     gen_cldr_run.has_side_effects = true;
     gen_cldr_run.setCwd(b.path("."));
     gen_cldr_run.stdio = .inherit;
+    if (with_cldr) {
+        if (b.lazyDependency("cldr_core", .{})) |core| {
+            gen_cldr_run.addDirectoryArg(core.path("."));
+        }
+        if (b.lazyDependency("cldr_numbers_full", .{})) |numbers| {
+            gen_cldr_run.addDirectoryArg(numbers.path("."));
+        }
+        if (b.lazyDependency("cldr_dates_full", .{})) |dates| {
+            gen_cldr_run.addDirectoryArg(dates.path("."));
+        }
+    }
+    // Without `-Dcldr` the three directories can still be given by hand, which
+    // is how to regenerate against a CLDR release this manifest does not pin.
     if (b.args) |args| gen_cldr_run.addArgs(args);
 
     const gen_cldr_step = b.step(
         "gen-cldr",
-        "Regenerate src/cldr/ -- pass the three CLDR directories after --",
+        "Regenerate src/cldr/ -- `-Dcldr` to fetch the data, or name three " ++
+            "directories after `--`",
     );
     gen_cldr_step.dependOn(&gen_cldr_run.step);
 

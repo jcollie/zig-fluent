@@ -216,6 +216,60 @@ pub fn fromEnviron(buffer: []Locale, environ: *const std.process.Environ.Map) []
     return fromVariables(buffer, variablesFromEnviron(environ));
 }
 
+/// Whether the environment *asks* not to be localized, as against saying
+/// nothing at all.
+///
+/// `fromVariables` answers both with an empty chain, and on POSIX that is the
+/// end of it: there is nowhere else to look, so the two cases lead to the same
+/// place and nothing has ever had to tell them apart. On Windows they diverge.
+/// An environment that says nothing is a reason to go and ask the operating
+/// system which languages the user prefers; an environment that says
+/// `LC_ALL=C` is a reason not to, because that is somebody saying "no
+/// translations, please" and Windows would happily supply some.
+///
+/// Only a variable that is set counts. An unset one is an absence, and POSIX
+/// treats one set to the empty string as unset too, so neither is a request.
+pub fn saysUnlocalized(variables: Variables) bool {
+    const base = variables.lc_all orelse variables.lc_messages orelse
+        variables.lang orelse return false;
+    if (base.len == 0) return false;
+    return isUnlocalized(base);
+}
+
+test saysUnlocalized {
+    // The request, in each of the places it can be made.
+    try std.testing.expect(saysUnlocalized(.{ .lc_all = "C" }));
+    try std.testing.expect(saysUnlocalized(.{ .lc_messages = "POSIX" }));
+    try std.testing.expect(saysUnlocalized(.{ .lang = "C.UTF-8" }));
+
+    // Silence is not a request, which is the whole point of this function.
+    try std.testing.expect(!saysUnlocalized(.{}));
+    try std.testing.expect(!saysUnlocalized(.{ .lc_all = "" }));
+    // Nor is a `LANGUAGE` with nothing to apply it to.
+    try std.testing.expect(!saysUnlocalized(.{ .language = "ru:ja" }));
+
+    // A real locale is not a request either.
+    try std.testing.expect(!saysUnlocalized(.{ .lang = "de_DE.UTF-8" }));
+    // And `LC_ALL` outranks the rest, so it can withdraw one.
+    try std.testing.expect(!saysUnlocalized(.{ .lc_all = "de_DE", .lang = "C" }));
+}
+
+/// Whether the process's own environment asks not to be localized.
+///
+/// A thin adapter over `saysUnlocalized`; see it for what the question means.
+pub fn saysUnlocalizedFromEnviron(environ: *const std.process.Environ.Map) bool {
+    return saysUnlocalized(variablesFromEnviron(environ));
+}
+
+test saysUnlocalizedFromEnviron {
+    var environ: std.process.Environ.Map = .init(std.testing.allocator);
+    defer environ.deinit();
+
+    try std.testing.expect(!saysUnlocalizedFromEnviron(&environ));
+    try environ.put("LC_ALL", "C");
+    try std.testing.expect(saysUnlocalizedFromEnviron(&environ));
+}
+
 /// Read the variables this module cares about out of a real environment.
 fn variablesFromEnviron(environ: *const std.process.Environ.Map) Variables {
     return .{

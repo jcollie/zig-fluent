@@ -46,6 +46,17 @@ pub fn preferredLocales(buffer: []Locale, environ: *const std.process.Environ.Ma
     const from_environment = posix.fromEnviron(buffer, environ);
     if (from_environment.len != 0) return from_environment;
 
+    // An empty chain means one of two different things, and on POSIX they lead
+    // to the same place so the difference never shows. `LC_ALL=C` is a request
+    // for no translation and is the whole answer; an environment that merely
+    // says nothing has not answered at all.
+    //
+    // Windows is where that matters, and it took a Windows runner to notice:
+    // without this the operating system's preferred UI languages were handed
+    // back to somebody who had just asked, in the one way POSIX gives them, to
+    // be left alone.
+    if (posix.saysUnlocalizedFromEnviron(environ)) return buffer[0..0];
+
     // Nothing in the environment. On POSIX that settles it; on Windows the
     // question has only just been asked of the right place.
     return windows.preferredUiLanguages(buffer);
@@ -84,6 +95,10 @@ pub fn categories(environ: *const std.process.Environ.Map) Categories {
     {
         return from_environment;
     }
+    // Four nulls, and again for two different reasons: `LC_ALL=C` asks for the
+    // C locale in every category, which is a preference and not the lack of
+    // one. Windows' regional settings must not be substituted for it.
+    if (posix.saysUnlocalizedFromEnviron(environ)) return from_environment;
     return windows.categories();
 }
 
@@ -104,6 +119,18 @@ test categories {
     if (!windows.available) {
         try std.testing.expectEqual(@as(?Locale, null), categories(&empty).messages);
     }
+
+    // `LC_ALL=C` is a preference, though, and holds on every platform: the
+    // user asked for the C locale and must not be given Windows' regional
+    // settings instead.
+    var unlocalized: std.process.Environ.Map = .init(std.testing.allocator);
+    defer unlocalized.deinit();
+    try unlocalized.put("LC_ALL", "C");
+    const none = categories(&unlocalized);
+    try std.testing.expectEqual(@as(?Locale, null), none.messages);
+    try std.testing.expectEqual(@as(?Locale, null), none.numeric);
+    try std.testing.expectEqual(@as(?Locale, null), none.time);
+    try std.testing.expectEqual(@as(?Locale, null), none.monetary);
 }
 
 /// Apply the environment's formatting preferences to a bundle.

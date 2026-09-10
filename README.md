@@ -307,22 +307,31 @@ purpose. It is what GNU gettext does there, and it means `LC_ALL=C` silences
 translation on Windows as well, which is the setting it would be worst to
 ignore.
 
-### Testing what cannot be run here
+### Testing it
 
 The Win32 calls come from [zigwin32](https://github.com/marlersoft/zigwin32),
 which is generated from Microsoft's own metadata, as a lazy dependency wired in
 only when the target is Windows. Two hand-written `extern` declarations would
 have been less machinery and worse: nothing checks them, and a wrong parameter
-width is memory corruption on the one platform that cannot be tested from a
-Linux machine. `GetUserDefaultLocaleName` takes a `[*:0]u16`, not the `[*]u16`
-that is easy to write.
+width is memory corruption. `GetUserDefaultLocaleName` takes a `[*:0]u16`, not
+the `[*]u16` that is easy to write.
 
 Everything that parses is separated from everything that calls, so the parsing
-is tested here on the byte sequences Windows would have produced — the
+is tested anywhere on the byte sequences Windows would have produced — the
 NUL-separated, double-NUL-terminated UTF-16 multi-string, the invariant locale,
-a name that is not ASCII. The calling half is checked by compiling the whole
-test suite for `x86_64-windows-gnu`, which type-checks it against the real
-signatures even though there is no Windows here to run it on.
+a name that is not ASCII. Cross-compiling the test suite for
+`x86_64-windows-gnu` type-checks the calling half against the real signatures.
+
+Neither of those runs the code, and the difference showed the first time it
+did. The [GitHub mirror](https://github.com/jcollie/zig-fluent) exists so that
+the suite can run on `windows-latest` and `macos-latest` as well as on Linux,
+and the first Windows run failed one assertion out of 199: `LC_ALL=C` reached
+`GetUserPreferredUILanguages` and came back with the runner's UI language.
+Asking not to be translated is the one setting it would be worst to ignore, the
+doc comment beside it said so, and no amount of type-checking was ever going to
+notice — on POSIX an environment that says `LC_ALL=C` and an environment that
+says nothing lead to the same place, and only on Windows do they part company.
+`posix.saysUnlocalized` is what tells them apart now.
 
 Windows' pseudo-locales pass through as ordinary tags — `qps` is in BCP 47's
 private-use range — match no bundle, and so leave the source locale showing,
@@ -501,10 +510,12 @@ a manifest entry costs.
 ### Regenerating the CLDR tables
 
 ```console
-$ zig build gen-cldr -- cldr-core cldr-numbers-full cldr-dates-full
+$ zig build gen-cldr -Dcldr
 ```
 
-The three directories are the unpacked CLDR packages:
+`-Dcldr` fetches the three CLDR packages the generator reads. Without it they
+are not fetched at all, and the three directories can be named by hand instead
+— which is how to regenerate against a CLDR release this manifest does not pin:
 
 ```console
 $ for p in core numbers-full dates-full; do
@@ -514,31 +525,62 @@ $ for p in core numbers-full dates-full; do
 $ zig build gen-cldr -- cldr-core cldr-numbers-full cldr-dates-full
 ```
 
-They are passed as arguments rather than declared as dependencies, and that is
-a deliberate retreat from the obvious design. **A lazy dependency in
-`build.zig.zon` is fetched by `zig build` whether or not any step asks for it**
-— measured on Zig 0.16.0, with the `lazyDependency` calls behind a `-D` flag
-that was switched off, and confirmed from the other side by building a throwaway
-project that merely depended on this one. Those three packages are 138 MB, so
-every consumer was paying for them in order to regenerate files that change only
-when CLDR issues a release. Out of the manifest, a dependent project's tree
-drops from 211 MB to 73 MB.
+That option is not a convenience. It is the guard that keeps 138 MB off
+everybody else's clean build, and where it sits is the whole of it.
+
+**`.lazy = true` is not what makes a dependency optional.** What makes it
+optional is whether `b.lazyDependency` is *called*: the call marks the package
+as needed, and `build()` runs in full during the configure phase of every `zig
+build`, whatever step was named on the command line. A call sitting at the top
+level of `build()` therefore fetches on every build, even when the only step
+that consumes its result is one nobody asked for — which is what these three
+calls used to do, and why every consumer of this library was fetching CLDR in
+order to regenerate files that change when the Unicode Consortium makes a
+release. Behind an option that defaults to false, the call does not execute and
+nothing is fetched.
+
+An earlier version of this file said something stronger and wrong: that a `-D`
+guard did not help, and that the only remedy was to take the packages out of
+the manifest entirely. The measurement behind that claim was of calls that were
+never guarded in the first place. A scratch project with two lazy dependencies,
+one called unconditionally and one behind an option defaulting to false,
+fetches exactly the first.
 
 What the generator writes goes under `src/cldr/` and is committed, so updating
 to a new CLDR is a deliberate act with a reviewable diff: fetch the new
-packages, run the generator, look at what moved.
+packages, run the generator, look at what moved. Either invocation produces
+byte-identical output.
 
 ### What a clean build actually downloads
 
-73 MB, and it is worth knowing where it goes, because none of it is lazy in the
-sense the name suggests:
+For a Linux target, six packages, 13 MB compressed and about 145 MB unpacked:
 
 | | | |
 |---|---|---|
-| `zigwin32` | 64 MB | the two Win32 calls; fetched on every platform, not only Windows |
-| `moment`, `tzdata`, `tzcode` | 8 MB | `zig-datetime`'s, for its own generators |
+| `cldr-dates-full` | 96 MB | **not ours** — see below |
+| `cldr-numbers-full` | 40 MB | **not ours** — see below |
+| `moment` | 5.3 MB | `zig-datetime`'s, for checking its locale table |
+| `cldr-core` | 1.8 MB | **not ours** — see below |
+| `zig-datetime` | 1.1 MB | the calendar and the timezone database |
 | `fluent-spec` | 876 KB | the conformance fixtures, used by `zig build test` |
-| `zig-datetime` | 868 KB | the calendar and the timezone database |
+
+Building for Windows adds `zigwin32` at 64 MB, for the two Win32 calls in
+`src/windows.zig`. That one is properly conditional — `if (target.result.os.tag
+== .windows)` around the `lazyDependency` call — so a build for any other
+target neither fetches nor compiles it.
+
+The three CLDR packages, 138 MB of the 145, are **not** this project's doing
+any more: they arrive through `zig-datetime`, whose `build.zig` calls
+`b.lazyDependency` for them at the top level of `build()` in order to wire up
+an oracle step that compares its tables against their source. It is the same
+mistake this project made, in the same shape, and it wants the same fix
+upstream. Until then, depending on this library means fetching them, and no
+option here can prevent it.
+
+`fluent-spec` is fetched by a plain `zig build` too, for the same reason and
+deliberately: the conformance suite is what `zig build test` exists to run, the
+step that needs it cannot be known at configure time, and 876 KB is not worth
+an option that would let the suite be skipped by accident.
 
 ### Fuzzing
 

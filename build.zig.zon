@@ -13,6 +13,33 @@
             .url = "git+https://github.com/jcollie/zig-datetime#92b279921434d4f3d1400aed63a994b58be804d0",
             .hash = "datetime-0.0.1-6-va7w5LDgDvb4wzJTZ6hjqL1cITz7EUFZVHn-d6kK44",
         },
+        // The Unicode CLDR, in the Unicode Consortium's JSON distribution.
+        // Read only by `zig build gen-cldr -Dcldr`, which rewrites `src/cldr/`
+        // and is a maintainer's errand run about twice a year, when CLDR makes
+        // a release. The generated files are committed, so an ordinary build
+        // reads them and needs none of this.
+        //
+        // Guarding matters more than `.lazy` does: a lazy dependency is
+        // fetched the moment its `b.lazyDependency` call executes, and
+        // `build()` runs in full on every `zig build` whatever step was named.
+        // These three unpack to 138 MB, and while their calls sat at the top
+        // level of `build()` every consumer of this library was paying for
+        // them. `-Dcldr` is what keeps the call from executing; see build.zig.
+        .cldr_core = .{
+            .url = "https://registry.npmjs.org/cldr-core/-/cldr-core-48.2.0.tgz",
+            .hash = "N-V-__8AAJ77GgCr4jV_q5d8vuaUZIWMrHbXUMYV7il4sgLB",
+            .lazy = true,
+        },
+        .cldr_numbers_full = .{
+            .url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz",
+            .hash = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk",
+            .lazy = true,
+        },
+        .cldr_dates_full = .{
+            .url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz",
+            .hash = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV",
+            .lazy = true,
+        },
         .zigwin32 = .{
             .url = "git+https://github.com/marlersoft/zigwin32#9f15c276b4e9d05afd34a10d8662a7dfc34647ea",
             .hash = "win32-42.0.39-preview-mX5pFS564gPTezZn4v3TMxRnfJUrZNx1B_F2p2HKXOeG",

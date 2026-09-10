@@ -168,7 +168,7 @@ copyFarm name
     {
       name = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV";
       path = fetchZigArtifact {
-        name = "cldr_dates";
+        name = "cldr_dates_full";
         url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz";
         hash = "sha256-Albxzv7KFPfVFb5Ict2kj83X51OBQw8lqv0BQ+rltDA=";
         unpack = false;
@@ -177,7 +177,7 @@ copyFarm name
     {
       name = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk";
       path = fetchZigArtifact {
-        name = "cldr_numbers";
+        name = "cldr_numbers_full";
         url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz";
         hash = "sha256-LRehRTxVmmIRLK7tUuC8/jy4U5yZ0jmue37U0IJ2edk=";
         unpack = false;
