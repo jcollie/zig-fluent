@@ -10,8 +10,8 @@
             .lazy = true,
         },
         .datetime = .{
-            .url = "git+https://github.com/jcollie/zig-datetime#734abf3f0fec36bc089616fee4bc2278850b3951",
-            .hash = "datetime-0.0.1-6-va74a1CwA3i3J6tRkgdFtX1ASAgbzBWyS8Rbowhq04",
+            .url = "git+https://github.com/jcollie/zig-datetime#92b279921434d4f3d1400aed63a994b58be804d0",
+            .hash = "datetime-0.0.1-6-va7w5LDgDvb4wzJTZ6hjqL1cITz7EUFZVHn-d6kK44",
         },
         .zigwin32 = .{
             .url = "git+https://github.com/marlersoft/zigwin32#9f15c276b4e9d05afd34a10d8662a7dfc34647ea",

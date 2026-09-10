@@ -157,11 +157,38 @@ in
 copyFarm name
   [
     {
-      name = "datetime-0.0.1-6-va74a1CwA3i3J6tRkgdFtX1ASAgbzBWyS8Rbowhq04";
+      name = "N-V-__8AAJ77GgCr4jV_q5d8vuaUZIWMrHbXUMYV7il4sgLB";
+      path = fetchZigArtifact {
+        name = "cldr_core";
+        url = "https://registry.npmjs.org/cldr-core/-/cldr-core-48.2.0.tgz";
+        hash = "sha256-UxDgx6BsH+uD3I5UyFhLvgucLqgyAXKhjVQZhrEkWF0=";
+        unpack = false;
+      };
+    }
+    {
+      name = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV";
+      path = fetchZigArtifact {
+        name = "cldr_dates";
+        url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz";
+        hash = "sha256-Albxzv7KFPfVFb5Ict2kj83X51OBQw8lqv0BQ+rltDA=";
+        unpack = false;
+      };
+    }
+    {
+      name = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk";
+      path = fetchZigArtifact {
+        name = "cldr_numbers";
+        url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz";
+        hash = "sha256-LRehRTxVmmIRLK7tUuC8/jy4U5yZ0jmue37U0IJ2edk=";
+        unpack = false;
+      };
+    }
+    {
+      name = "datetime-0.0.1-6-va7w5LDgDvb4wzJTZ6hjqL1cITz7EUFZVHn-d6kK44";
       path = fetchZigArtifact {
         name = "datetime";
-        url = "git+https://github.com/jcollie/zig-datetime#734abf3f0fec36bc089616fee4bc2278850b3951";
-        hash = "sha256-hlFm4IfH5FvCUiraPa0I0DnBf3q6dAmr2psi+Lc3fxo=";
+        url = "git+https://github.com/jcollie/zig-datetime#92b279921434d4f3d1400aed63a994b58be804d0";
+        hash = "sha256-UF/b55hBWAR3MLeuRXw/A/egtquKvS+8qPxWlpMqM3k=";
         unpack = true;
       };
     }
