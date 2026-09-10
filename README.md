@@ -329,6 +329,91 @@ private-use range — match no bundle, and so leave the source locale showing,
 which is what somebody who set one should see from a program that ships no
 pseudo-locale.
 
+## On macOS
+
+macOS is two systems at once, and which one you are in decides everything.
+
+**In a terminal it is POSIX**, and already served. Terminal.app's *Set locale
+environment variables on startup* is on by default and sets `LANG` from the
+region preference, so `fluent.system` works there with nothing added. iTerm2
+does the same. A command-line program needs to read no further than this.
+
+**A GUI app gets nothing.** `launchd` passes no `LANG`, so a bundled `.app`
+sees an empty environment however the user has their region set, and must ask
+the preferences system instead.
+
+### What to ask for
+
+The answers live in `NSGlobalDomain`, and macOS makes the same two-way split
+Windows does — a ranked list of languages, and one locale for formatting — so
+they land in the same `Categories`:
+
+| key | value | analogue |
+|---|---|---|
+| `AppleLanguages` | `("en-US", "de-DE")`, in preference order | `LANGUAGE`, `GetUserPreferredUILanguages` |
+| `AppleLocale` | `en_US`, or `en_GB@currency=EUR` | `LC_NUMERIC`+`LC_TIME`+`LC_MONETARY`, the Windows regional format |
+
+Both shapes go straight into functions that are already here, which is the
+useful part: having read the two keys, there is nothing left to write.
+
+```zig
+// AppleLanguages entries are BCP 47 already.
+const first = try fluent.Locale.parse("zh-Hans-CN");        // zh-Hans-CN
+
+// AppleLocale is a POSIX-shaped name, and the ICU keywords after `@` are
+// dropped like any other modifier.
+const format = fluent.posix.fromName("en_GB@currency=EUR"); // en-GB
+```
+
+Reading them is two CoreFoundation calls —
+`CFPreferencesCopyAppValue(CFSTR("AppleLanguages"), kCFPreferencesCurrentApplication)`
+and the same for `AppleLocale` — which a GUI app already links for.
+
+### Format overrides
+
+macOS lets a user override formats *independently of the locale*, under
+Language & Region → Advanced, and those land in `NSGlobalDomain` as well:
+
+| key | what it overrides |
+|---|---|
+| `AppleICUDateFormatStrings` | a dict keyed `"1"`–`"4"`: ICU date patterns for the four lengths |
+| `AppleICUNumberSymbols` | a dict keyed by ICU's `UNumberFormatSymbol`: `0` decimal, `1` grouping, `10` monetary decimal, `17` monetary grouping |
+| `AppleICUForce24HourTime`, `AppleICUForce12HourTime` | the clock, whatever the locale prefers |
+| `AppleFirstWeekday`, `AppleMeasurementUnits` | week start, metric or not |
+
+These are not read either, and an application that wants them can apply them
+itself, because each has somewhere to go: `Bundle.date_names.date_formats` holds
+the same four patterns, `Bundle.number_symbols` the same symbols, and
+`datetime_format.Options.hour12` is the same switch.
+
+**Mind the order of the date patterns.** macOS keys them `"1"` to `"4"` running
+*short to long* — `"1"` is `ddMMMyy` and `"4"` is `EEEE, d MMMM y`. This library
+stores them longest first, indexed by `Style`, so `date_formats[0]` is `full`
+and `date_formats[3]` is `short`. They are reversed as well as offset:
+
+```zig
+// AppleICUDateFormatStrings "1".."4"  ->  date_formats[3]..[0]
+bundle.date_names.date_formats[4 - index] = pattern;
+```
+
+And note that symbols `10` and `17` are the monetary separators — the
+distinction described above as one CLDR does not keep and this library
+therefore cannot serve. A caller reading those from macOS has better
+information than the tables do.
+
+### Why there is no `fluent.darwin`
+
+Because it could not be verified from here. Reading any of this needs
+`CFPreferencesCopyAppValue`, which needs `-framework CoreFoundation`, which
+needs the macOS SDK; without it the linker gets as far as `unable to find
+framework 'CoreFoundation'`. The Windows half is the way it is precisely
+because [zigwin32](https://github.com/marlersoft/zigwin32) let every signature
+be type-checked against Microsoft's own metadata — and it caught a wrong
+parameter width the first time it was compiled. There is no equivalent here,
+and code that ships looking as tested as the rest of the library while being
+neither built nor run is worse than a section of a README that tells you
+exactly which two keys to read.
+
 ## Pure Zig
 
 Every other mature implementation delegates the locale-sensitive part to ICU:
