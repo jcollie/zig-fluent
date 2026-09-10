@@ -553,34 +553,33 @@ byte-identical output.
 
 ### What a clean build actually downloads
 
-For a Linux target, six packages, 13 MB compressed and about 145 MB unpacked:
+For a Linux target, two packages, 328 KB compressed and 1.9 MB unpacked:
 
 | | | |
 |---|---|---|
-| `cldr-dates-full` | 96 MB | **not ours** — see below |
-| `cldr-numbers-full` | 40 MB | **not ours** — see below |
-| `moment` | 5.3 MB | `zig-datetime`'s, for checking its locale table |
-| `cldr-core` | 1.8 MB | **not ours** — see below |
 | `zig-datetime` | 1.1 MB | the calendar and the timezone database |
 | `fluent-spec` | 876 KB | the conformance fixtures, used by `zig build test` |
 
 Building for Windows adds `zigwin32` at 64 MB, for the two Win32 calls in
-`src/windows.zig`. That one is properly conditional — `if (target.result.os.tag
-== .windows)` around the `lazyDependency` call — so a build for any other
-target neither fetches nor compiles it.
+`src/windows.zig`. That one is conditional on the target — `if
+(target.result.os.tag == .windows)` around the `lazyDependency` call — so a
+build for anything else neither fetches nor compiles it.
 
-The three CLDR packages, 138 MB of the 145, are **not** this project's doing
-any more: they arrive through `zig-datetime`, whose `build.zig` calls
-`b.lazyDependency` for them at the top level of `build()` in order to wire up
-an oracle step that compares its tables against their source. It is the same
-mistake this project made, in the same shape, and it wants the same fix
-upstream. Until then, depending on this library means fetching them, and no
-option here can prevent it.
+`fluent-spec` is fetched by a plain `zig build`, deliberately: the conformance
+suite is what `zig build test` exists to run, which step was asked for cannot
+be known at configure time, and 876 KB is not worth an option that would let
+the suite be skipped by accident.
 
-`fluent-spec` is fetched by a plain `zig build` too, for the same reason and
-deliberately: the conformance suite is what `zig build test` exists to run, the
-step that needs it cannot be known at configure time, and 876 KB is not worth
-an option that would let the suite be skipped by accident.
+It was 13 MB and about 145 MB unpacked until very recently, and the difference
+is worth recording because none of it was this project's own manifest. The
+three CLDR packages and moment arrived through `zig-datetime`, whose `build.zig`
+called `b.lazyDependency` for them at the top level of `build()` to wire up
+oracle steps that check its tables against their sources — the same mistake in
+the same shape, one dependency down. It is fixed there now with
+`if (b.pkg_hash.len != 0) return` in front of the oracle section: `pkg_hash` is
+empty for the package a build was invoked on and set for anything reached as a
+dependency, so the steps exist for whoever is developing that library and for
+nobody else. That is the general shape of the fix, and it needs no option.
 
 ### Fuzzing
 
