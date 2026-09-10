@@ -56,24 +56,32 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
-    const gen_cldr_step = b.step("gen-cldr", "Regenerate src/cldr/ from the CLDR data packages");
-    if (b.lazyDependency("cldr_core", .{})) |core| {
-        if (b.lazyDependency("cldr_numbers_full", .{})) |numbers| {
-            if (b.lazyDependency("cldr_dates_full", .{})) |dates| {
-                const run = b.addRunArtifact(gen_cldr);
-                run.addDirectoryArg(core.path("."));
-                run.addDirectoryArg(numbers.path("."));
-                run.addDirectoryArg(dates.path("."));
-                // It writes into the source tree, which is the point of it,
-                // so it must run every time it is asked for rather than being
-                // cached on its inputs.
-                run.has_side_effects = true;
-                run.setCwd(b.path("."));
-                run.stdio = .inherit;
-                gen_cldr_step.dependOn(&run.step);
-            }
-        }
-    }
+    // It takes the three CLDR package directories as arguments rather than as
+    // dependencies, and that is a deliberate retreat from the obvious design.
+    //
+    // Declaring them in `build.zig.zon` and reaching them with
+    // `b.lazyDependency` reads better and does not work: a lazy dependency in
+    // the manifest is fetched by `zig build` whether or not any step asks for
+    // it -- measured, on 0.16.0, with the calls behind a `-D` flag that was
+    // switched off. Those three packages are 138 MB, and every consumer of
+    // this library was paying for them to regenerate files that change only
+    // when CLDR issues a release. Out of the manifest, a consumer's tree drops
+    // from 211 MB to 73 MB.
+    //
+    // The README says where to get the data. It is a maintainer's errand run
+    // about twice a year, and it is worth an errand to keep it off everyone
+    // else's clean build.
+    const gen_cldr_run = b.addRunArtifact(gen_cldr);
+    gen_cldr_run.has_side_effects = true;
+    gen_cldr_run.setCwd(b.path("."));
+    gen_cldr_run.stdio = .inherit;
+    if (b.args) |args| gen_cldr_run.addArgs(args);
+
+    const gen_cldr_step = b.step(
+        "gen-cldr",
+        "Regenerate src/cldr/ -- pass the three CLDR directories after --",
+    );
+    gen_cldr_step.dependOn(&gen_cldr_run.step);
 
     // A worked example: read the user's language out of the environment, pick
     // the closest of the translations shipped with it, and print in that one.

@@ -9,21 +9,6 @@
             .hash = "N-V-__8AAOPHBwAthlB_ltwF8wIYLtx96Tb9jDWVBZaxfUwl",
             .lazy = true,
         },
-        .cldr_core = .{
-            .url = "https://registry.npmjs.org/cldr-core/-/cldr-core-48.2.0.tgz",
-            .hash = "N-V-__8AAJ77GgCr4jV_q5d8vuaUZIWMrHbXUMYV7il4sgLB",
-            .lazy = true,
-        },
-        .cldr_numbers_full = .{
-            .url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz",
-            .hash = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk",
-            .lazy = true,
-        },
-        .cldr_dates_full = .{
-            .url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz",
-            .hash = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV",
-            .lazy = true,
-        },
         .datetime = .{
             .url = "git+https://github.com/jcollie/zig-datetime#734abf3f0fec36bc089616fee4bc2278850b3951",
             .hash = "datetime-0.0.1-6-va74a1CwA3i3J6tRkgdFtX1ASAgbzBWyS8Rbowhq04",

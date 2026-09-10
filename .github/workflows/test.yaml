@@ -1,0 +1,78 @@
+# SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+# SPDX-License-Identifier: MIT
+
+# The GitHub mirror exists for these runners. The canonical repository is on
+# Forgejo, and `.forgejo/workflows/test.yaml` is what gates it -- but those
+# runners are Linux, and this library has a Windows path that calls Win32 and
+# a macOS path that is POSIX-but-not-quite. Neither can be run on Linux, and
+# until this workflow existed neither had ever been executed at all.
+name: test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      # Every platform reports, rather than the first failure hiding the rest:
+      # the whole point here is finding out what a platform does differently.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Zig
+        uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
+        with:
+          version: 0.16.0
+
+      - name: Check formatting
+        run: zig fmt --check --exclude zig-pkg .
+
+      - name: Test
+        run: zig build test --summary all
+
+      - name: Build
+        run: zig build
+
+      # The tools nothing else compiles: the fuzz driver, the docs server and
+      # the CLDR generator.
+      - name: Compile everything else
+        run: zig build check
+
+      # What the runner itself is set to. Not an assertion -- a CI machine's
+      # locale is nobody's design -- but it is the only look this project gets
+      # at what these platforms actually report, and it is printed so that a
+      # surprise is visible rather than silently absorbed.
+      - name: What this machine says its locale is
+        shell: bash
+        run: |
+          echo "--- environment ---"
+          env | grep -E '^(LANG|LANGUAGE|LC_)' || echo "(nothing set)"
+          case "${{ matrix.os }}" in
+            macos-*)
+              echo "--- macOS preferences ---"
+              defaults read -g AppleLanguages 2>/dev/null || echo "AppleLanguages: unset"
+              defaults read -g AppleLocale 2>/dev/null || echo "AppleLocale: unset"
+              ;;
+            windows-*)
+              echo "--- Windows ---"
+              powershell -Command "Get-Culture; Get-UICulture" || true
+              ;;
+          esac
+
+      # And the library's own answer, which on Windows is the first time
+      # `GetUserPreferredUILanguages` and `GetUserDefaultLocaleName` have ever
+      # been called for real.
+      - name: Run the example as this machine's user
+        run: zig build example
+
+      - name: Run the example with a locale named
+        run: zig build example -- ru

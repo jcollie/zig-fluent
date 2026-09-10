@@ -43,10 +43,10 @@ pub fn main(init: std.process.Init) !void {
         std.debug.print(
             \\usage: gen_cldr <cldr-core> <cldr-numbers-full> <cldr-dates-full>
             \\
-            \\Writes the generated tables to src/cldr/. Run it through the build
-            \\system, which knows where the packages are:
+            \\Writes the generated tables to src/cldr/. The three arguments are
+            \\the unpacked CLDR packages; see the README for where to get them.
             \\
-            \\    zig build gen-cldr
+            \\    zig build gen-cldr -- core/ numbers-full/ dates-full/
             \\
         , .{});
         return error.InvalidArguments;

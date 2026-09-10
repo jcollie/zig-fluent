@@ -42,7 +42,7 @@ changed.
 ## Using it
 
 ```sh
-zig fetch --save git+https://git.jcollie.dev/jeff/zig-fluent
+zig fetch --save git+https://github.com/jcollie/zig-fluent
 ```
 
 ```zig
@@ -493,23 +493,52 @@ $ zig build fuzz-run -- --seconds 60
 
 `zig build test` also runs Fluent's cross-implementation conformance suite: 39
 `.ftl` files, each paired with the syntax tree it must parse to. They are not
-vendored — they arrive as a lazy `build.zig.zon` dependency, so running the
-tests fetches them and merely depending on this library does not.
+vendored — they arrive as a `build.zig.zon` dependency, so the exact revision
+compared against is a hash in the manifest rather than a copy in this repository
+that could drift. At 876 KB they are worth a manifest entry; see below for what
+a manifest entry costs.
 
 ### Regenerating the CLDR tables
 
 ```console
-$ zig build gen-cldr
+$ zig build gen-cldr -- cldr-core cldr-numbers-full cldr-dates-full
 ```
 
-This reads `cldr-core`, `cldr-numbers-full` and `cldr-dates-full`, which are
-lazy dependencies totalling 135 MB unpacked. Only this step resolves them, so an
-ordinary build never sees them. What it writes goes under `src/cldr/` and is
-committed, because generating on every build would make every consumer download
-all of it to produce files that change only when CLDR issues a release.
+The three directories are the unpacked CLDR packages:
 
-Updating to a new CLDR is therefore a deliberate act with a reviewable diff:
-bump the versions in `build.zig.zon`, run the generator, look at what moved.
+```console
+$ for p in core numbers-full dates-full; do
+    curl -sSL "https://registry.npmjs.org/cldr-$p/-/cldr-$p-48.2.0.tgz" |
+      tar xz && mv package "cldr-$p"
+  done
+$ zig build gen-cldr -- cldr-core cldr-numbers-full cldr-dates-full
+```
+
+They are passed as arguments rather than declared as dependencies, and that is
+a deliberate retreat from the obvious design. **A lazy dependency in
+`build.zig.zon` is fetched by `zig build` whether or not any step asks for it**
+— measured on Zig 0.16.0, with the `lazyDependency` calls behind a `-D` flag
+that was switched off, and confirmed from the other side by building a throwaway
+project that merely depended on this one. Those three packages are 138 MB, so
+every consumer was paying for them in order to regenerate files that change only
+when CLDR issues a release. Out of the manifest, a dependent project's tree
+drops from 211 MB to 73 MB.
+
+What the generator writes goes under `src/cldr/` and is committed, so updating
+to a new CLDR is a deliberate act with a reviewable diff: fetch the new
+packages, run the generator, look at what moved.
+
+### What a clean build actually downloads
+
+73 MB, and it is worth knowing where it goes, because none of it is lazy in the
+sense the name suggests:
+
+| | | |
+|---|---|---|
+| `zigwin32` | 64 MB | the two Win32 calls; fetched on every platform, not only Windows |
+| `moment`, `tzdata`, `tzcode` | 8 MB | `zig-datetime`'s, for its own generators |
+| `fluent-spec` | 876 KB | the conformance fixtures, used by `zig build test` |
+| `zig-datetime` | 868 KB | the calendar and the timezone database |
 
 ### Fuzzing
 
@@ -576,12 +605,25 @@ is.
 
 ## Where this lives
 
-The repository is hosted on Forgejo, which is where the issues, the continuous
-integration and the published documentation are:
+The repository is hosted on Forgejo, which is where the issues and the
+published documentation are:
 
 ```sh
 git clone https://git.jcollie.dev/jeff/zig-fluent.git
 ```
+
+It is mirrored to GitHub, and that is the copy Zig fetches from, since a
+`zig fetch` URL is read by whoever depends on this and GitHub is the more
+reachable of the two:
+
+```sh
+git clone https://github.com/jcollie/zig-fluent.git
+```
+
+The mirror also earns its keep: the Forgejo runners are Linux, and
+`.github/workflows/test.yaml` runs the same tests on macOS and Windows as well,
+which is the only way the Win32 calls and the macOS locale conventions get
+exercised at all.
 
 ## Licence
 

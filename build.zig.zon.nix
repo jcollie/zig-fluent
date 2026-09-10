@@ -157,33 +157,6 @@ in
 copyFarm name
   [
     {
-      name = "N-V-__8AAJ77GgCr4jV_q5d8vuaUZIWMrHbXUMYV7il4sgLB";
-      path = fetchZigArtifact {
-        name = "cldr_core";
-        url = "https://registry.npmjs.org/cldr-core/-/cldr-core-48.2.0.tgz";
-        hash = "sha256-UxDgx6BsH+uD3I5UyFhLvgucLqgyAXKhjVQZhrEkWF0=";
-        unpack = false;
-      };
-    }
-    {
-      name = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV";
-      path = fetchZigArtifact {
-        name = "cldr_dates_full";
-        url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz";
-        hash = "sha256-Albxzv7KFPfVFb5Ict2kj83X51OBQw8lqv0BQ+rltDA=";
-        unpack = false;
-      };
-    }
-    {
-      name = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk";
-      path = fetchZigArtifact {
-        name = "cldr_numbers_full";
-        url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz";
-        hash = "sha256-LRehRTxVmmIRLK7tUuC8/jy4U5yZ0jmue37U0IJ2edk=";
-        unpack = false;
-      };
-    }
-    {
       name = "datetime-0.0.1-6-va74a1CwA3i3J6tRkgdFtX1ASAgbzBWyS8Rbowhq04";
       path = fetchZigArtifact {
         name = "datetime";
