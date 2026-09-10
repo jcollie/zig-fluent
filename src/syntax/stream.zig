@@ -35,6 +35,25 @@ const testing = std.testing;
 /// accept it wherever a newline would do.
 pub const eof: ?u8 = null;
 
+/// Every byte, each as a string one byte long, for an annotation to point at.
+///
+/// An `Annotation` borrows its argument and is read long after the parse that
+/// made it, so the argument has to outlive the call that raised it. Writing
+/// `&[_]u8{ch}` is the natural thing and is wrong: it is the address of a
+/// temporary in the raising function's own frame, dangling the moment that
+/// function returns. It is also the worst shape of dangling pointer to find,
+/// because the byte is usually still sitting there in a debug build and only
+/// an optimized one prints something else -- a zero, as it happened, which
+/// then travelled through the error message as a NUL in the middle of a
+/// string.
+///
+/// A table of static strings costs 256 bytes of rodata and cannot dangle.
+const one_byte: [256][1]u8 = table: {
+    var bytes: [256][1]u8 = undefined;
+    for (&bytes, 0..) |*slot, byte| slot.* = .{@intCast(byte)};
+    break :table bytes;
+};
+
 pub const Stream = struct {
     source: []const u8,
     index: usize = 0,
@@ -336,7 +355,7 @@ pub const Stream = struct {
             _ = self.next();
             return;
         }
-        return self.fail(.E0003, &[_]u8{ch});
+        return self.fail(.E0003, &one_byte[ch]);
     }
 
     test expectChar {
@@ -346,6 +365,10 @@ pub const Stream = struct {
 
         try testing.expectError(error.ParseError, stream.expectChar('='));
         try testing.expectEqual(errors.Code.E0003, stream.pending.code);
+        // The character it wanted, and still readable after the call that
+        // named it has returned -- which is the whole reason `one_byte` is a
+        // table rather than a temporary.
+        try testing.expectEqualStrings("=", stream.pending.argument.?);
     }
 
     /// Consume a line ending, of which the end of the file is one.
