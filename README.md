@@ -187,6 +187,11 @@ the two divergences below. There were no others.
   never wrong, only less friendly than "Central European Summer Time".
 - **Compact notation** ("1.2M"). The plural rules read it, because CLDR's own
   sample data is written in it, but nothing here produces it.
+- **Currency spacing.** CLDR says to insert a non-breaking space between the
+  digits and a currency text that is alphabetic rather than a symbol, so ICU
+  writes `EUR 1,234.50` where this writes `EUR1,234.50`. Symbols are unaffected
+  — `€1,234.50` is right either way — and since currency display names are not
+  shipped, an alphabetic currency text is one the application passed in itself.
 
 ## Building
 
@@ -249,10 +254,34 @@ comment binds to whatever sits directly beneath it, so a blank line is not
 cosmetic there: put one in the wrong place and an entry adopts a comment that
 was never about it.
 
-A seventh crash came out of reading the code afterwards, once the second one
-had made the shape recognisable — `DATETIME()` given a large number clamped its
-timestamp against the ends of `i64` and handed the result to `@intFromFloat`,
-which is the same trap in a different place.
+A later pass added targets for date formatting, for CLDR patterns supplied by a
+consumer rather than by CLDR, for the interchange JSON and for pattern affixes,
+and those found four more: a pattern asking for more than nine fractional
+second digits divided by zero looking for a tenth; a date-and-time connector
+ending in `{` read past the end of itself; and the affix walker searched for the
+currency placeholder with a byte-wise `indexOfAny`, so it also matched the first
+byte of every character in U+0080..U+00BF — a non-breaking space among them,
+which German, French, Russian and Czech all put before their percent sign. That
+last one was not a crash at all. It was **wrong output in shipped code**, in
+every one of those languages, and the reason it survived a 1,560-case comparison
+against `Intl` is that `NUMBER()` cannot ask for a percentage from FTL, so the
+matrix never exercised the path. The comparison now covers percent and currency
+across forty locales too; all 280 percent cases agree.
+
+A fifth came from the fuzzer directly, and is the subtlest of the lot: the
+serializer tracks its output by the last two bytes written, and used a zero
+byte to mean "nothing written yet". No byte can mean that — a NUL inside a
+comment is a NUL inside a comment — so a comment containing one was read as the
+start of the file, the blank line after it was suppressed, and reparsing handed
+that comment to the message below. Nobody was going to write that input by
+hand.
+
+Two more crashes came out of reading the code afterwards, once the shape had
+become recognisable: `DATETIME()` given a large number clamped its timestamp
+against the ends of `i64` and handed the result to `@intFromFloat`, which is the
+same trap as the plural one in a different place; and a year before the common
+era was computed with arithmetic that both said the wrong thing and overflowed
+at the bottom of an `i32`.
 
 Every one of them carries a test. The `\UFFFFFF` one is worth pausing on:
 being in range is a question about a value, not about syntax, so a well-formed

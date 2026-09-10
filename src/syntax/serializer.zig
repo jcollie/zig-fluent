@@ -98,6 +98,14 @@ const Out = struct {
     /// The last two bytes written, so that the entry separator can tell
     /// whether the output is already at a blank line.
     tail: [2]u8 = .{ 0, 0 },
+    /// How many bytes have been written, only ever compared against two.
+    ///
+    /// `tail` cannot answer "has anything been written yet" on its own: every
+    /// byte is a possible byte, so no value of it can mean "none". Using zero
+    /// for that read a NUL in a comment as the start of the output, suppressed
+    /// the blank line after it, and let the next entry adopt the comment. A
+    /// fuzzer found it, which is the only way anyone was going to.
+    written: usize = 0,
 
     /// Write text, indenting every line after the first by the current depth.
     fn write(self: *Out, text: []const u8) std.Io.Writer.Error!void {
@@ -115,15 +123,16 @@ const Out = struct {
     fn raw(self: *Out, text: []const u8) std.Io.Writer.Error!void {
         if (text.len == 0) return;
         try self.w.writeAll(text);
+        self.written += text.len;
         self.tail = if (text.len == 1)
             .{ self.tail[1], text[0] }
         else
             .{ text[text.len - 2], text[text.len - 1] };
     }
 
-    /// Whether a blank line has just been written, or nothing has been.
+    /// Whether a blank line has just been written.
     fn atBlankLine(self: Out) bool {
-        return (self.tail[0] == '\n' or self.tail[0] == 0) and self.tail[1] == '\n';
+        return self.written >= 2 and self.tail[0] == '\n' and self.tail[1] == '\n';
     }
 };
 
@@ -472,6 +481,17 @@ test "a standalone comment is kept apart from what follows it" {
     try expectSerialized(
         "# Standalone.\n\nb = two\n",
         "# Standalone.\n\nb = two\n",
+    );
+}
+
+test "a comment holding a NUL still gets its blank line" {
+    // The output is tracked by its last two bytes, and no byte can mean "none
+    // written yet" -- a NUL in a comment is a NUL in a comment. Getting that
+    // wrong suppressed the blank line after this comment, and reparsing then
+    // handed it to `m`.
+    try expectSerialized(
+        "# a\x00b\n\nm = v\n",
+        "# a\x00b\n\nm = v\n",
     );
 }
 

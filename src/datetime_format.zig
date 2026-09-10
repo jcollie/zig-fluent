@@ -315,8 +315,18 @@ pub const Formatter = struct {
         var rest = glue;
         while (std.mem.indexOfScalar(u8, rest, '{')) |at| {
             w.writeAll(rest[0..at]) catch return date.?;
-            const which = rest[at + 1];
-            w.writeAll(if (which == '1') date.? else time.?) catch return date.?;
+
+            // `{1}` is the date and `{0}` the time. A brace that does not
+            // begin a complete placeholder is literal text: CLDR's own glue
+            // never has one, but a `Names` supplied by a consumer is arbitrary
+            // and a glue ending in `{` would otherwise be read past the end.
+            if (at + 2 >= rest.len or rest[at + 2] != '}') {
+                w.writeByte('{') catch return date.?;
+                rest = rest[at + 1 ..];
+                continue;
+            }
+
+            w.writeAll(if (rest[at + 1] == '1') date.? else time.?) catch return date.?;
             rest = rest[at + 3 ..];
         }
         w.writeAll(rest) catch return date.?;
@@ -549,9 +559,16 @@ pub const Formatter = struct {
                 try w.writeAll(if (count >= 4) self.names.eras_wide[era] else self.names.eras[era]);
             },
             'y', 'u' => {
-                // Astronomical year 0 is 1 BC, and a date before the common
-                // era is written with its era rather than a negative year.
-                const year: u32 = @abs(if (moment.year <= 0) moment.year - 1 + 1 else moment.year);
+                // A year is written within its era, never as a negative
+                // number. Astronomical year 0 *is* 1 BC and -1 is 2 BC, so the
+                // era-relative year below the common era is `1 - y`; checked
+                // against `Intl`, which writes those two as "1 BC" and "2 BC".
+                //
+                // Widened to `i64` first, because `1 - y` overflows an `i32`
+                // at the bottom of the range and a date is decoded from a
+                // timestamp that a caller chose.
+                const astronomical: i64 = moment.year;
+                const year: u64 = @abs(if (astronomical <= 0) 1 - astronomical else astronomical);
                 if (count == 2) {
                     try self.writePadded(w, year % 100, 2);
                 } else {
@@ -582,11 +599,22 @@ pub const Formatter = struct {
             's' => try self.writePadded(w, moment.second, count),
             'S' => {
                 // Fractions of a second, truncated to the width asked for.
+                //
+                // A nanosecond is nine digits and there is no tenth: past that
+                // the answer is zeros, and dividing to find them is a division
+                // by zero. A pattern may ask for more -- patterns are data,
+                // and `Options.fractional_second_digits` is a `u8` -- so the
+                // bound is checked rather than assumed. A fuzz seed found it.
                 var scale: u64 = 1_000_000_000;
                 const value: u64 = moment.nanosecond;
                 for (0..count) |_| {
+                    if (scale == 0) {
+                        try self.writeDigit(w, '0');
+                        continue;
+                    }
                     scale /= 10;
-                    try self.writeDigit(w, @intCast('0' + (value / scale) % 10));
+                    const digit: u8 = if (scale == 0) 0 else @intCast((value / scale) % 10);
+                    try self.writeDigit(w, '0' + digit);
                 }
             },
             'z', 'Z', 'O', 'v', 'V', 'x', 'X' => try self.writeZone(letter, count, moment, w),

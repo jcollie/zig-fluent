@@ -709,3 +709,47 @@ test "a number may be ranked rather than counted" {
     // cardinals only ever say `one` or `other`.
     try expectMessage(&bundle, "place", &.{.{ .name = "n", .value = .num(3) }}, "3th");
 }
+
+test "a year is written within its era, never as a negative number" {
+    // Astronomical year 0 is 1 BC and -1 is 2 BC, which is what `Intl` gives
+    // for the same moments.
+    var bundle = try bundleFor("en", "d = { DATETIME($t, year: \"numeric\", era: \"short\") }\n");
+    defer bundle.deinit();
+
+    for ([_]struct { i64, []const u8 }{
+        // 0001-01-01, 0000-01-01, -0001-01-01 and -0100-01-01 UTC.
+        .{ -62135596800000, "1 AD" },
+        .{ -62167219200000, "1 BC" },
+        .{ -62198755200000, "2 BC" },
+        .{ -65319120000000, "101 BC" },
+    }) |case| {
+        const moment_ms, const expected = case;
+        try expectMessage(&bundle, "d", &.{.{ .name = "t", .value = .time(moment_ms) }}, expected);
+    }
+}
+
+test "a percentage keeps the space the locale puts before its sign" {
+    // Most of Europe writes a non-breaking space there and English does not.
+    // Checked against `Intl` across forty locales; these five stand for it.
+    //
+    // `NUMBER()` cannot ask for a percentage from FTL -- the reference
+    // implementation's option list has no `style` -- so this goes through the
+    // formatter the way an application supplying a percentage would.
+    for ([_]struct { []const u8, []const u8 }{
+        .{ "en", "25%" },
+        .{ "de", "25\u{00A0}%" },
+        .{ "fr", "25\u{00A0}%" },
+        .{ "ru", "25\u{00A0}%" },
+        .{ "cs", "25\u{00A0}%" },
+    }) |case| {
+        const tag, const expected = case;
+
+        var bundle: Bundle = try .init(testing.allocator, try .parse(tag));
+        defer bundle.deinit();
+
+        var buffer: [64]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+        try bundle.numberFormatter(.{ .style = .percent }).format(0.25, &w);
+        try testing.expectEqualStrings(expected, w.buffered());
+    }
+}

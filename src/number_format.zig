@@ -262,26 +262,30 @@ pub const Formatter = struct {
     /// percent sign goes, and both are stand-ins for text the locale supplies
     /// rather than the characters themselves.
     fn writeAffix(self: Formatter, w: *std.Io.Writer, affix: []const u8) std.Io.Writer.Error!void {
-        var rest = affix;
-        while (rest.len != 0) {
-            const next = std.mem.indexOfAny(u8, rest, "%¤-+") orelse {
-                try w.writeAll(rest);
-                return;
-            };
-            try w.writeAll(rest[0..next]);
-            switch (rest[next]) {
+        // Walked a byte at a time, matching the currency placeholder as the
+        // two-byte sequence it is.
+        //
+        // `indexOfAny(u8, rest, "%¤-+")` looks like the way to do this and is
+        // wrong, because it searches for *bytes*: the `¤` in that needle is
+        // 0xC2 0xA4, so it also matches a bare 0xC2 -- the first byte of every
+        // character in U+0080..U+00BF. A non-breaking space is U+00A0, and
+        // German, French, Russian and Czech all put one before the percent
+        // sign, so their percentages were losing it. Affixes are a handful of
+        // bytes; there is nothing here worth a cleverer scan.
+        var i: usize = 0;
+        while (i < affix.len) {
+            if (std.mem.startsWith(u8, affix[i..], currency_placeholder)) {
+                try w.writeAll(self.options.currency_text);
+                i += currency_placeholder.len;
+                continue;
+            }
+            switch (affix[i]) {
                 '%' => try w.writeAll(self.symbols.percent_sign),
                 '-' => try w.writeAll(self.symbols.minus_sign),
                 '+' => try w.writeAll(self.symbols.plus_sign),
-                else => {
-                    // The currency placeholder is U+00A4, whose UTF-8 is two
-                    // bytes; `indexOfAny` found the first of them.
-                    try w.writeAll(self.options.currency_text);
-                    rest = rest[next + 2 ..];
-                    continue;
-                },
+                else => |byte| try w.writeByte(byte),
             }
-            rest = rest[next + 1 ..];
+            i += 1;
         }
     }
 
@@ -514,6 +518,9 @@ pub const Formatter = struct {
 
 const default_digits = "0123456789";
 
+/// U+00A4 CURRENCY SIGN, which is where a CLDR pattern wants the currency.
+const currency_placeholder = "\u{00A4}";
+
 /// Copy `text` into `buffer` and return the part of it that was written.
 fn copy(buffer: []u8, text: []const u8) []const u8 {
     @memcpy(buffer[0..text.len], text);
@@ -624,6 +631,25 @@ test "a percentage is scaled and given its sign" {
     try expectFormat(f, 1, "100%");
     // Whole percent by default, however many places the value has.
     try expectFormat(f, 0.1234, "12%");
+}
+
+test "an affix keeps the characters around its sign" {
+    // Most of Europe writes a non-breaking space before the percent sign, and
+    // it is part of the pattern rather than part of the number. Checked
+    // against `Intl`, which gives "25 %" for each of these.
+    const f: Formatter = .{
+        .pattern = .{ .positive_suffix = "\u{00A0}%" },
+        .options = .{ .style = .percent },
+    };
+    try expectFormat(f, 0.25, "25\u{00A0}%");
+
+    // The same trap in the other direction: a currency symbol that happens to
+    // begin with the same byte must not be eaten either.
+    const pound: Formatter = .{
+        .pattern = .{ .positive_prefix = "\u{00A4}" },
+        .options = .{ .style = .currency, .currency_text = "£" },
+    };
+    try expectFormat(pound, 5, "£5.00");
 }
 
 test "a currency amount takes the currency's own number of places" {

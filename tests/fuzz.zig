@@ -325,6 +325,272 @@ test "language tags parse or are refused, and nothing else" {
     for (tag_seeds) |seed| try localeProperty(seed);
 }
 
+// -- formatting dates --------------------------------------------------------
+
+/// The locales the date targets draw from.
+///
+/// Real ones, because the interesting code is the skeleton matching, and a
+/// locale with no `availableFormats` never reaches it. These five disagree
+/// about enough to matter: the order of the fields, whether the month is a
+/// name or a numeral, which clock the time is on, and what the digits are.
+const date_locales = [_][]const u8{ "en", "de", "ja", "ar-EG", "fi" };
+
+/// No moment and no combination of options can make the date formatter run
+/// past its buffers or fail to terminate.
+///
+/// The options come from a translation file, so what arrives is whatever a
+/// translator typed, and the field widths feed index arithmetic in the pattern
+/// renderer and the skeleton matcher.
+fn dateProperty(tag: []const u8, epoch_ms: i64, options: fluent.datetime_format.Options) !void {
+    var bundle: fluent.Bundle = try .init(backing, fluent.Locale.parse(tag) catch .root);
+    defer bundle.deinit();
+
+    var buffer: [1024]u8 = undefined;
+    var w = std.Io.Writer.fixed(&buffer);
+    try bundle.dateTimeFormatter(options).format(epoch_ms, &w);
+}
+
+/// Read a `datetime_format.Options` out of a fuzzer's byte stream.
+fn dateOptions(smith: *Smith) fluent.datetime_format.Options {
+    const O = fluent.datetime_format.Options;
+
+    // Built by hand rather than with `smith.value(?T)`, so that the shape of
+    // what is generated is written down here: roughly half the fields set,
+    // each to any of its values.
+    const maybe = struct {
+        fn f(s: *Smith, T: type) ?T {
+            return if (s.value(bool)) s.value(T) else null;
+        }
+    }.f;
+
+    return .{
+        .date_style = maybe(smith, O.Style),
+        .time_style = maybe(smith, O.Style),
+        .weekday = maybe(smith, O.Width),
+        .era = maybe(smith, O.Width),
+        .year = maybe(smith, O.Numeric),
+        .month = maybe(smith, O.MonthWidth),
+        .day = maybe(smith, O.Numeric),
+        .hour = maybe(smith, O.Numeric),
+        .minute = maybe(smith, O.Numeric),
+        .second = maybe(smith, O.Numeric),
+        .fractional_second_digits = maybe(smith, u8),
+        .day_period = maybe(smith, O.Width),
+        .hour12 = maybe(smith, bool),
+        .time_zone_name = maybe(smith, O.TimeZoneName),
+    };
+}
+
+fn fuzzDate(_: void, smith: *Smith) !void {
+    const tag = date_locales[smith.index(date_locales.len)];
+    // Every bit pattern, so the ends of the range and the moments before 1970
+    // come up rather than only plausible timestamps.
+    const epoch_ms: i64 = @bitCast(smith.value(u64));
+    try dateProperty(tag, epoch_ms, dateOptions(smith));
+}
+
+test "the date formatter holds up against any options" {
+    const moments = [_]i64{
+        0,                    -1,                   1_771_061_400_000,
+        std.math.minInt(i64), std.math.maxInt(i64), -62_135_596_800_000,
+        std.time.ms_per_day,  -std.time.ms_per_day,
+    };
+    const O = fluent.datetime_format.Options;
+    const option_sets = [_]O{
+        .{},
+        .{ .date_style = .full, .time_style = .full },
+        .{ .date_style = .short },
+        .{ .weekday = .long, .era = .long, .year = .@"2-digit", .month = .narrow, .day = .@"2-digit" },
+        .{ .hour = .@"2-digit", .minute = .@"2-digit", .second = .@"2-digit", .fractional_second_digits = 3 },
+        .{ .fractional_second_digits = 255 },
+        .{ .time_zone_name = .long_offset, .hour = .numeric },
+        .{ .hour12 = true, .hour = .numeric },
+    };
+
+    for (date_locales) |tag| {
+        for (moments) |moment| {
+            for (option_sets) |options| try dateProperty(tag, moment, options);
+        }
+    }
+}
+
+// -- rendering a pattern -----------------------------------------------------
+
+const pattern_seeds = [_][]const u8{
+    "y-MM-dd",
+    "EEEE, d MMMM y",
+    "y\u{5E74}M\u{6708}d\u{65E5}",
+    "h:mm:ss a zzzz",
+    "d. MMMM y 'um' HH:mm",
+    "'quoted' d ''escaped'' M",
+    "GGGGG yyyyy MMMMM dddd",
+    "SSSSSSSSSS",
+    "'unterminated",
+    // A brace that begins no complete placeholder, which the glue parser has
+    // to treat as literal text rather than read past the end of.
+    "a{",
+    "{1",
+    "{1x{0}",
+    "",
+    "{}[]*",
+    "\xff\xfe",
+};
+
+/// A pattern this library did not write is still only text.
+///
+/// CLDR's patterns arrive as data, and a consumer may supply its own `Names`
+/// with patterns of its own. The renderer walks them a byte at a time, handles
+/// quoting, and counts runs of repeated letters into field widths -- all of
+/// which is index arithmetic over input it did not choose.
+fn patternProperty(pattern: []const u8) !void {
+    const names: fluent.datetime_format.Names = .{
+        .date_formats = .{ pattern, pattern, pattern, pattern },
+        .time_formats = .{ pattern, pattern, pattern, pattern },
+        .datetime_formats = .{ pattern, pattern, pattern, pattern },
+        .datetime_at_formats = .{ pattern, pattern, pattern, pattern },
+        // A skeleton the matcher will reach for, whose pattern is the same
+        // arbitrary text, so the field-width adjustment walks it too.
+        .available_formats = &.{.{ .skeleton = "yMd", .pattern = pattern }},
+    };
+
+    var buffer: [4096]u8 = undefined;
+    for ([_]fluent.datetime_format.Options{
+        .{ .date_style = .short },
+        .{ .date_style = .full, .time_style = .full },
+        .{ .year = .numeric, .month = .@"2-digit", .day = .@"2-digit" },
+        .{ .weekday = .long, .month = .long, .day = .numeric },
+    }) |options| {
+        var w = std.Io.Writer.fixed(&buffer);
+        try (fluent.datetime_format.Formatter{ .names = names, .options = options }).format(0, &w);
+    }
+}
+
+fn fuzzPattern(_: void, smith: *Smith) !void {
+    var buffer: [256]u8 = undefined;
+    const len = smith.slice(&buffer);
+    try patternProperty(buffer[0..len]);
+}
+
+test "any text can be walked as a date pattern" {
+    for (pattern_seeds) |seed| try patternProperty(seed);
+}
+
+// -- the interchange JSON ----------------------------------------------------
+
+/// Whatever the parser produced, the JSON writer emits valid JSON for it.
+///
+/// The writer escapes text the parser took verbatim from the source, so the
+/// input to it is arbitrary bytes -- quotes, backslashes, control characters
+/// and invalid UTF-8 among them. A tool reading this on the other side parses
+/// it as JSON, so producing something that is not JSON is a real failure.
+fn jsonProperty(input: []const u8) !void {
+    var resource = try fluent.syntax.parse(backing, input);
+    defer resource.deinit();
+
+    var out: std.Io.Writer.Allocating = .init(backing);
+    defer out.deinit();
+    fluent.syntax.writeJson(resource, &out.writer) catch return error.OutOfMemory;
+
+    var parsed = std.json.parseFromSlice(std.json.Value, backing, out.written(), .{}) catch |err| {
+        std.debug.print("not valid JSON ({t}): {s}\n", .{ err, out.written() });
+        return error.InvalidJson;
+    };
+    defer parsed.deinit();
+
+    // And it is a resource, whatever else it is.
+    try testing.expectEqualStrings("Resource", parsed.value.object.get("type").?.string);
+}
+
+fn fuzzJson(_: void, smith: *Smith) !void {
+    var buffer: [4096]u8 = undefined;
+    const len = smith.slice(&buffer);
+    try jsonProperty(buffer[0..len]);
+}
+
+test "the interchange JSON is always valid JSON" {
+    for (source_seeds) |seed| try jsonProperty(seed);
+    // The characters JSON itself cares about, in the places the parser keeps
+    // verbatim: a text element, a comment and a string literal.
+    for ([_][]const u8{
+        "m = a\"b\\c",
+        "# a\"b\\c\nm = v",
+        "m = { \"a\\\\b\" }",
+        "m = \x01\x02\x1f",
+        "m = \xff\xfe invalid utf-8",
+        "broken = \"\x00\x01",
+    }) |seed| try jsonProperty(seed);
+}
+
+// -- affixes and symbols -----------------------------------------------------
+
+const affix_seeds = [_][]const u8{
+    "%",
+    "\u{00A0}%",
+    "\u{00A4}",
+    "\u{00A4}\u{00A0}",
+    "(\u{00A4}",
+    "R$",
+    "kr.",
+    "\u{00A0}\u{00A0}\u{00A0}",
+    // A lone lead byte, and a lone continuation byte, which is the shape that
+    // broke the affix walker: `¤` is 0xC2 0xA4 and a byte-wise search for it
+    // also matches either half of any other Latin-1 character.
+    "\xc2",
+    "\xa4",
+    "\xc2\xa0",
+    "",
+};
+
+/// A pattern's affixes are data, and any bytes at all must walk safely.
+///
+/// This is where a real bug lived: the affix walker searched for the currency
+/// placeholder with a byte-wise `indexOfAny`, so it also matched the first
+/// byte of every character in U+0080..U+00BF -- a non-breaking space among
+/// them, which most of Europe puts before its percent sign.
+fn affixProperty(prefix: []const u8, suffix: []const u8) !void {
+    const formatter: fluent.number_format.Formatter = .{
+        .symbols = .{
+            .decimal = prefix,
+            .group = suffix,
+            .minus_sign = prefix,
+            .percent_sign = suffix,
+            .infinity = prefix,
+            .nan = suffix,
+        },
+        .pattern = .{
+            .positive_prefix = prefix,
+            .positive_suffix = suffix,
+            .negative_prefix = suffix,
+            .negative_suffix = prefix,
+        },
+        .options = .{ .style = .currency, .currency_text = suffix },
+    };
+
+    var buffer: [4096]u8 = undefined;
+    for ([_]f64{ 0, 1, -1, 1234.5, -1e300, std.math.nan(f64), std.math.inf(f64) }) |value| {
+        var w = std.Io.Writer.fixed(&buffer);
+        formatter.format(value, &w) catch |err| switch (err) {
+            // A tiny buffer against a long affix is the caller's problem, not
+            // a fault; everything else would be.
+            error.WriteFailed => {},
+        };
+    }
+}
+
+fn fuzzAffix(_: void, smith: *Smith) !void {
+    var prefix_buffer: [128]u8 = undefined;
+    const prefix_len = smith.slice(&prefix_buffer);
+    var suffix_buffer: [128]u8 = undefined;
+    const suffix_len = smith.slice(&suffix_buffer);
+    try affixProperty(prefix_buffer[0..prefix_len], suffix_buffer[0..suffix_len]);
+}
+
+test "any bytes can be an affix" {
+    for (affix_seeds) |prefix| {
+        for (affix_seeds) |suffix| try affixProperty(prefix, suffix);
+    }
+}
+
 // -- the table the standalone driver reads -----------------------------------
 
 pub const Target = struct {
@@ -360,6 +626,10 @@ pub const all = [_]Target{
     .{ .name = "numbers", .run = Driven(fuzzNumber).run, .corpus = &decimal_seeds, .content_max = 64 },
     .{ .name = "operands", .run = Driven(fuzzOperands).run, .corpus = &decimal_seeds, .content_max = 64 },
     .{ .name = "locales", .run = Driven(fuzzLocale).run, .corpus = &tag_seeds, .content_max = 64 },
+    .{ .name = "dates", .run = Driven(fuzzDate).run, .corpus = &decimal_seeds, .content_max = 64 },
+    .{ .name = "patterns", .run = Driven(fuzzPattern).run, .corpus = &pattern_seeds, .content_max = 256 },
+    .{ .name = "json", .run = Driven(fuzzJson).run, .corpus = &source_seeds, .content_max = 4096 },
+    .{ .name = "affixes", .run = Driven(fuzzAffix).run, .corpus = &affix_seeds, .content_max = 128 },
 };
 
 test {
@@ -370,4 +640,8 @@ test {
     _ = fuzzNumber;
     _ = fuzzOperands;
     _ = fuzzLocale;
+    _ = fuzzDate;
+    _ = fuzzPattern;
+    _ = fuzzJson;
+    _ = fuzzAffix;
 }
