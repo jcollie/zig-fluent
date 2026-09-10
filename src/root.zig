@@ -79,9 +79,21 @@ pub const Args = value_mod.Args;
 /// A BCP 47 language tag, reduced to the subtags CLDR keys its data by.
 pub const Locale = @import("locale.zig").Locale;
 
+/// One locale per formatting category, which a user may set separately from
+/// the language they read.
+pub const Categories = @import("locale.zig").Categories;
+
 /// Reading the user's language out of a POSIX environment: `LANGUAGE`,
 /// `LC_ALL`, `LC_MESSAGES` and `LANG`, none of which are language tags.
 pub const posix = @import("posix.zig");
+
+/// Reading it out of Windows, which has none of those and two questions of
+/// its own: the display language and the regional format.
+pub const windows = @import("windows.zig");
+
+/// Asking whichever of the two is running, so that a program that works on
+/// both need not branch.
+pub const system = @import("system.zig");
 
 /// CLDR's plural rules: which of `zero`, `one`, `two`, `few`, `many` or
 /// `other` a number takes in a given language.
@@ -101,6 +113,8 @@ test {
     _ = syntax;
     _ = @import("locale.zig");
     _ = posix;
+    _ = windows;
+    _ = system;
     _ = plural;
     _ = number_format;
     _ = datetime_format;
@@ -121,5 +135,7 @@ test {
     std.testing.refAllDecls(number_format);
     std.testing.refAllDecls(datetime_format);
     std.testing.refAllDecls(posix);
+    std.testing.refAllDecls(windows);
+    std.testing.refAllDecls(system);
     std.testing.refAllDecls(@This());
 }

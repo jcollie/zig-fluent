@@ -265,6 +265,49 @@ pub const Locale = struct {
     }
 };
 
+/// One locale per formatting category.
+///
+/// A user need not answer "what language do you read" and "how do you write
+/// numbers" the same way, and both POSIX and Windows let them answer
+/// separately: `LANG=en_US.UTF-8 LC_TIME=en_GB.UTF-8` on one, a display
+/// language distinct from a regional format on the other. `fluent.posix` and
+/// `fluent.windows` each fill one of these in from their own platform, and
+/// `fluent.system` picks whichever applies.
+///
+/// Null means the category was not set, or was set to something meaning "no
+/// preference" -- `C` on POSIX, the invariant locale on Windows -- so the
+/// caller's own default applies.
+pub const Categories = struct {
+    /// Which language to speak, and therefore which plural rules apply:
+    /// `[one]` and `[few]` are keys the translator wrote, so they are chosen
+    /// in the language of the text and not in the reader's number-formatting
+    /// preference.
+    messages: ?Locale = null,
+    /// The separators, the digits and the grouping.
+    numeric: ?Locale = null,
+    /// The month names, the field order, the clock.
+    time: ?Locale = null,
+    /// Where the currency sign goes.
+    monetary: ?Locale = null,
+
+    /// The same locale for every category, which is what a caller with only
+    /// one has.
+    pub fn all(locale: Locale) Categories {
+        return .{
+            .messages = locale,
+            .numeric = locale,
+            .time = locale,
+            .monetary = locale,
+        };
+    }
+
+    test all {
+        const every = Categories.all(try Locale.parse("de-DE"));
+        try testing.expectEqualStrings("de-DE", every.messages.?.tag());
+        try testing.expectEqualStrings("de-DE", every.time.?.tag());
+    }
+};
+
 /// Find `needle` in a sorted table of tags.
 ///
 /// The generated CLDR tables are written in sorted order precisely so that

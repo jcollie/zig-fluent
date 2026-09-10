@@ -30,6 +30,16 @@ pub fn build(b: *std.Build) void {
         },
     });
 
+    // Windows has none of POSIX's environment variables and answers with an
+    // API instead, so `src/windows.zig` needs bindings for two calls. Lazy,
+    // and only for that target, so a build for anything else neither fetches
+    // nor compiles them.
+    if (target.result.os.tag == .windows) {
+        if (b.lazyDependency("zigwin32", .{})) |zigwin32| {
+            mod.addImport("win32", zigwin32.module("win32"));
+        }
+    }
+
     // Regenerate the CLDR tables under src/cldr/. The three packages it reads
     // are lazy dependencies totalling 135 MB unpacked, so only this step
     // fetches them -- `zig build`, `zig build test` and anything depending on

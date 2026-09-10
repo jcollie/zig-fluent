@@ -71,36 +71,8 @@ pub const Variables = struct {
     lang: ?[]const u8 = null,
 };
 
-/// One locale per POSIX category, as the environment sets them.
-///
-/// POSIX does not ask "what is your locale" but "what is your locale *for
-/// this*", and the answers may differ. `LANG=en_US.UTF-8 LC_TIME=en_GB.UTF-8`
-/// is an ordinary thing to want -- English messages, a twenty-four hour clock
-/// -- and honouring it means a bundle cannot assume one locale governs
-/// everything.
-///
-/// Null means the category was not set, or was set to `C`: no preference, so
-/// the caller's own default applies.
-///
-/// `LC_COLLATE` and `LC_CTYPE` are absent because they govern sorting and
-/// character classification, and this library does neither.
-pub const Categories = struct {
-    /// `LC_MESSAGES`: which language to speak, and therefore which plural
-    /// rules apply -- `[one]` and `[few]` are keys the translator wrote, so
-    /// they are chosen in the language of the text and not in the reader's
-    /// number-formatting preference.
-    ///
-    /// This is the single category value. `fromVariables` gives the ranked
-    /// chain instead, which is what a fallback between bundles wants, because
-    /// only `LANGUAGE` can rank anything.
-    messages: ?Locale = null,
-    /// `LC_NUMERIC`: the separators, the digits and the grouping.
-    numeric: ?Locale = null,
-    /// `LC_TIME`: the month names, the field order, the clock.
-    time: ?Locale = null,
-    /// `LC_MONETARY`: where the currency sign goes.
-    monetary: ?Locale = null,
-};
+/// One locale per category. See `fluent.Categories`.
+pub const Categories = @import("locale.zig").Categories;
 
 /// The locale each category asks for.
 ///

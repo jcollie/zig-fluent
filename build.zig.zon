@@ -28,6 +28,11 @@
             .url = "git+https://github.com/jcollie/zig-datetime#734abf3f0fec36bc089616fee4bc2278850b3951",
             .hash = "datetime-0.0.1-6-va74a1CwA3i3J6tRkgdFtX1ASAgbzBWyS8Rbowhq04",
         },
+        .zigwin32 = .{
+            .url = "git+https://github.com/marlersoft/zigwin32#9f15c276b4e9d05afd34a10d8662a7dfc34647ea",
+            .hash = "win32-42.0.39-preview-mX5pFS564gPTezZn4v3TMxRnfJUrZNx1B_F2p2HKXOeG",
+            .lazy = true,
+        },
     },
     .paths = .{
         "build.zig",

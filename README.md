@@ -272,14 +272,62 @@ the currency sign but not the decimal mark. POSIX distinguishes them
 (`mon_decimal_point`), and a pair of locales that disagrees about it will not
 be exact.
 
-### Not Windows
+## On Windows
 
-Windows has none of these variables. `GetUserDefaultLocaleName` is the
-equivalent, it already answers in a BCP 47 tag, and `Locale.parse` takes its
-answer directly — so nothing in `fluent.posix` helps there and nothing in it is
-needed. The rest of the library is platform-independent: it cross-compiles to
-`x86_64-windows-gnu`, and so does the test suite, though there is no Windows
-here to run it on.
+Windows has none of those variables and answers two questions of its own —
+which happen to make the same split:
+
+| | POSIX | Windows |
+|---|---|---|
+| which language to speak | `LANGUAGE`, `LC_MESSAGES` | `GetUserPreferredUILanguages` — a ranked list |
+| how to write numbers, dates, money | `LC_NUMERIC`, `LC_TIME`, `LC_MONETARY` | `GetUserDefaultLocaleName` — one "regional format" for all three |
+
+Somebody in Germany reading an English interface is an ordinary Windows
+setting, and it is the same shape as `LANG=en_US.UTF-8 LC_NUMERIC=de_DE.UTF-8`.
+`fluent.windows` reads both, and answers in the same `Categories` that
+`fluent.posix` does.
+
+### Write it once
+
+`fluent.system` asks whichever system is running, so a program that works on
+both need not branch:
+
+```zig
+var buffer: [8]fluent.Locale = undefined;
+const wanted = fluent.system.preferredLocales(&buffer, init.environ_map);
+const bundle = negotiate(&bundles, wanted);
+
+fluent.system.applyCategories(bundle, fluent.system.categories(init.environ_map));
+```
+
+**The environment is asked first, on Windows too.** Not because Windows uses
+it — it does not — but because somebody running under MSYS2, Cygwin or Git Bash
+has a shell that sets `LANG`, and somebody who exported `LC_ALL` did it on
+purpose. It is what GNU gettext does there, and it means `LC_ALL=C` silences
+translation on Windows as well, which is the setting it would be worst to
+ignore.
+
+### Testing what cannot be run here
+
+The Win32 calls come from [zigwin32](https://github.com/marlersoft/zigwin32),
+which is generated from Microsoft's own metadata, as a lazy dependency wired in
+only when the target is Windows. Two hand-written `extern` declarations would
+have been less machinery and worse: nothing checks them, and a wrong parameter
+width is memory corruption on the one platform that cannot be tested from a
+Linux machine. `GetUserDefaultLocaleName` takes a `[*:0]u16`, not the `[*]u16`
+that is easy to write.
+
+Everything that parses is separated from everything that calls, so the parsing
+is tested here on the byte sequences Windows would have produced — the
+NUL-separated, double-NUL-terminated UTF-16 multi-string, the invariant locale,
+a name that is not ASCII. The calling half is checked by compiling the whole
+test suite for `x86_64-windows-gnu`, which type-checks it against the real
+signatures even though there is no Windows here to run it on.
+
+Windows' pseudo-locales pass through as ordinary tags — `qps` is in BCP 47's
+private-use range — match no bundle, and so leave the source locale showing,
+which is what somebody who set one should see from a program that ships no
+pseudo-locale.
 
 ## Pure Zig
 

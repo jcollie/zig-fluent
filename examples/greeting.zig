@@ -13,8 +13,8 @@
 //! the middle one is really this library's business:
 //!
 //!  1. **What did the user ask for?** POSIX answers with `LANGUAGE`, `LC_ALL`,
-//!     `LC_MESSAGES` and `LANG`, which are not language tags. `fluent.posix`
-//!     turns them into some.
+//!     `LC_MESSAGES` and `LANG`, which are not language tags; Windows answers
+//!     with an API instead. `fluent.system` asks whichever is running.
 //!  2. **What do we have?** One `Bundle` per translation, and a negotiation
 //!     between what was asked for and what was shipped.
 //!  3. **Say it.** `bundle.format`, with the arguments the message needs.
@@ -56,7 +56,7 @@ const max_requested = 8;
 fn requestedLocales(buffer: []Locale, init: std.process.Init) ![]Locale {
     const args = try init.minimal.args.toSlice(init.arena.allocator());
     if (args.len > 1) return fluent.posix.fromList(buffer, args[1]);
-    return fluent.posix.fromEnviron(buffer, init.environ_map);
+    return fluent.system.preferredLocales(buffer, init.environ_map);
 }
 
 /// Read the environment, choose a bundle, and print in that language.
@@ -102,10 +102,8 @@ pub fn main(init: std.process.Init) !void {
     //
     // The message language is not touched, so the plural rules stay those of
     // the language the text is written in.
-    const categories = fluent.posix.categoriesFromEnviron(init.environ_map);
-    if (categories.numeric) |locale| chosen.setNumberLocale(locale);
-    if (categories.monetary) |locale| chosen.setCurrencyLocale(locale);
-    if (categories.time) |locale| chosen.setDateLocale(locale);
+    const categories = fluent.system.categories(init.environ_map);
+    fluent.system.applyCategories(chosen, categories);
 
     // -- 3. say it --------------------------------------------------------
     var stdout_buffer: [4096]u8 = undefined;
