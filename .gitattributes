@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+# SPDX-License-Identifier: MIT
+
+# Zig source must have LF line endings: the compiler rejects a carriage
+# return outside a string literal, and `zig fmt` reports every CRLF file as
+# needing reformatting. Windows checkouts get CRLF by default -- GitHub's
+# windows runners ship git with `core.autocrlf = true` -- which turned the
+# first CI run's formatting check into a list of every file in the tree.
+#
+# `text=auto eol=lf` stores text normalised and checks it out that way on
+# every platform. Nothing in this repository is meant to hold a CR: the
+# parser's tests build their CRLF input from escapes in the Zig source
+# rather than from a file, precisely so that no checkout can alter it.
+* text=auto eol=lf
