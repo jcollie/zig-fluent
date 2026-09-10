@@ -28,6 +28,7 @@ const testing = std.testing;
 pub const DateTime = datetime.DateTime;
 pub const Instant = datetime.Instant;
 pub const TimeZone = datetime.TimeZone;
+pub const DayOfWeek = datetime.DayOfWeek;
 
 /// Decompose a moment given as milliseconds since the Unix epoch, as UTC.
 pub fn fromEpochMilli(epoch_ms: i64) DateTime {
@@ -221,6 +222,19 @@ pub const Names = struct {
     /// Whether the locale writes the time on a twelve-hour clock.
     hour12: bool = false,
 
+    /// The day a week begins on here, and how many days of January the first
+    /// week of the year must hold. Together they are the whole of a week rule,
+    /// which is what the `Y` field -- the year a *week* belongs to -- is
+    /// counted against.
+    ///
+    /// CLDR keeps this per territory rather than per locale, so a tag without
+    /// a region is resolved through `likelySubtags` first; the defaults are
+    /// the root's, `001`. The two are separate from everything else in this
+    /// struct in that they are supplemental data rather than the locale's own
+    /// `ca-gregorian` file.
+    first_day: DayOfWeek = .Mon,
+    min_days_in_first_week: u8 = 1,
+
     pub const Available = struct {
         /// The field letters, in CLDR's canonical order, e.g. `"MMMMd"`.
         skeleton: []const u8,
@@ -273,6 +287,50 @@ pub const Formatter = struct {
             .options = .{ .hour = .@"2-digit", .minute = .@"2-digit" },
         }).format(0, &w);
         try testing.expectEqualStrings("00:00", w.buffered());
+    }
+
+    test "Y is the week's year, not the calendar year" {
+        // `ksh` files `Y-MM` under the `yM` skeleton, and Cologne keeps the
+        // ISO week rule: a week begins on Monday and week 1 is the one holding
+        // January 4th.
+        const names: Names = .{
+            .available_formats = &.{.{ .skeleton = "yM", .pattern = "Y-MM" }},
+            .first_day = .Mon,
+            .min_days_in_first_week = 4,
+        };
+        const formatter: Formatter = .{
+            .names = names,
+            .options = .{ .year = .numeric, .month = .numeric },
+        };
+
+        var buffer: [64]u8 = undefined;
+
+        // 2024-12-30 is a Monday, and under that rule it opens week 1 of 2025 --
+        // so the week's year is 2025 while the calendar's is still 2024.
+        var w = std.Io.Writer.fixed(&buffer);
+        try formatter.format(1_735_560_000_000, &w);
+        try testing.expectEqualStrings("2025-12", w.buffered());
+
+        // 2023-01-01 is a Sunday, the last day of week 52 of 2022, and the
+        // year runs the other way.
+        w = std.Io.Writer.fixed(&buffer);
+        try formatter.format(1_672_560_000_000, &w);
+        try testing.expectEqualStrings("2022-01", w.buffered());
+
+        // The rule is read rather than assumed: the same instant under the
+        // American rule -- weeks begin on Sunday, week 1 holds January 1st --
+        // falls in week 1 of 2023 instead.
+        const american: Formatter = .{
+            .names = .{
+                .available_formats = names.available_formats,
+                .first_day = .Sun,
+                .min_days_in_first_week = 1,
+            },
+            .options = formatter.options,
+        };
+        w = std.Io.Writer.fixed(&buffer);
+        try american.format(1_672_560_000_000, &w);
+        try testing.expectEqualStrings("2023-01", w.buffered());
     }
 
     /// Work out which CLDR pattern to use for the options in force.
@@ -573,6 +631,31 @@ pub const Formatter = struct {
                     try self.writePadded(w, year % 100, 2);
                 } else {
                     try self.writePadded(w, year, count);
+                }
+            },
+            // `Y` is the year the *week* belongs to, which is not always the
+            // calendar year: the last days of December fall in week 1 of the
+            // year after wherever the locale's week rule puts the boundary
+            // there. Four locales' patterns use it -- `ksh` writes `Y-MM`,
+            // `sc` writes `MM/Y`, `gd` writes `LLL Y` and `de-CH` writes
+            // `E, MM.dd.Y G` -- and until this case existed all four wrote
+            // nothing at all, because an unhandled letter falls off the end
+            // of this switch.
+            //
+            // Written astronomically, sign and all, rather than within its
+            // era: that is what ICU does, and it is why `Y` and `y` can
+            // differ by more than a year on the far side of year 0.
+            'Y' => {
+                const week = moment.asDate().weekOfYear(
+                    self.names.first_day,
+                    @intCast(self.names.min_days_in_first_week),
+                );
+                if (week.year < 0) try w.writeByte('-');
+                const magnitude: u64 = @abs(@as(i64, week.year));
+                if (count == 2) {
+                    try self.writePadded(w, magnitude % 100, 2);
+                } else {
+                    try self.writePadded(w, magnitude, count);
                 }
             },
             'M', 'L' => try self.writeMonth(letter == 'L', count, moment, w),

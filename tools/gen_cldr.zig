@@ -63,7 +63,7 @@ pub fn main(init: std.process.Init) !void {
 
     try generatePlurals(arena, io, core, out_dir);
     try generateNumbers(arena, io, core, numbers, out_dir);
-    try generateDates(arena, io, dates, out_dir);
+    try generateDates(arena, io, core, dates, out_dir);
 }
 
 // -- plural rules ------------------------------------------------------------
@@ -930,6 +930,8 @@ const DateLocale = struct {
     datetime_at_formats: [4][]const u8,
     available_formats: []const Available,
     hour12: bool,
+    first_day: []const u8,
+    min_days_in_first_week: u8,
 
     const Available = struct {
         skeleton: []const u8,
@@ -949,9 +951,17 @@ const style_names = [4][]const u8{ "full", "long", "medium", "short" };
 const weekday_keys = [7][]const u8{ "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
 
 /// Write `src/cldr/dates.zig` from every locale's Gregorian calendar data.
-fn generateDates(arena: Allocator, io: std.Io, dates_root: std.Io.Dir, out_dir: std.Io.Dir) !void {
+fn generateDates(
+    arena: Allocator,
+    io: std.Io,
+    core: std.Io.Dir,
+    dates_root: std.Io.Dir,
+    out_dir: std.Io.Dir,
+) !void {
     var main_dir = try dates_root.openDir(io, "main", .{ .iterate = true });
     defer main_dir.close(io);
+
+    const week_data = try readWeekData(arena, io, core);
 
     var locales: std.ArrayList(DateLocale) = .empty;
 
@@ -1038,6 +1048,12 @@ fn generateDates(arena: Allocator, io: std.Io, dates_root: std.Io.Dir, out_dir: 
         // there, it is a twelve-hour locale, and no other source can disagree.
         locale.hour12 = std.mem.indexOfScalar(u8, locale.time_formats[3], 'h') != null;
 
+        // The week rule, which `Y` counts against. CLDR keeps it per
+        // territory, so the tag is resolved to one first; see `readWeekData`.
+        const rule = week_data.lookup(locale.tag);
+        locale.first_day = rule.first_day;
+        locale.min_days_in_first_week = rule.min_days;
+
         var available: std.ArrayList(DateLocale.Available) = .empty;
         var format_it = datetime_formats.get("availableFormats").?.object.iterator();
         while (format_it.next()) |format_entry| {
@@ -1065,6 +1081,128 @@ fn generateDates(arena: Allocator, io: std.Io, dates_root: std.Io.Dir, out_dir: 
 
     try writeDatesFile(arena, io, out_dir, owned);
     std.debug.print("gen-cldr: dates: {d} locales\n", .{owned.len});
+}
+
+/// CLDR's week rules, and the mapping from a locale tag to the territory
+/// whose rule applies.
+///
+/// A week rule is two numbers -- which weekday a week begins on, and how many
+/// days of January the first week must contain -- and CLDR keeps them in
+/// `supplemental/weekData.json` keyed by **territory**, not by locale. So a
+/// tag has to be resolved to a territory before the rule can be looked up,
+/// and most tags do not carry one: `sc` is Sardinian, and only
+/// `likelySubtags` knows that means Italy.
+const WeekData = struct {
+    /// Territory to weekday name, as CLDR spells it: "mon", "sun", "sat".
+    first_day: std.StringHashMap([]const u8),
+    /// Territory to the count of January days in week 1.
+    min_days: std.StringHashMap(u8),
+    /// A tag to the tag `likelySubtags` expands it to.
+    likely: std.StringHashMap([]const u8),
+
+    const WeekRule = struct { first_day: []const u8, min_days: u8 };
+
+    /// The rule for `tag`, falling back to the root territory `001`.
+    fn lookup(self: WeekData, tag: []const u8) WeekRule {
+        const territory = self.territoryOf(tag) orelse "001";
+        return .{
+            // Capitalized on the way out, because `Names.first_day` is a
+            // `DayOfWeek`, whose tags are `Mon` and `Sun` rather than CLDR's
+            // lowercase spellings. Only the first letter differs.
+            .first_day = capitalized(self.first_day.get(territory) orelse
+                self.first_day.get("001").?),
+            .min_days = self.min_days.get(territory) orelse self.min_days.get("001").?,
+        };
+    }
+
+    /// The territory `tag` belongs to, by CLDR's own resolution order.
+    ///
+    /// A region subtag in the tag itself wins outright -- `de-CH` is
+    /// Switzerland whatever Germany does. Failing that the tag is looked up
+    /// in `likelySubtags`, dropping a trailing subtag at a time until
+    /// something matches, which is the lookup UTS #35 specifies and is what
+    /// turns `bal-Latn` into Pakistan by way of `bal`.
+    fn territoryOf(self: WeekData, tag: []const u8) ?[]const u8 {
+        if (regionIn(tag)) |region| return region;
+
+        var candidate = tag;
+        while (true) {
+            if (self.likely.get(candidate)) |expanded| return regionIn(expanded);
+            candidate = if (std.mem.findScalarLast(u8, candidate, '-')) |dash|
+                candidate[0..dash]
+            else
+                return null;
+        }
+    }
+};
+
+/// The region subtag of `tag`, if it has one.
+///
+/// A region is two uppercase letters or three digits, and never the first
+/// subtag -- which is the language, and `no` is Norwegian rather than Norway.
+fn regionIn(tag: []const u8) ?[]const u8 {
+    var it = std.mem.splitScalar(u8, tag, '-');
+    _ = it.next();
+    while (it.next()) |subtag| {
+        if (subtag.len == 2 and
+            std.ascii.isUpper(subtag[0]) and std.ascii.isUpper(subtag[1])) return subtag;
+        if (subtag.len == 3 and
+            std.ascii.isDigit(subtag[0]) and
+            std.ascii.isDigit(subtag[1]) and
+            std.ascii.isDigit(subtag[2])) return subtag;
+    }
+    return null;
+}
+
+/// `first_day` and `min_days` and the likely-subtags table they need.
+fn readWeekData(arena: Allocator, io: std.Io, core: std.Io.Dir) !WeekData {
+    var data: WeekData = .{
+        .first_day = .init(arena),
+        .min_days = .init(arena),
+        .likely = .init(arena),
+    };
+
+    const week_text = try core.readFileAlloc(io, "supplemental/weekData.json", arena, .limited(1 << 20));
+    const week_parsed = try std.json.parseFromSlice(std.json.Value, arena, week_text, .{});
+    const week = week_parsed.value.object.get("supplemental").?.object.get("weekData").?.object;
+
+    var first_it = week.get("firstDay").?.object.iterator();
+    while (first_it.next()) |entry| {
+        // `GB-alt-variant` is the Sunday-first reading of the same territory,
+        // offered alongside the real answer. Anything with an `-alt-` in it
+        // is an alternative CLDR is recording rather than the value to use.
+        if (std.mem.findScalar(u8, entry.key_ptr.*, '-') != null) continue;
+        try data.first_day.put(entry.key_ptr.*, entry.value_ptr.*.string);
+    }
+
+    var min_it = week.get("minDays").?.object.iterator();
+    while (min_it.next()) |entry| {
+        if (std.mem.findScalar(u8, entry.key_ptr.*, '-') != null) continue;
+        try data.min_days.put(entry.key_ptr.*, try std.fmt.parseInt(u8, entry.value_ptr.*.string, 10));
+    }
+
+    const likely_text = try core.readFileAlloc(io, "supplemental/likelySubtags.json", arena, .limited(4 << 20));
+    const likely_parsed = try std.json.parseFromSlice(std.json.Value, arena, likely_text, .{});
+    var likely_it = likely_parsed.value.object
+        .get("supplemental").?.object
+        .get("likelySubtags").?.object.iterator();
+    while (likely_it.next()) |entry| {
+        try data.likely.put(entry.key_ptr.*, entry.value_ptr.*.string);
+    }
+
+    return data;
+}
+
+/// CLDR's "mon" as `DayOfWeek`'s `Mon`.
+fn capitalized(name: []const u8) []const u8 {
+    return switch (name[0]) {
+        's' => if (name[1] == 'u') "Sun" else "Sat",
+        'm' => "Mon",
+        't' => if (name[1] == 'u') "Tue" else "Thu",
+        'w' => "Wed",
+        'f' => "Fri",
+        else => unreachable,
+    };
 }
 
 /// The pattern out of a CLDR value.
@@ -1141,6 +1279,8 @@ fn writeDatesFile(arena: Allocator, io: std.Io, out_dir: std.Io.Dir, locales: []
         try writeNameArray(w, "datetime_formats", &locale.datetime_formats);
         try writeNameArray(w, "datetime_at_formats", &locale.datetime_at_formats);
         try w.print("        .hour12 = {},\n", .{locale.hour12});
+        try w.print("        .first_day = .{s},\n", .{locale.first_day});
+        try w.print("        .min_days_in_first_week = {d},\n", .{locale.min_days_in_first_week});
         try w.writeAll("        .available_formats = &.{\n");
         for (locale.available_formats) |available| {
             try w.print("            .{{ .skeleton = \"{f}\", .pattern = \"{f}\" }},\n", .{

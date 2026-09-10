@@ -137,6 +137,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -199,6 +201,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -261,6 +265,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -323,6 +329,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -385,6 +393,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -448,6 +458,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -511,6 +523,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -573,6 +587,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'w\xc9\x94' {0}", "{1} 'w\xc9\x94' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -636,6 +652,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -699,6 +717,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -761,6 +781,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -823,6 +845,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -885,6 +909,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -950,6 +976,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1015,6 +1043,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1080,6 +1110,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1145,6 +1177,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1210,6 +1244,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1275,6 +1311,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1340,6 +1378,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1405,6 +1445,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1470,6 +1512,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1535,6 +1579,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1600,6 +1646,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1665,6 +1713,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1730,6 +1780,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1795,6 +1847,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1860,6 +1914,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1925,6 +1981,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -1990,6 +2048,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2055,6 +2115,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2120,6 +2182,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2185,6 +2249,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2250,6 +2316,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2315,6 +2383,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2380,6 +2450,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2445,6 +2517,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2510,6 +2584,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2575,6 +2651,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2640,6 +2718,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xd9\x81\xd9\x8a {0}", "{1} \xd9\x81\xd9\x8a {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2705,6 +2785,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2767,6 +2849,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2829,6 +2913,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2892,6 +2978,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'a' 'les' {0}", "{1} 'a' 'les' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -2954,6 +3042,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}/{0}", "{1}/{0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3016,6 +3106,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3078,6 +3170,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3140,6 +3234,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3202,6 +3298,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3264,6 +3362,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}/{0}", "{1}/{0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3326,6 +3426,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3388,6 +3490,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3450,6 +3554,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3512,6 +3618,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3574,6 +3682,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3636,6 +3746,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd1\x83' {0}", "{1} '\xd1\x83' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3699,6 +3811,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd1\x83' {0}", "{1} '\xd1\x83' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3762,6 +3876,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3825,6 +3941,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3887,6 +4005,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -3950,6 +4070,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd0\xb2' {0}", "{1} '\xd0\xb2' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4020,6 +4142,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4082,6 +4206,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4144,6 +4270,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4206,6 +4334,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4268,6 +4398,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4330,6 +4462,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4392,6 +4526,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4454,6 +4590,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4516,6 +4654,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4578,6 +4718,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4644,6 +4786,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4706,6 +4850,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa6\x8f {0}", "{1} \xe0\xa6\x8f {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4771,6 +4917,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa6\x8f {0}", "{1} \xe0\xa6\x8f {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4836,6 +4984,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4899,6 +5049,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -4962,6 +5114,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5024,6 +5178,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'da' {0}", "{1} 'da' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5086,6 +5242,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa4\xa8\xe0\xa4\xbf {0} \xe0\xa4\xaf\xe0\xa4\xbe\xe0\xa4\xb5", "{1} \xe0\xa4\xa8\xe0\xa4\xbf {0} \xe0\xa4\xaf\xe0\xa4\xbe\xe0\xa4\xb5", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5149,6 +5307,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'u' {0}", "{1} 'u' {0}", "{1} 'u' {0}", "{1} 'u' {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5214,6 +5374,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5276,6 +5438,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'u' {0}", "{1} 'u' {0}", "{1} 'u' {0}", "{1} 'u' {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5341,6 +5505,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5403,6 +5569,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5465,6 +5633,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5527,6 +5697,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, 'a' 'les' {0}", "{1}, 'a' 'les' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5595,6 +5767,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, 'a' 'les' {0}", "{1}, 'a' 'les' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5663,6 +5837,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, 'a' 'les' {0}", "{1}, 'a' 'les' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5731,6 +5907,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, 'a' 'les' {0}", "{1}, 'a' 'les' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5799,6 +5977,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, 'a' 'les' {0}", "{1}, 'a' 'les' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5867,6 +6047,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5929,6 +6111,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -5991,6 +6175,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6056,6 +6242,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6121,6 +6309,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6183,6 +6373,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'sa' {0}", "{1} 'sa' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6245,6 +6437,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6308,6 +6502,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6370,6 +6566,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe1\x8e\xa4\xe1\x8e\xbe\xe1\x8e\xa2 {0}", "{1} \xe1\x8e\xa4\xe1\x8e\xbe\xe1\x8e\xa2 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6432,6 +6630,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6494,6 +6694,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6556,6 +6758,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6618,6 +6822,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6680,6 +6886,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6742,6 +6950,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'v' {0}", "{1} 'v' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6809,6 +7019,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6871,6 +7083,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6933,6 +7147,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -6995,6 +7211,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'am' {0}", "{1} 'am' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7057,6 +7275,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7122,6 +7342,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7187,6 +7409,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7250,6 +7474,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'um' {0}", "{1} 'um' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7317,6 +7543,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'um' {0}", "{1} 'um' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7384,6 +7612,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'um' {0}", "{1} 'um' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7451,6 +7681,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'um' {0}", "{1} 'um' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7518,6 +7750,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'um' {0}", "{1} 'um' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7585,6 +7819,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'um' {0}", "{1} 'um' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7652,6 +7888,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'um' {0}", "{1} 'um' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7719,6 +7957,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7781,6 +8021,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa4\x97\xe0\xa5\x80 {0}", "{1} \xe0\xa4\x97\xe0\xa5\x80 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7843,6 +8085,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'zeger' {0}", "{1} 'zeger' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7905,6 +8149,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -7967,6 +8213,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Fri,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8029,6 +8277,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8091,6 +8341,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8153,6 +8405,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8216,6 +8470,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{0} {1}", "{0} {1}", "{0} {1}", "{0} {1}" },
         .datetime_at_formats = .{ "{0} {1}", "{0} {1}", "{0} {1}", "{0} {1}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8279,6 +8535,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{0} {1}", "{0} {1}", "{0} {1}", "{0} {1}" },
         .datetime_at_formats = .{ "{0} {1}", "{0} {1}", "{0} {1}", "{0} {1}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8342,6 +8600,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} - {0}", "{1} - {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xcf\x83\xcf\x84\xce\xb9\xcf\x82 {0}", "{1} \xcf\x83\xcf\x84\xce\xb9\xcf\x82 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8405,6 +8665,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} - {0}", "{1} - {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xcf\x83\xcf\x84\xce\xb9\xcf\x82 {0}", "{1} \xcf\x83\xcf\x84\xce\xb9\xcf\x82 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8468,6 +8730,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} - {0}", "{1} - {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xcf\x83\xcf\x84\xce\xb9\xcf\x82 {0}", "{1} \xcf\x83\xcf\x84\xce\xb9\xcf\x82 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8531,6 +8795,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8593,6 +8859,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8656,6 +8924,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8719,6 +8989,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8782,6 +9054,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8845,6 +9119,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8908,6 +9184,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -8970,6 +9248,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9033,6 +9313,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9101,6 +9383,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9164,6 +9448,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9227,6 +9513,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9289,6 +9577,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9352,6 +9642,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9415,6 +9707,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9478,6 +9772,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9541,6 +9837,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9604,6 +9902,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9667,6 +9967,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9730,6 +10032,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9793,6 +10097,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9856,6 +10162,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9919,6 +10227,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -9982,6 +10292,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10045,6 +10357,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10108,6 +10422,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10171,6 +10487,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10234,6 +10552,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10297,6 +10617,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10359,6 +10681,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10422,6 +10746,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10485,6 +10811,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10548,6 +10876,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10611,6 +10941,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10674,6 +11006,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10737,6 +11071,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10800,6 +11136,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10863,6 +11201,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10931,6 +11271,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -10994,6 +11336,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11057,6 +11401,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11120,6 +11466,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11183,6 +11531,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11246,6 +11596,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11309,6 +11661,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11372,6 +11726,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11434,6 +11790,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11497,6 +11855,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11561,6 +11921,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11624,6 +11986,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11687,6 +12051,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11750,6 +12116,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11813,6 +12181,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11876,6 +12246,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -11944,6 +12316,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12007,6 +12381,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12070,6 +12446,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12133,6 +12511,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12196,6 +12576,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12258,6 +12640,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12321,6 +12705,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12384,6 +12770,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12447,6 +12835,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12510,6 +12900,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12573,6 +12965,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12636,6 +13030,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12699,6 +13095,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12762,6 +13160,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12825,6 +13225,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12888,6 +13290,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -12950,6 +13354,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13013,6 +13419,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13075,6 +13483,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13138,6 +13548,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13201,6 +13613,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13264,6 +13678,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Fri,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13327,6 +13743,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13390,6 +13808,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13453,6 +13873,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13516,6 +13938,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13579,6 +14003,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13642,6 +14068,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13705,6 +14133,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13768,6 +14198,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13831,6 +14263,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13894,6 +14328,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -13957,6 +14393,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14020,6 +14458,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14082,6 +14522,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14145,6 +14587,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14208,6 +14652,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14271,6 +14717,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14333,6 +14781,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14396,6 +14846,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14459,6 +14911,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14522,6 +14976,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14585,6 +15041,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14648,6 +15106,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14711,6 +15171,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14774,6 +15236,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14837,6 +15301,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14900,6 +15366,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -14963,6 +15431,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15026,6 +15496,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15089,6 +15561,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15152,6 +15626,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15215,6 +15691,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15278,6 +15756,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15341,6 +15821,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15403,6 +15885,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15466,6 +15950,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15529,6 +16015,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15592,6 +16080,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15655,6 +16145,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15718,6 +16210,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15781,6 +16275,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15844,6 +16340,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15907,6 +16405,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -15969,6 +16469,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16032,6 +16534,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16095,6 +16599,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16157,6 +16663,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16220,6 +16728,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16283,6 +16793,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16346,6 +16858,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16409,6 +16923,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'at' {0}", "{1} 'at' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16472,6 +16988,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'je' {0}", "{1} 'je' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16534,6 +17052,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16605,6 +17125,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16677,6 +17199,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16749,6 +17273,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16821,6 +17347,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16893,6 +17421,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -16965,6 +17495,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17037,6 +17569,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17109,6 +17643,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17181,6 +17717,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17253,6 +17791,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17325,6 +17865,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17396,6 +17938,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17468,6 +18012,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17539,6 +18085,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17611,6 +18159,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17683,6 +18233,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17754,6 +18306,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17826,6 +18380,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17898,6 +18454,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -17970,6 +18528,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18042,6 +18602,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18113,6 +18675,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18185,6 +18749,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18257,6 +18823,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18329,6 +18897,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18401,6 +18971,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18473,6 +19045,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18545,6 +19119,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, 'kell' {0}", "{1}, 'kell' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18609,6 +19185,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} ({0})", "{1} ({0})", "{1} ({0})", "{1} ({0})" },
         .datetime_at_formats = .{ "{1} ({0})", "{1} ({0})", "{1} ({0})", "{1} ({0})" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18673,6 +19251,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18735,6 +19315,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c \xd8\xb3\xd8\xa7\xd8\xb9\xd8\xaa {0}", "{1}\xd8\x8c \xd8\xb3\xd8\xa7\xd8\xb9\xd8\xaa {0}", "{1}\xd8\x8c\xe2\x80\x8f {0}", "{1}\xd8\x8c\xe2\x80\x8f {0}" },
         .datetime_at_formats = .{ "{1} \xd8\xb3\xd8\xa7\xd8\xb9\xd8\xaa {0}", "{1} \xd8\xb3\xd8\xa7\xd8\xb9\xd8\xaa {0}", "{1}\xd8\x8c {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18800,6 +19382,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c \xd8\xb3\xd8\xa7\xd8\xb9\xd8\xaa {0}", "{1}\xd8\x8c \xd8\xb3\xd8\xa7\xd8\xb9\xd8\xaa {0}", "{1}\xd8\x8c\xe2\x80\x8f {0}", "{1}\xd8\x8c\xe2\x80\x8f {0}" },
         .datetime_at_formats = .{ "{1} \xd8\xb3\xd8\xa7\xd8\xb9\xd8\xaa {0}", "{1} \xd8\xb3\xd8\xa7\xd8\xb9\xd8\xaa {0}", "{1}\xd8\x8c {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18865,6 +19449,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18931,6 +19517,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -18993,6 +19581,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19055,6 +19645,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19117,6 +19709,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19179,6 +19773,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19241,6 +19837,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19303,6 +19901,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19365,6 +19965,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19427,6 +20029,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19489,6 +20093,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19551,6 +20157,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19613,6 +20221,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xf0\x9e\xa4\x89 {0}", "{1} \xf0\x9e\xa4\x89 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19675,6 +20285,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19741,6 +20353,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19807,6 +20421,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19873,6 +20489,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -19939,6 +20557,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20005,6 +20625,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20071,6 +20693,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20137,6 +20761,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20203,6 +20829,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20269,6 +20897,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20335,6 +20965,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20401,6 +21033,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20467,6 +21101,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'klo' {0}", "{1} 'klo' {0}", "{1} 'klo' {0}", "{1} 'klo' {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20535,6 +21171,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'nang' {0}", "{1} 'nang' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20599,6 +21237,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20661,6 +21301,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -20723,6 +21365,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -20785,6 +21429,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -20847,6 +21493,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -20909,6 +21557,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -20971,6 +21621,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21033,6 +21685,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21095,6 +21749,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21160,6 +21816,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21222,6 +21880,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21284,6 +21944,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21346,6 +22008,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21409,6 +22073,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21471,6 +22137,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21533,6 +22201,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21595,6 +22265,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21657,6 +22329,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21719,6 +22393,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21781,6 +22457,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21843,6 +22521,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21905,6 +22585,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -21967,6 +22649,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22029,6 +22713,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22091,6 +22777,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22153,6 +22841,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22215,6 +22905,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22277,6 +22969,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22339,6 +23033,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22401,6 +23097,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22463,6 +23161,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22525,6 +23225,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22587,6 +23289,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22649,6 +23353,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22711,6 +23417,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22773,6 +23481,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22835,6 +23545,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22897,6 +23609,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -22959,6 +23673,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23021,6 +23737,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23083,6 +23801,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23145,6 +23865,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23207,6 +23929,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23269,6 +23993,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23331,6 +24057,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23393,6 +24121,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23455,6 +24185,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23517,6 +24249,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -23579,6 +24313,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -23641,6 +24377,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -23705,6 +24443,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -23767,6 +24507,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'ag' {0}", "{1} 'ag' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -23829,6 +24571,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'ag' {0}", "{1} 'ag' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -23891,6 +24635,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -23953,6 +24699,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'aig' {0}", "{1} 'aig' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24017,6 +24765,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24079,6 +24829,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24141,6 +24893,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24206,6 +24960,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24268,6 +25024,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24336,6 +25094,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24404,6 +25164,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24472,6 +25234,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24536,6 +25300,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24599,6 +25365,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24661,6 +25429,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'da' {0}", "{1} 'da' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24724,6 +25494,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24786,6 +25558,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24848,6 +25622,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'da' {0}", "{1} 'da' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24911,6 +25687,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'da' {0}", "{1} 'da' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -24974,6 +25752,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25036,6 +25816,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xd7\x91\xd7\xa9\xd7\xa2\xd7\x94 {0}", "{1} \xd7\x91\xd7\xa9\xd7\xa2\xd7\x94 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25099,6 +25881,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa4\x95\xe0\xa5\x8b {0} \xe0\xa4\xac\xe0\xa4\x9c\xe0\xa5\x87", "{1} \xe0\xa4\x95\xe0\xa5\x8b {0} \xe0\xa4\xac\xe0\xa4\x9c\xe0\xa5\x87", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25165,6 +25949,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, {0} 'par'", "{1}, {0} 'par'", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25233,6 +26019,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25295,6 +26083,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25357,6 +26147,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'u' {0}", "{1} 'u' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25422,6 +26214,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'u' {0}", "{1} 'u' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25487,6 +26281,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'w' {0}", "{1} 'w' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25549,6 +26345,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0' {0}", "{1} '\xc3\xa0' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -25611,6 +26409,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25674,6 +26474,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25736,6 +26538,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'a' {0}", "{1} 'a' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25798,6 +26602,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'pukul' {0}", "{1} 'pukul' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25861,6 +26667,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'ye' {0}", "{1} 'ye' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25923,6 +26731,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'na' {0}", "{1} 'na' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -25986,6 +26796,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xea\x91\x8d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26048,6 +26860,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26110,6 +26924,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26173,6 +26989,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'alle' 'ore' {0}", "{1} 'alle' 'ore' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26235,6 +27053,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'alle' 'ore' {0}", "{1} 'alle' 'ore' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26297,6 +27117,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'alle' 'ore' {0}", "{1} 'alle' 'ore' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26359,6 +27181,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'alle' 'ore' {0}", "{1} 'alle' 'ore' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26421,6 +27245,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26483,6 +27309,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26545,6 +27373,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26614,6 +27444,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26676,6 +27508,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26738,6 +27572,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26801,6 +27637,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'ing' {0}", "{1} 'ing' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26863,6 +27701,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26925,6 +27765,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -26987,6 +27829,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27049,6 +27893,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27111,6 +27957,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27177,6 +28025,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27239,6 +28089,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27302,6 +28154,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27364,6 +28218,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27427,6 +28283,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27493,6 +28351,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27555,6 +28415,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27617,6 +28479,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27684,6 +28548,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27750,6 +28616,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27813,6 +28681,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27875,6 +28745,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27937,6 +28809,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -27999,6 +28873,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28061,6 +28937,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28123,6 +29001,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28185,6 +29065,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28248,6 +29130,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe1\x9e\x93\xe1\x9f\x85\xe2\x80\x8b\xe1\x9e\x98\xe1\x9f\x89\xe1\x9f\x84\xe1\x9e\x84 {0}", "{1} \xe1\x9e\x93\xe1\x9f\x85\xe2\x80\x8b\xe1\x9e\x98\xe1\x9f\x89\xe1\x9f\x84\xe1\x9e\x84 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28310,6 +29194,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xb2\xb0\xe0\xb2\x82\xe0\xb2\xa6\xe0\xb3\x81 {0} \xe0\xb2\xb8\xe0\xb2\xae\xe0\xb2\xaf\xe0\xb2\x95\xe0\xb3\x8d\xe0\xb2\x95\xe0\xb3\x86", "{1} \xe0\xb2\xb0\xe0\xb2\x82\xe0\xb2\xa6\xe0\xb3\x81 {0} \xe0\xb2\xb8\xe0\xb2\xae\xe0\xb2\xaf\xe0\xb2\x95\xe0\xb3\x8d\xe0\xb2\x95\xe0\xb3\x86", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28374,6 +29260,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xec\x9d\xbc" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28445,6 +29333,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xec\x9d\xbc" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28516,6 +29406,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xec\x9d\xbc" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28587,6 +29479,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0} \xe0\xa4\xb5\xe0\xa4\xb0\xe0\xa4\xbe\xe0\xa4\x82\xe0\xa4\x9a\xe0\xa5\x87\xe0\xa4\xb0", "{1} {0} \xe0\xa4\xb5\xe0\xa4\xb0\xe0\xa4\xbe\xe0\xa4\x82\xe0\xa4\x9a\xe0\xa5\x87\xe0\xa4\xb0", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28649,6 +29543,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0} \xe0\xa4\xb5\xe0\xa4\xb0\xe0\xa4\xbe\xe0\xa4\x82\xe0\xa4\x9a\xe0\xa5\x87\xe0\xa4\xb0", "{1} {0} \xe0\xa4\xb5\xe0\xa4\xb0\xe0\xa4\xbe\xe0\xa4\x82\xe0\xa4\x9a\xe0\xa5\x87\xe0\xa4\xb0", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28711,6 +29607,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0} 'vaztam'", "{1}, {0} 'vaztam'", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28773,6 +29671,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28835,6 +29735,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28897,6 +29799,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{0} \xd9\xbe\xd9\xae\xdb\xaa\xd9\xb9\xda\xbe\xd8\xa0 {1}", "{0} \xd9\xbe\xd9\xae\xdb\xaa\xd9\xb9\xda\xbe\xd8\xa0 {1}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -28960,6 +29864,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{0} \xd9\xbe\xd9\xae\xdb\xaa\xd9\xb9\xda\xbe\xd8\xa0 {1}", "{0} \xd9\xbe\xd9\xae\xdb\xaa\xd9\xb9\xda\xbe\xd8\xa0 {1}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29023,6 +29929,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{0} \xe0\xa4\xaa\xe0\xa5\x87\xe0\xa4\xa0 {1}", "{0} \xe0\xa4\xaa\xe0\xa5\x87\xe0\xa4\xa0 {1}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29085,6 +29993,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29148,6 +30058,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29210,6 +30122,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29272,6 +30186,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29334,6 +30250,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29396,6 +30314,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29458,6 +30378,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29520,6 +30442,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29582,6 +30506,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29644,6 +30570,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29706,6 +30634,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29768,6 +30698,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'a\xc3\xa3' {0}", "{1} 'a\xc3\xa3' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29830,6 +30762,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} \xe0\xa4\x86\xe0\xa4\x81 {0}", "{1} \xe0\xa4\x86\xe0\xa4\x81 {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa4\x86\xe0\xa4\x81 {0}", "{1} \xe0\xa4\x86\xe0\xa4\x81 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29892,6 +30826,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'a\xc3\xa3' {0}", "{1} 'a\xc3\xa3' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -29954,6 +30890,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} \xe0\xac\x86\xe0\xac\x81 {0}", "{1} \xe0\xac\x86\xe0\xac\x81 {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xac\x86\xe0\xac\x81 {0}", "{1} \xe0\xac\x86\xe0\xac\x81 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30016,6 +30954,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} \xe0\xb0\xa4 {0}", "{1} \xe0\xb0\xa4 {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xb0\xa4 {0}", "{1} \xe0\xb0\xa4 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30078,6 +31018,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30140,6 +31082,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30202,6 +31146,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30265,6 +31211,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30327,6 +31275,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30390,6 +31340,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30452,6 +31404,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30514,6 +31468,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'dales' {0}", "{1} 'dales' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30576,6 +31532,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30638,6 +31596,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30700,6 +31660,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30762,6 +31724,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30824,6 +31788,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30886,6 +31852,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -30948,6 +31916,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31010,6 +31980,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31072,6 +32044,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "dd" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31142,6 +32116,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31204,6 +32180,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31266,6 +32244,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31329,6 +32309,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31392,6 +32374,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31456,6 +32440,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31518,6 +32504,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa4\x95\xe0\xa5\x87 {0}", "{1} \xe0\xa4\x95\xe0\xa5\x87 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31580,6 +32568,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31643,6 +32633,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31706,6 +32698,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31768,6 +32762,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31831,6 +32827,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31897,6 +32895,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -31963,6 +32963,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32025,6 +33027,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32087,6 +33091,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32149,6 +33155,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} 'i' {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32211,6 +33219,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32273,6 +33283,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, '\xd0\xb2\xd0\xbe' {0}", "{1}, '\xd0\xb2\xd0\xbe' {0}", "{1}, '\xd0\xb2\xd0\xbe' {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32337,6 +33349,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}-\xe0\xb4\xa8\xe0\xb5\x8d", "{1}, {0}-\xe0\xb4\xa8\xe0\xb5\x8d", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32402,6 +33416,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32464,6 +33480,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32526,6 +33544,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32588,6 +33608,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa6\x97\xe0\xa7\x80 {0} \xe0\xa6\xa6\xe0\xa6\xbe", "{1} \xe0\xa6\x97\xe0\xa7\x80 {0} \xe0\xa6\xa6\xe0\xa6\xbe", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32650,6 +33672,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa6\x97\xe0\xa7\x80 {0} \xe0\xa6\xa6\xe0\xa6\xbe", "{1} \xe0\xa6\x97\xe0\xa7\x80 {0} \xe0\xa6\xa6\xe0\xa6\xbe", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32712,6 +33736,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32774,6 +33800,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32836,6 +33864,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa4\xb0\xe0\xa5\x8b\xe0\xa4\x9c\xe0\xa5\x80 {0}", "{1} \xe0\xa4\xb0\xe0\xa5\x8b\xe0\xa4\x9c\xe0\xa5\x80 {0} \xe0\xa4\xb5\xe0\xa4\xbe\xe0\xa4\x9c\xe0\xa4\xa4\xe0\xa4\xbe", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32900,6 +33930,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'pada' {0}", "{1} 'pada' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -32963,6 +33995,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33027,6 +34061,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33091,6 +34127,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'pada' {0}", "{1} 'pada' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33154,6 +34192,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'pada' {0}", "{1} 'pada' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33217,6 +34257,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'pada' {0}", "{1} 'pada' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33280,6 +34322,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33342,6 +34386,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33404,6 +34450,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33466,6 +34514,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33528,6 +34578,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33590,6 +34642,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33653,6 +34707,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33715,6 +34771,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33777,6 +34835,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33840,6 +34900,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33904,6 +34966,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -33968,6 +35032,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34031,6 +35097,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34093,6 +35161,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34155,6 +35225,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}: {0}", "{1}: {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34217,6 +35289,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}: {0}", "{1}: {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34279,6 +35353,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34341,6 +35417,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34403,6 +35481,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34465,6 +35545,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34527,6 +35609,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34589,6 +35673,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34651,6 +35737,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'om' {0}", "{1} 'om' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34713,6 +35801,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34775,6 +35865,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34839,6 +35931,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1},{0}", "{1}, {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1},{0}", "{1}, {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34901,6 +35995,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -34965,6 +36061,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35027,6 +36125,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35089,6 +36189,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} 'ka' {0}", "{1} 'ka' {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'ka' {0}", "{1} 'ka' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35151,6 +36253,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35213,6 +36317,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35275,6 +36381,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35337,6 +36445,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35400,6 +36510,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35462,6 +36574,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35524,6 +36638,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35586,6 +36702,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35648,6 +36766,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} {0} 'tti'", "{1} {0} 'tti'", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35713,6 +36833,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} {0} 'tti'", "{1} {0} 'tti'", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35778,6 +36900,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{0} \xe0\xac\xa0\xe0\xac\xbe\xe0\xac\xb0\xe0\xad\x87 {1}", "{0} \xe0\xac\xa0\xe0\xac\xbe\xe0\xac\xb0\xe0\xad\x87 {1}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35842,6 +36966,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35904,6 +37030,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -35966,6 +37094,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36028,6 +37158,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36091,6 +37223,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36155,6 +37289,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36218,6 +37354,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36280,6 +37418,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36342,6 +37482,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'f\xe1\xbb\x8d' {0}", "{1} 'f\xe1\xbb\x8d' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36404,6 +37546,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36466,6 +37610,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36528,6 +37674,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36590,6 +37738,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36658,6 +37808,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36720,6 +37872,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36782,6 +37936,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xd9\xbe\xd9\x87 {0}", "{1} \xd9\xbe\xd9\x87 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36844,6 +38000,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xd9\xbe\xd9\x87 {0}", "{1} \xd9\xbe\xd9\x87 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36906,6 +38064,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -36973,6 +38133,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37041,6 +38203,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37109,6 +38273,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37177,6 +38343,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37245,6 +38413,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37313,6 +38483,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37381,6 +38553,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37449,6 +38623,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37517,6 +38693,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37585,6 +38763,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37653,6 +38833,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xc3\xa0s' {0}", "{1} '\xc3\xa0s' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37721,6 +38903,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{0} {1}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37783,6 +38967,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{0} {1}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37845,6 +39031,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{0} {1}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37907,6 +39095,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -37969,6 +39159,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38031,6 +39223,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38093,6 +39287,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38155,6 +39351,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38217,6 +39415,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38279,6 +39479,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'a' 'las' {0}", "{1} 'a' 'las' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38346,6 +39548,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38408,6 +39612,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'la' {0}", "{1} 'la' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38473,6 +39679,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'la' {0}", "{1} 'la' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38538,6 +39746,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38601,6 +39811,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd0\xb2' {0}", "{1} '\xd0\xb2' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38665,6 +39877,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd0\xb2' {0}", "{1} '\xd0\xb2' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38729,6 +39943,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd0\xb2' {0}", "{1} '\xd0\xb2' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38793,6 +40009,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd0\xb2' {0}", "{1} '\xd0\xb2' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38857,6 +40075,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd0\xb2' {0}", "{1} '\xd0\xb2' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38921,6 +40141,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd0\xb2' {0}", "{1} '\xd0\xb2' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -38985,6 +40207,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39047,6 +40271,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39110,6 +40336,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa4\xa4\xe0\xa4\xa6\xe0\xa4\xbe {0}", "{1} \xe0\xa4\xa4\xe0\xa4\xa6\xe0\xa4\xbe {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39172,6 +40400,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39234,6 +40464,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39297,6 +40529,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39359,6 +40593,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39421,6 +40657,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39483,6 +40721,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39545,6 +40785,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'a' 'sas' {0}", "{1} 'a' 'sas' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39607,6 +40849,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'a' 'l'\xe2\x80\x99'uri' {0}", "{1} 'a' 'l'\xe2\x80\x99'uri' {0}", "{1} 'a' 'l'\xe2\x80\x99'uri' {0}", "{1} '\xc3\xaa' {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39669,6 +40913,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39731,6 +40977,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39793,6 +41041,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xa4\xa4\xe0\xa5\x87 {0}", "{1} \xe0\xa4\xa4\xe0\xa5\x87 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39855,6 +41105,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39917,6 +41169,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -39979,6 +41233,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40041,6 +41297,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40103,6 +41361,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40165,6 +41425,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40233,6 +41495,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40299,6 +41563,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40364,6 +41630,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40426,6 +41694,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40491,6 +41761,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40556,6 +41828,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40621,6 +41895,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40683,6 +41959,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40745,6 +42023,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xb6\xaf\xe0\xb7\x92\xe0\xb6\xb1 {0}", "{1} \xe0\xb6\xaf\xe0\xb7\x92\xe0\xb6\xb1 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40807,6 +42087,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40869,6 +42151,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'o' {0}", "{1} 'o' {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40935,6 +42219,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -40997,6 +42283,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'ob' {0}", "{1} 'ob' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d." },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41059,6 +42347,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41121,6 +42411,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41183,6 +42475,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41245,6 +42539,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41307,6 +42603,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'tme' {0}", "{1} 'tme' {0}", "{1} 'tme' {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41369,6 +42667,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41431,6 +42731,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41494,6 +42796,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'ee' {0}", "{1} 'ee' {0}", "{1} 'ee' {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41557,6 +42861,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'ee' {0}", "{1} 'ee' {0}", "{1} 'ee' {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41620,6 +42926,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'ee' {0}", "{1} 'ee' {0}", "{1} 'ee' {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41683,6 +42991,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'ee' {0}", "{1} 'ee' {0}", "{1} 'ee' {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41746,6 +43056,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'n\xc3\xab' {0}", "{1} 'n\xc3\xab' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41810,6 +43122,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'n\xc3\xab' {0}", "{1} 'n\xc3\xab' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41874,6 +43188,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'n\xc3\xab' {0}", "{1} 'n\xc3\xab' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -41938,6 +43254,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42005,6 +43323,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42072,6 +43392,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42139,6 +43461,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42206,6 +43530,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42273,6 +43599,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42340,6 +43668,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42407,6 +43737,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42474,6 +43806,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "E" },
@@ -42541,6 +43875,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -42603,6 +43939,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -42665,6 +44003,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -42727,6 +44067,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -42789,6 +44131,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -42851,6 +44195,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'jam' {0}", "{1} 'jam' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -42913,6 +44259,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'jam' {0}", "{1} 'jam' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -42975,6 +44323,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43037,6 +44387,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43099,6 +44451,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43161,6 +44515,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43227,6 +44583,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43293,6 +44651,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'kl'. {0}", "{1} 'kl'. {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43359,6 +44719,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43422,6 +44784,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43485,6 +44849,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'saa' {0}", "{1} 'saa' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43548,6 +44914,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43611,6 +44979,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xdc\x92\xdc\xab\xdc\xa5\xdc\xac\xdc\x90 {0}", "{1} \xdc\x92\xdc\xab\xdc\xa5\xdc\xac\xdc\x90 {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43673,6 +45043,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} \xdc\x92\xdc\xab\xdc\xa5\xdc\xac\xdc\x90 {0}", "{1} \xdc\x92\xdc\xab\xdc\xa5\xdc\xac\xdc\x90 {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43735,6 +45107,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43797,6 +45171,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xae\x85\xe0\xae\xa9\xe0\xaf\x8d\xe0\xae\xb1\xe0\xaf\x81 {0}", "{1} \xe0\xae\x85\xe0\xae\xa9\xe0\xaf\x8d\xe0\xae\xb1\xe0\xaf\x81 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43861,6 +45237,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xae\x85\xe0\xae\xa9\xe0\xaf\x8d\xe0\xae\xb1\xe0\xaf\x81 {0}", "{1} \xe0\xae\x85\xe0\xae\xa9\xe0\xaf\x8d\xe0\xae\xb1\xe0\xaf\x81 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43925,6 +45303,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xae\x85\xe0\xae\xa9\xe0\xaf\x8d\xe0\xae\xb1\xe0\xaf\x81 {0}", "{1} \xe0\xae\x85\xe0\xae\xa9\xe0\xaf\x8d\xe0\xae\xb1\xe0\xaf\x81 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -43989,6 +45369,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xae\x85\xe0\xae\xa9\xe0\xaf\x8d\xe0\xae\xb1\xe0\xaf\x81 {0}", "{1} \xe0\xae\x85\xe0\xae\xa9\xe0\xaf\x8d\xe0\xae\xb1\xe0\xaf\x81 {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44053,6 +45435,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}\xe0\xb0\x95\xe0\xb0\xbf", "{1} {0}\xe0\xb0\x95\xe0\xb0\xbf", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44117,6 +45501,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44180,6 +45566,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44243,6 +45631,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} '\xd1\x81\xd0\xbe\xd0\xb0\xd1\x82\xd0\xb8' {0}", "{1} '\xd1\x81\xd0\xbe\xd0\xb0\xd1\x82\xd0\xb8' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44305,6 +45695,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xe0\xb9\x80\xe0\xb8\xa7\xe0\xb8\xa5\xe0\xb8\xb2 {0}", "{1} \xe0\xb9\x80\xe0\xb8\xa7\xe0\xb8\xa5\xe0\xb8\xb2 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44376,6 +45768,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xe1\x88\xb0\xe1\x8b\x93\xe1\x89\xb5 {0}", "{1} \xe1\x88\xb0\xe1\x8b\x93\xe1\x89\xb5 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44441,6 +45835,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xe1\x88\xb0\xe1\x8b\x93\xe1\x89\xb5 {0}", "{1} \xe1\x88\xb0\xe1\x8b\x93\xe1\x89\xb5 {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44506,6 +45902,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44568,6 +45966,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'sagat' {0}", "{1} 'sagat' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44632,6 +46032,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} 'ka' {0}", "{1} 'ka' {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'ka' {0}", "{1} 'ka' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44694,6 +46096,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} 'ka' {0}", "{1} 'ka' {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} 'ka' {0}", "{1} 'ka' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44756,6 +46160,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44820,6 +46226,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "#d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44882,6 +46290,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -44944,6 +46354,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45009,6 +46421,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45074,6 +46488,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45136,6 +46552,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45198,6 +46616,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45260,6 +46680,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} {0} '\xd1\x81\xd3\x99\xd0\xb3\xd0\xb0\xd1\x82\xd1\x8c\xd1\x82\xd3\x99'", "{1} {0} '\xd1\x81\xd3\x99\xd0\xb3\xd0\xb0\xd1\x82\xd1\x8c\xd1\x82\xd3\x99'", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45322,6 +46744,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45384,6 +46808,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45446,6 +46872,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45509,6 +46937,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45571,6 +47001,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1} '\xd0\xbe' {0}", "{1} '\xd0\xbe' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45634,6 +47066,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45696,6 +47130,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xda\xa9\xd9\x88 {0}", "{1} \xda\xa9\xd9\x88 {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45758,6 +47194,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} \xda\xa9\xd9\x88 {0}", "{1} \xda\xa9\xd9\x88 {0}", "{1}\xd8\x8c {0}", "{1}\xd8\x8c {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45820,6 +47258,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45882,6 +47322,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sat,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -45944,6 +47386,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46006,6 +47450,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46068,6 +47514,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46131,6 +47579,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46193,6 +47643,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46256,6 +47708,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46318,6 +47772,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46380,6 +47836,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{0} {1}", "{0} {1}", "{0} {1}", "{0} {1}" },
         .datetime_at_formats = .{ "'l\xc3\xbac' {0} {1}", "'l\xc3\xbac' {0} {1}", "{0} {1}", "{0} {1}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46446,6 +47904,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46508,6 +47968,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46570,6 +48032,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46633,6 +48097,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46695,6 +48161,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 4,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46757,6 +48225,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46819,6 +48289,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46881,6 +48353,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} - {0}", "{1} - {0}", "{1} - {0}", "{1} - {0}" },
         .datetime_at_formats = .{ "{1} 'ci' {0}", "{1} 'ci' {0}", "{1} - {0}", "{1} - {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -46943,6 +48417,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'ngo' {0}", "{1} 'ngo' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47005,6 +48481,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .datetime_at_formats = .{ "{1}, {0}", "{1}, {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47067,6 +48545,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47130,6 +48610,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47192,6 +48674,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1}, {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47255,6 +48739,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'n\xc3\xad' {0}", "{1} 'n\xc3\xad' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47318,6 +48804,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} 'n\xc3\xad' {0}", "{1} 'n\xc3\xad' {0}", "{1}, {0}", "{1}, {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47381,6 +48869,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47448,6 +48938,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47515,6 +49007,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47582,6 +49076,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47646,6 +49142,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47710,6 +49208,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47774,6 +49274,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47838,6 +49340,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47902,6 +49406,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -47964,6 +49470,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48026,6 +49534,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48091,6 +49601,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48156,6 +49668,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48223,6 +49737,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48289,6 +49805,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48354,6 +49872,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48420,6 +49940,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48485,6 +50007,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48550,6 +50074,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .hour12 = true,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48615,6 +50141,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1}\xe2\x80\x89{0}" },
         .hour12 = true,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d\xe6\x97\xa5" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48680,6 +50208,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Mon,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
@@ -48742,6 +50272,8 @@ pub const names: []const Names = &.{
         .datetime_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .datetime_at_formats = .{ "{1} {0}", "{1} {0}", "{1} {0}", "{1} {0}" },
         .hour12 = false,
+        .first_day = .Sun,
+        .min_days_in_first_week = 1,
         .available_formats = &.{
             .{ .skeleton = "d", .pattern = "d" },
             .{ .skeleton = "E", .pattern = "ccc" },
