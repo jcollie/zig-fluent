@@ -283,15 +283,24 @@ pub fn build(b: *std.Build) void {
     });
     c_static.installHeader(b.path("include/fluent.h"), "fluent.h");
 
-    // Zig's own runtime helpers, put inside the archive rather than left for
+    // Zig's own runtime helpers, put inside the library rather than left for
     // the linker to find. Zig links `compiler_rt` for you and `cc` does not,
     // so without this a static library built at anything but `-ODebug` fails
     // to link from a Makefile with `undefined reference to
     // __zig_probe_stack` -- and fails there and nowhere else, because
     // everything in this build links it with Zig. `examples/c` is what caught
     // it.
-    c_static.bundle_compiler_rt = true;
     c_shared.bundle_compiler_rt = true;
+
+    // Not into the archive on Darwin, though, where it trades one link error
+    // for another: Zig does not pad archive members to eight bytes and
+    // Apple's linker insists on it, so `ld` refuses the whole file with
+    // "64-bit mach-o member 'compiler_rt.o' not 8-byte aligned". Nothing here
+    // needs those helpers on the targets Darwin runs on -- the stack probe
+    // that provoked this is x86 -- so the archive is left without them and
+    // the CI step that builds `examples/c` is what will say if that stops
+    // being true.
+    c_static.bundle_compiler_rt = !target.result.os.tag.isDarwin();
 
     const install_c = b.step("c", "Build and install the C library and its header");
     install_c.dependOn(&b.addInstallArtifact(c_static, .{}).step);

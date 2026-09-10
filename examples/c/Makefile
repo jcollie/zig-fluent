@@ -13,7 +13,10 @@
 #     make LINKAGE=shared      # link libfluent.so rather than libfluent.a
 #     make clean
 
-CC ?= gcc
+# Plain `=`, not `?=`: make predefines `CC` as `cc`, so `?=` would never take
+# effect and the compiler asked for here would silently not be the one used.
+# A command line still wins -- `make CC=clang` does what it says.
+CC = gcc
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror -O2
 
 # Where the library and its header are. `zig build --prefix DIR` puts them
