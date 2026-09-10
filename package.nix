@@ -24,6 +24,7 @@ stdenv.mkDerivation (finalAttrs: {
       ./build.zig
       ./build.zig.zon
       ./examples
+      ./include
       ./src
       ./tests
       ./tools
@@ -49,10 +50,25 @@ stdenv.mkDerivation (finalAttrs: {
   # The tests are pure -- a parser, a resolver and a table of locale data, with
   # no clock, no network and no files but the conformance fixtures, which come
   # from the dependency farm. So they run here rather than only in CI, and are
-  # most of what this derivation is for: what it *installs* is the API
-  # documentation, since a Zig library is consumed as source through the
-  # package manager and has no binary artifact to offer.
+  # most of what this derivation is for.
+  #
+  # They include a C program compiled against `include/fluent.h` and linked
+  # against the static library, which is what proves the two agree.
   doCheck = true;
+
+  # `zig build` installs the C library -- `libfluent.a`, `libfluent.so`, the
+  # header and a pkg-config file -- alongside the API documentation. A Zig
+  # consumer needs none of it, since a Zig library is consumed as source
+  # through the package manager; a C one needs nothing else.
+  outputs = [
+    "out"
+    "dev"
+  ];
+
+  postInstall = ''
+    moveToOutput include "$dev"
+    moveToOutput share/pkgconfig "$dev"
+  '';
 
   meta = {
     description = "An implementation of Project Fluent for Zig";
@@ -60,7 +76,8 @@ stdenv.mkDerivation (finalAttrs: {
       Localization for Zig built on Project Fluent, with CLDR plural rules,
       number formatting and date formatting generated into the library rather
       than delegated to ICU. The derivation builds and tests the library and
-      installs its API documentation.
+      installs its API documentation along with a C library and header, so
+      that a project in any language that can call C can use it.
     '';
     homepage = "https://git.jcollie.dev/jeff/zig-fluent";
     license = lib.licenses.mit;

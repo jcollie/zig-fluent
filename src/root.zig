@@ -50,6 +50,10 @@ const bundle_mod = @import("bundle.zig");
 /// holds.
 pub const Bundle = bundle_mod.Bundle;
 
+/// How `Bundle.addResource` should treat a name an earlier resource already
+/// defined.
+pub const AddOptions = bundle_mod.AddOptions;
+
 /// Something that went wrong while adding a resource or formatting a message.
 /// None of them stop anything; they are collected for whoever wants to know.
 pub const Error = bundle_mod.Error;

@@ -155,6 +155,67 @@ resolver. There is a serializer too, which writes Fluent's canonical formatting
 and so doubles as a formatter, and a JSON writer that emits Fluent's interchange
 AST for tools written against `fluent-syntax`.
 
+## From C
+
+There is a C library too, so a project that is not written in Zig can use this
+one: `libfluent.a`, `libfluent.so` and a hand-written `include/fluent.h`, plus a
+pkg-config file. `zig build` produces all of it.
+
+```console
+$ zig build --prefix /usr/local
+$ pkg-config --cflags --libs fluent
+-I/usr/local/include -L/usr/local/lib -lfluent
+```
+
+```c
+#include <fluent.h>
+
+fluent_bundle *bundle = fluent_bundle_new("en-US");
+fluent_bundle_add_resource(bundle, ftl, ftl_len, NULL);
+
+fluent_args *args = fluent_args_new();
+fluent_args_set_string(args, "userName", "Ada", 3);
+fluent_args_set_number(args, "photoCount", 3);
+fluent_args_set_string(args, "userGender", "female", 6);
+
+char *text = fluent_bundle_format(bundle, "shared-photos", args, NULL);
+puts(text);
+
+fluent_string_free(text);
+fluent_args_free(args);
+fluent_bundle_free(bundle);
+```
+
+The same shape as the Zig API, with the same guarantee that nothing but running
+out of memory can fail: a message that is not in the bundle formats to `NULL`
+rather than to an error, and a hole in a translation still renders the sentence
+around it. Names — message identifiers, attributes, locale tags, argument names
+— are C strings, because that is what a name is; bodies of text are a pointer
+and a length, because they come out of files and may be anything. Neither is
+retained. Text the library returns is freed with `fluent_string_free`.
+
+`fluent_preferred_locales` answers the question the sections below are about,
+on all three platforms, without the caller needing an environment block of its
+own:
+
+```c
+fluent_tag wanted[8];
+size_t count = fluent_preferred_locales(wanted, 8);
+```
+
+Three things are deliberately Zig-only. **Locale negotiation** — choosing which
+of the translations you shipped best serves what was asked for — is the
+application's decision rather than this library's, in C exactly as in Zig.
+**Time zones** would mean handing C a parsed TZif, which belongs to
+`zig-datetime`; dates are read in UTC. **Custom functions** need a Zig
+callback. `include/fluent.h` says so in the same words, since it is the file a
+C programmer will actually read.
+
+`tests/c_api.c` is a consumer rather than a unit test: it is compiled by a C
+compiler against the installed header and linked against the static library, so
+it is what catches the header and the implementation drifting apart. It runs as
+part of `zig build test`.
+
 ## In a POSIX environment
 
 Somebody running a command-line program on a Unix expects `LANG` and the `LC_*`
@@ -618,6 +679,7 @@ Everything happens inside the devshell:
 $ nix develop
 $ zig build example                # the worked example, in your own language
 $ zig build test --summary all     # unit, conformance, round-trip, fuzz seeds
+$ zig build c                      # just the C library, header and .pc file
 $ zig fmt --check --exclude zig-pkg .
 $ zig build docs-serve             # read the API documentation at :8000
 $ zig build fuzz-run -- --seconds 60

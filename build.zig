@@ -3,6 +3,10 @@
 
 const std = @import("std");
 
+/// The manifest, read for the one thing the C API has to agree with it about:
+/// `fluent_version()` returns this rather than a second copy kept in a header.
+const manifest = @import("build.zig.zon");
+
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -236,6 +240,91 @@ pub fn build(b: *std.Build) void {
     check_step.dependOn(&example.step);
     check_step.dependOn(&gen_cldr.step);
 
+    // -- the C library -------------------------------------------------------
+    //
+    // What a non-Zig project consumes: `libfluent.a`, `libfluent.so` and
+    // `include/fluent.h`, plus a pkg-config file so that a Makefile or a
+    // meson build can find them without being told where they are.
+    //
+    // `src/c.zig` is a wrapper and nothing else -- opaque handles, C strings
+    // and the errors turned into return values the header documents. The
+    // header is written by hand rather than generated, because it is the
+    // documentation a C programmer reads and `zig translate-c` in reverse
+    // would produce something nobody would want to read.
+    const c_options = b.addOptions();
+    c_options.addOption([]const u8, "version", manifest.version);
+
+    const c_mod = b.createModule(.{
+        .root_source_file = b.path("src/c.zig"),
+        .target = target,
+        .optimize = optimize,
+        // libc's allocator, because a C program's memory is libc's memory,
+        // and `std.c.environ` is where the environment is read from.
+        .link_libc = true,
+        .imports = &.{
+            .{ .name = "fluent", .module = mod },
+            .{ .name = "build_options", .module = c_options.createModule() },
+        },
+    });
+
+    // Both linkages, because which one a consumer wants is theirs to decide:
+    // a static library is the simpler thing to ship, and a shared one is what
+    // a distribution packages.
+    const c_static = b.addLibrary(.{
+        .name = "fluent",
+        .linkage = .static,
+        .root_module = c_mod,
+    });
+    const c_shared = b.addLibrary(.{
+        .name = "fluent",
+        .linkage = .dynamic,
+        .version = parseVersion(manifest.version),
+        .root_module = c_mod,
+    });
+    c_static.installHeader(b.path("include/fluent.h"), "fluent.h");
+
+    const install_c = b.step("c", "Build and install the C library and its header");
+    install_c.dependOn(&b.addInstallArtifact(c_static, .{}).step);
+    install_c.dependOn(&b.addInstallArtifact(c_shared, .{}).step);
+    install_c.dependOn(&b.addInstallFileWithDir(
+        b.addWriteFiles().add("fluent.pc", pkgConfig(b)),
+        .{ .custom = "share/pkgconfig" },
+        "fluent.pc",
+    ).step);
+    b.getInstallStep().dependOn(install_c);
+
+    // Ownership is the whole of what `src/c.zig` does, and a C program cannot
+    // check its own for leaks. These can, because in a test build that file's
+    // allocator is `std.testing.allocator` rather than libc's.
+    test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = c_mod })).step);
+
+    // And the header from the outside: a C program that includes it, links the
+    // static library and exercises the API the way a consumer would. It is the
+    // only thing that can catch the header and an `export fn` drifting apart,
+    // since nothing else in this build reads `include/fluent.h`.
+    const c_api_test_mod = b.createModule(.{
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    c_api_test_mod.addCSourceFile(.{
+        .file = b.path("tests/c_api.c"),
+        .flags = &.{ "-std=c11", "-Wall", "-Wextra", "-Werror" },
+    });
+    c_api_test_mod.addIncludePath(b.path("include"));
+    c_api_test_mod.linkLibrary(c_static);
+
+    const c_api_test = b.addExecutable(.{
+        .name = "c-api-test",
+        .root_module = c_api_test_mod,
+    });
+
+    const run_c_api_test = b.addRunArtifact(c_api_test);
+    run_c_api_test.expectExitCode(0);
+    test_step.dependOn(&run_c_api_test.step);
+    check_step.dependOn(&c_api_test.step);
+    check_step.dependOn(&c_shared.step);
+
     // -- documentation -------------------------------------------------------
     //
     // Zig emits the API documentation as a side effect of compiling, so the
@@ -293,4 +382,41 @@ pub fn build(b: *std.Build) void {
         b.addTest(.{ .root_module = docs_server.root_module }),
     ).step);
     check_step.dependOn(&docs_server.step);
+}
+
+/// The manifest's version as a `std.SemanticVersion`, for the shared library's
+/// soname.
+///
+/// A version that does not parse is a mistake in `build.zig.zon` rather than
+/// something to work around, so this stops the build rather than guessing.
+fn parseVersion(text: []const u8) std.SemanticVersion {
+    return std.SemanticVersion.parse(text) catch |err| std.debug.panic(
+        "build.zig.zon has version \"{s}\", which is not a semantic version: {t}",
+        .{ text, err },
+    );
+}
+
+/// The pkg-config file, so that `pkg-config --cflags --libs fluent` answers.
+///
+/// Only `prefix` is a literal path; `libdir` and `includedir` are written in
+/// terms of it, which is the convention every consumer of a `.pc` file expects
+/// -- it is what lets `pkg-config --define-variable=prefix=...` relocate the
+/// whole thing, and what lets a packaging tool rewrite one line rather than
+/// three. Nix already relies on that: it moves the header into a separate
+/// output and rewrites `includedir` to match.
+fn pkgConfig(b: *std.Build) []const u8 {
+    return b.fmt(
+        \\prefix={s}
+        \\exec_prefix=${{prefix}}
+        \\libdir=${{prefix}}/lib
+        \\includedir=${{prefix}}/include
+        \\
+        \\Name: fluent
+        \\Description: An implementation of Project Fluent, for C
+        \\URL: https://git.jcollie.dev/jeff/zig-fluent
+        \\Version: {s}
+        \\Libs: -L${{libdir}} -lfluent
+        \\Cflags: -I${{includedir}}
+        \\
+    , .{ b.install_prefix, manifest.version });
 }
