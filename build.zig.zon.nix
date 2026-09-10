@@ -184,11 +184,11 @@ copyFarm name
       };
     }
     {
-      name = "datetime-0.0.1-6-va7-VRDgD-26M0OuBB10ZhJC1ErNxufDFcqQ-S6jw-";
+      name = "datetime-0.0.1-6-va78KXDgDWPHMK23Vy-PmcH6kjlD1fzW-tPFS5m9JQ";
       path = fetchZigArtifact {
         name = "datetime";
-        url = "git+https://github.com/jcollie/zig-datetime#a1f69392e41d68c92d7ee493091075b2115364c2";
-        hash = "sha256-PCT6MCBQG3yoD9F4NupsFtjrTUbKKu7PD4lMidTuVlA=";
+        url = "git+https://github.com/jcollie/zig-datetime#aceb4334cad7ee829c60bdd734e474e73b945049";
+        hash = "sha256-QkQ0CMcm/y74SGGaefamuJPbiOd6dG7axbGAKxvjtNM=";
         unpack = true;
       };
     }
