@@ -65,7 +65,27 @@ pub fn build(b: *std.Build) void {
         }
     }
 
+    // A worked example: read the user's language out of the environment, pick
+    // the closest of the translations shipped with it, and print in that one.
+    // It is built and tested like everything else, so it cannot rot.
+    const example = b.addExecutable(.{
+        .name = "greeting",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("examples/greeting.zig"),
+            .target = target,
+            .optimize = optimize,
+            .imports = &.{.{ .name = "fluent", .module = mod }},
+        }),
+    });
+
+    const run_example = b.addRunArtifact(example);
+    run_example.stdio = .inherit;
+    if (b.args) |args| run_example.addArgs(args);
+    const example_step = b.step("example", "Run the worked example; pass a locale to override the environment");
+    example_step.dependOn(&run_example.step);
+
     const test_step = b.step("test", "Run tests");
+    test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = example.root_module })).step);
     test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = mod })).step);
 
     // The library from the outside: real `.ftl` text through a real bundle.
@@ -155,6 +175,7 @@ pub fn build(b: *std.Build) void {
     // `zig build test` would not notice.
     const check_step = b.step("check", "Compile everything without running it");
     check_step.dependOn(&fuzz_run.step);
+    check_step.dependOn(&example.step);
     check_step.dependOn(&gen_cldr.step);
 
     // -- documentation -------------------------------------------------------

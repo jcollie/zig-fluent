@@ -23,6 +23,7 @@ stdenv.mkDerivation (finalAttrs: {
     fileset = lib.fileset.unions [
       ./build.zig
       ./build.zig.zon
+      ./examples
       ./src
       ./tests
       ./tools

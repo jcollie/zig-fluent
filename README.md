@@ -76,6 +76,45 @@ default — and in every case the rest of the sentence is still built. That is
 deliberate: a localization system sits between an application and everyone using
 it, and a translation with one hole in it is worth far more than a blank screen.
 
+### A worked example
+
+`examples/greeting.zig` does the whole of it: reads the user's language out of
+the environment, picks the closest of five translations shipped with it, and
+prints in that one.
+
+```console
+$ LANG=de_DE.UTF-8 zig build example
+requested: de-DE
+showing:   de
+
+  Willkommen bei Fototresor!
+  Keine neuen Fotos
+  Ein neues Foto
+  2 neue Fotos
+  Ada hat am 14. Februar 2026 3 Fotos mit dir geteilt.
+  12.345,7 GB von 50.000 GB belegt
+```
+
+```console
+$ zig build example -- ru        # or say so directly, skipping the environment
+  1 новая фотография
+  2 новые фотографии
+  5 новых фотографий
+  21 новая фотография
+```
+
+Those four Russian lines are the argument for Fluent in one screen. The program
+passes a number; it never learns that Russian needs four forms where English
+needs two, that 21 takes the same form as 1 while 11 does not, or that Japanese
+counts photos with 枚. All of that lives in the `.ftl` files, where the person
+who speaks the language can reach it.
+
+The example also shows the parts that are the application's job rather than the
+library's: POSIX spreads "what language does this user read" over `LANGUAGE`,
+`LC_ALL`, `LC_MESSAGES` and `LANG`, none of which are language tags, and
+negotiating a ranked list of those against the translations you shipped is a
+dozen lines. Both are written out and tested there.
+
 ### Just the parser
 
 ```zig
@@ -155,6 +194,7 @@ Everything happens inside the devshell:
 
 ```console
 $ nix develop
+$ zig build example                # the worked example, in your own language
 $ zig build test --summary all     # unit, conformance, round-trip, fuzz seeds
 $ zig fmt --check --exclude zig-pkg .
 $ zig build docs-serve             # read the API documentation at :8000
