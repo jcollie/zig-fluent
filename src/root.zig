@@ -91,8 +91,12 @@ pub const posix = @import("posix.zig");
 /// its own: the display language and the regional format.
 pub const windows = @import("windows.zig");
 
-/// Asking whichever of the two is running, so that a program that works on
-/// both need not branch.
+/// Reading it out of macOS, which is POSIX from a terminal and not from the
+/// Finder, and which lets the formats be overridden apart from the locale.
+pub const darwin = @import("darwin.zig");
+
+/// Asking whichever of the three is running, so that a program that works on
+/// all of them need not branch.
 pub const system = @import("system.zig");
 
 /// CLDR's plural rules: which of `zero`, `one`, `two`, `few`, `many` or
@@ -114,6 +118,7 @@ test {
     _ = @import("locale.zig");
     _ = posix;
     _ = windows;
+    _ = darwin;
     _ = system;
     _ = plural;
     _ = number_format;
@@ -136,6 +141,7 @@ test {
     std.testing.refAllDecls(datetime_format);
     std.testing.refAllDecls(posix);
     std.testing.refAllDecls(windows);
+    std.testing.refAllDecls(darwin);
     std.testing.refAllDecls(system);
     std.testing.refAllDecls(@This());
 }

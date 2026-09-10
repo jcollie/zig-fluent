@@ -76,3 +76,61 @@ jobs:
 
       - name: Run the example with a locale named
         run: zig build example -- fi
+
+      # The point of having a macOS runner at all. `fluent.darwin` reads the
+      # user's language out of the preferences rather than the environment,
+      # because a program started from the Finder has no `LANG` -- and until
+      # this step existed there was no way to find out whether it read them
+      # correctly, only whether it compiled.
+      #
+      # So: tell macOS the user prefers Finnish, take the environment away so
+      # that the POSIX path cannot answer, and require the Finnish text back.
+      # A wrong answer fails here rather than looking plausible.
+      - name: Read a language macOS was told to prefer
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          defaults write -g AppleLanguages '("fi-FI", "en-US")'
+          defaults write -g AppleLocale -string "fi_FI"
+          echo "--- what macOS now reports ---"
+          defaults read -g AppleLanguages
+          defaults read -g AppleLocale
+
+          # `env -u` rather than `env -i`: the build needs PATH and HOME.
+          output=$(env -u LANG -u LANGUAGE -u LC_ALL -u LC_MESSAGES \
+                       -u LC_NUMERIC -u LC_TIME -u LC_MONETARY \
+                   zig build example)
+          echo "--- what the library answered ---"
+          echo "$output"
+
+          # `Tervetuloa Kuvakirjastoon!` is the Finnish welcome, and it can
+          # only come from the preferences: nothing in the environment says
+          # Finnish, and the catalog's first entry is en-US.
+          if ! grep -q "Tervetuloa" <<<"$output"; then
+            echo "::error::AppleLanguages said Finnish and the library did not answer in it"
+            exit 1
+          fi
+          # And the formats follow AppleLocale, which is the other preference.
+          # Matched on the decimal comma alone: Finnish groups with U+00A0
+          # rather than a space, so a literal "12 345,7" written here would
+          # never match however right the answer was.
+          if ! grep -q "345,7" <<<"$output"; then
+            echo "::error::AppleLocale said fi_FI and the numbers came back in another format"
+            exit 1
+          fi
+
+      # The environment still wins where it is set, which is what a person
+      # running from a terminal expects and is the same rule POSIX has. Same
+      # preferences as above, one variable put back.
+      - name: An explicit LC_ALL still beats the preferences
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          output=$(LC_ALL=en_US.UTF-8 zig build example)
+          echo "$output"
+          if ! grep -q "Welcome to Photo Vault" <<<"$output"; then
+            echo "::error::LC_ALL=en_US was set and the preferences answered anyway"
+            exit 1
+          fi

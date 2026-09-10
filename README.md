@@ -355,7 +355,10 @@ does the same. A command-line program needs to read no further than this.
 
 **A GUI app gets nothing.** `launchd` passes no `LANG`, so a bundled `.app`
 sees an empty environment however the user has their region set, and must ask
-the preferences system instead.
+the preferences system instead. `fluent.darwin` is that, and `fluent.system`
+reaches it in the same place it reaches Windows: the environment first, then
+the platform. A program that reads its language through `fluent.system` needs
+to know none of this.
 
 ### What to ask for
 
@@ -380,9 +383,10 @@ const first = try fluent.Locale.parse("zh-Hans-CN");        // zh-Hans-CN
 const format = fluent.posix.fromName("en_GB@currency=EUR"); // en-GB
 ```
 
-Reading them is two CoreFoundation calls —
-`CFPreferencesCopyAppValue(CFSTR("AppleLanguages"), kCFPreferencesCurrentApplication)`
-and the same for `AppleLocale` — which a GUI app already links for.
+Reading them is two CoreFoundation calls, which `fluent.darwin` makes:
+`preferredUiLanguages` for the ranked list and `userDefaultLocale` for the
+format locale, mirroring `fluent.windows` name for name. `zig build` links
+CoreFoundation for a Darwin target and nothing anywhere else.
 
 ### Format overrides
 
@@ -396,12 +400,25 @@ Language & Region → Advanced, and those land in `NSGlobalDomain` as well:
 | `AppleICUForce24HourTime`, `AppleICUForce12HourTime` | the clock, whatever the locale prefers |
 | `AppleFirstWeekday`, `AppleMeasurementUnits` | week start, metric or not |
 
-These are not read either, and an application that wants them can apply them
-itself, because each has somewhere to go: `Bundle.date_names.date_formats` holds
-the same four patterns, `Bundle.number_symbols` the same symbols,
+`fluent.darwin.overrides` reads all of them, into a struct whose fields are
+null unless the user has actually overridden that thing. It does **not** apply
+them: a `Bundle` belongs to the application, so the application assigns them,
+and each has somewhere to go — `Bundle.date_names.date_formats` holds the same
+four patterns, `Bundle.number_symbols` the same symbols,
 `datetime_format.Options.hour12` is the same switch, and
-`Bundle.date_names.first_day` is the same week start — which the `Y` field, the
-year a *week* belongs to, is counted against.
+`Bundle.date_names.first_day` is the same week start, which the `Y` field — the
+year a *week* belongs to — is counted against.
+
+```zig
+var storage: fluent.darwin.OverrideStorage = .{};
+const over = fluent.darwin.overrides(&storage);
+if (over.date_formats) |formats| bundle.date_names.date_formats = formats;
+if (over.decimal) |mark| bundle.number_symbols.decimal = mark;
+if (over.first_weekday) |day| bundle.date_names.first_day = day;
+```
+
+The slices point into `storage`, which is the caller's and has to outlive
+them; nothing here allocates.
 
 **Mind the order of the date patterns.** macOS keys them `"1"` to `"4"` running
 *short to long* — `"1"` is `ddMMMyy` and `"4"` is `EEEE, d MMMM y`. This library
@@ -418,18 +435,40 @@ distinction described above as one CLDR does not keep and this library
 therefore cannot serve. A caller reading those from macOS has better
 information than the tables do.
 
-### Why there is no `fluent.darwin`
+### How far to trust `fluent.darwin`
 
-Because it could not be verified from here. Reading any of this needs
-`CFPreferencesCopyAppValue`, which needs `-framework CoreFoundation`, which
-needs the macOS SDK; without it the linker gets as far as `unable to find
-framework 'CoreFoundation'`. The Windows half is the way it is precisely
-because [zigwin32](https://github.com/marlersoft/zigwin32) let every signature
-be type-checked against Microsoft's own metadata — and it caught a wrong
-parameter width the first time it was compiled. There is no equivalent here,
-and code that ships looking as tested as the rest of the library while being
-neither built nor run is worse than a section of a README that tells you
-exactly which two keys to read.
+This section used to say there was no such module, and gave the reason: it
+could not be verified from here. `CFPreferencesCopyAppValue` needs
+`-framework CoreFoundation`, which needs the macOS SDK, and a development
+machine running Linux has neither — the linker gets as far as `unable to find
+framework 'CoreFoundation'`. A macOS runner is what changed, and it is worth
+being exact about what it does and does not buy.
+
+**The declarations are written by hand, and that is a real difference from the
+Windows path.** `src/windows.zig` takes its bindings from
+[zigwin32](https://github.com/marlersoft/zigwin32), generated from Microsoft's
+own metadata, which caught a wrong parameter width the first time it was
+compiled. There is no equivalent for CoreFoundation, so the care has to come
+from somewhere else, and here it is narrowness: six functions and three types,
+every one an opaque `CFTypeRef`-shaped pointer, nothing passed by value,
+no callbacks, and every `CF*Copy*` released at the call site that made it.
+Every value read is type-checked with `CFGetTypeID` before it is used, because
+a preference can hold anything a `defaults write` put there and a wrong guess
+would be a crash rather than a wrong answer.
+
+**CI sets the preferences and asserts on the result**, which is the part that
+makes this more than code that compiles. The macOS job writes
+`AppleLanguages` and `AppleLocale`, takes every `LC_*` and `LANG` out of the
+environment so the POSIX path cannot answer, and requires the Finnish welcome
+and a Finnish decimal comma back; then it puts `LC_ALL=en_US.UTF-8` back and
+requires English, because the environment still wins where it is set. A wrong
+answer fails the run rather than looking plausible in a log.
+
+**What is not verified anywhere:** the format overrides. `overrides` reads six
+more preferences, and CI exercises the two locale keys only — setting
+`AppleICUDateFormatStrings` from a shell script to prove a round trip is a
+larger fixture than it is worth, and until someone does it those six are
+typechecked and reviewed rather than run.
 
 ## Pure Zig
 

@@ -40,6 +40,16 @@ pub fn build(b: *std.Build) void {
         }
     }
 
+    // macOS keeps the user's language in its preferences rather than in the
+    // environment, and `src/darwin.zig` asks CoreFoundation for it. There is
+    // no zigwin32 for CoreFoundation, so the declarations are written by hand
+    // and this links the framework they need. Only for that target: the
+    // framework does not exist elsewhere, and on a host without the macOS SDK
+    // even a cross build cannot find it.
+    if (target.result.os.tag.isDarwin()) {
+        mod.linkFramework("CoreFoundation", .{});
+    }
+
     // Regenerate the CLDR tables under src/cldr/. The three packages it reads
     // are lazy dependencies totalling 135 MB unpacked, so only this step
     // fetches them -- `zig build`, `zig build test` and anything depending on

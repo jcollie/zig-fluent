@@ -28,6 +28,7 @@ const builtin = @import("builtin");
 const std = @import("std");
 
 const Locale = @import("locale.zig").Locale;
+const darwin = @import("darwin.zig");
 const posix = @import("posix.zig");
 const windows = @import("windows.zig");
 
@@ -57,8 +58,11 @@ pub fn preferredLocales(buffer: []Locale, environ: *const std.process.Environ.Ma
     // be left alone.
     if (posix.saysUnlocalizedFromEnviron(environ)) return buffer[0..0];
 
-    // Nothing in the environment. On POSIX that settles it; on Windows the
-    // question has only just been asked of the right place.
+    // Nothing in the environment. On POSIX that settles it; on Windows and
+    // macOS the question has only just been asked of the right place -- and on
+    // macOS this is the ordinary case rather than the odd one, because a
+    // program started from the Finder has no `LANG` at all.
+    if (darwin.available) return darwin.preferredUiLanguages(buffer);
     return windows.preferredUiLanguages(buffer);
 }
 
@@ -99,6 +103,7 @@ pub fn categories(environ: *const std.process.Environ.Map) Categories {
     // C locale in every category, which is a preference and not the lack of
     // one. Windows' regional settings must not be substituted for it.
     if (posix.saysUnlocalizedFromEnviron(environ)) return from_environment;
+    if (darwin.available) return darwin.categories();
     return windows.categories();
 }
 
