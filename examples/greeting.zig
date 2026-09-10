@@ -20,11 +20,11 @@
 //!  3. **Say it.** `bundle.format`, with the arguments the message needs.
 //!
 //! Everything grammatical stays inside the `.ftl` files. This program passes a
-//! count, a name, a gender and a moment, and never learns that Finnish
-//! declines the product name and counts photos in the partitive, that German
-//! puts the date before the object, or that Japanese counts them with 枚. Nor
-//! that Finnish reads the gender it is handed and has no use for it, which is
-//! the same freedom seen from the other side.
+//! count, a name, a gender and a moment, and never learns that Polish needs
+//! four plural forms where English needs two and agrees its past tense with
+//! the sharer, that Finnish counts photos in the partitive and has no use for
+//! a gender at all, that German puts the date before the object, or that
+//! Japanese counts them with 枚.
 
 const std = @import("std");
 const fluent = @import("fluent");
@@ -44,6 +44,7 @@ const catalog = [_]struct { tag: []const u8, source: []const u8 }{
     .{ .tag = "de", .source = @embedFile("locales/de.ftl") },
     .{ .tag = "fr", .source = @embedFile("locales/fr.ftl") },
     .{ .tag = "fi", .source = @embedFile("locales/fi.ftl") },
+    .{ .tag = "pl", .source = @embedFile("locales/pl.ftl") },
     .{ .tag = "ja", .source = @embedFile("locales/ja.ftl") },
 };
 
@@ -291,6 +292,69 @@ test "every shipped translation parses and defines every message" {
             }
         }
     }
+}
+
+test "the Polish translation counts four ways and agrees with gender" {
+    // The two things `pl.ftl` is in the catalog for, and the tests around this
+    // one reach neither: they pass a single gender and a single count.
+    var bundle: fluent.Bundle = try .init(testing.allocator, try .parse("pl"));
+    defer bundle.deinit();
+    // Off so that the assertions can be written as the text a reader sees;
+    // see `bundleFor` in tests/bundle.zig for the same reasoning.
+    bundle.use_isolating = false;
+    try bundle.addResource(@embedFile("locales/pl.ftl"), .{}, null);
+
+    const counted = [_]struct { count: f64, want: []const u8 }{
+        .{ .count = 0, .want = "Brak nowych zdjęć" },
+        .{ .count = 1, .want = "1 nowe zdjęcie" },
+        .{ .count = 2, .want = "2 nowe zdjęcia" },
+        .{ .count = 5, .want = "5 nowych zdjęć" },
+        // The rule worth pinning: 2 to 4 are `few` and 12 to 14 are not, so
+        // 22 agrees with 2 and 12 agrees with 5.
+        .{ .count = 12, .want = "12 nowych zdjęć" },
+        .{ .count = 22, .want = "22 nowe zdjęcia" },
+        // And a fraction is `other`, which Polish puts in the genitive
+        // singular rather than the genitive plural whole numbers take.
+        .{ .count = 1.5, .want = "1,5 nowego zdjęcia" },
+    };
+
+    for (counted) |case| {
+        const args: fluent.Args = &.{.{ .name = "count", .value = .num(case.count) }};
+        const text = try bundle.format(testing.allocator, "new-photos", args, null) orelse
+            return error.MissingMessage;
+        defer testing.allocator.free(text);
+        try testing.expectEqualStrings(case.want, text);
+    }
+
+    // The past tense agrees with the sharer, which is the whole reason the
+    // program passes a gender it cannot itself use.
+    const gendered = [_]struct { gender: []const u8, want: []const u8 }{
+        .{ .gender = "female", .want = "Ada udostępniła ci zdjęcie 14 lutego 2026." },
+        .{ .gender = "male", .want = "Ada udostępnił ci zdjęcie 14 lutego 2026." },
+        // Anything else takes the default, which is the masculine form; a
+        // translator who wanted a third would write one.
+        .{ .gender = "other", .want = "Ada udostępnił ci zdjęcie 14 lutego 2026." },
+    };
+
+    for (gendered) |case| {
+        const args: fluent.Args = &.{
+            .{ .name = "user", .value = .{ .string = "Ada" } },
+            .{ .name = "gender", .value = .{ .string = case.gender } },
+            .{ .name = "count", .value = .num(1) },
+            .{ .name = "when", .value = .time(1_771_061_400_000) },
+        };
+        const text = try bundle.format(testing.allocator, "shared-with-you", args, null) orelse
+            return error.MissingMessage;
+        defer testing.allocator.free(text);
+        try testing.expectEqualStrings(case.want, text);
+    }
+
+    // And the term declines: the welcome asks for the locative, which changes
+    // the stem rather than only the ending.
+    const welcome = try bundle.format(testing.allocator, "welcome", &.{}, null) orelse
+        return error.MissingMessage;
+    defer testing.allocator.free(welcome);
+    try testing.expectEqualStrings("Witamy w Skarbcu Zdjęć!", welcome);
 }
 
 test "every shipped translation formats without reporting an error" {

@@ -103,17 +103,37 @@ $ zig build example -- fi        # or say so directly, skipping the environment
   Ada jakoi kanssasi 3 kuvaa 14. helmikuuta 2026.
 ```
 
-Those four Finnish lines are the argument for Fluent in one screen, and each
-makes a different half of it. The product name is a term, so the translator
-declines it — `Tervetuloa { -app-name }on!` — and the calling code never learns
-that Finnish has a case system. A counted noun goes into the partitive, so one
-photo and two differ in more than the numeral in front of them. And `$gender`
-is passed to that third message and never read, because Finnish has no
-grammatical gender and no gendered pronoun to choose between: a translation may
-ignore an argument the program thought was essential, and nothing has to be
-changed for it to. All of that lives in the `.ftl` files, where the person who
-speaks the language can reach it — as does Russian needing four plural forms
-where English needs two, and Japanese counting photos with 枚.
+Those four Finnish lines are the argument for Fluent in one screen. The product
+name is a term, so the translator declines it — `Tervetuloa { -app-name }on!` —
+and the calling code never learns that Finnish has a case system. A counted noun
+goes into the partitive, so one photo and two differ in more than the numeral in
+front of them. And `$gender` is passed to that third message and never read,
+because Finnish has no grammatical gender and no gendered pronoun to choose
+between: a translation may ignore an argument the program thought was essential,
+and nothing has to be changed for it to.
+
+Polish makes the opposite case, which is why both are shipped:
+
+```console
+$ zig build example -- pl
+  Witamy w Skarbcu Zdjęć!
+  1 nowe zdjęcie
+  2 nowe zdjęcia
+  5 nowych zdjęć
+  Ada udostępniła ci 3 zdjęcia 14 lutego 2026.
+```
+
+Four plural categories where English has two, and the noun changes case with
+the category rather than merely taking an `-s`. `few` is 2 to 4 but not 12 to
+14, so 22 agrees with 2 and 12 agrees with 5. The past tense agrees with the
+sharer — `udostępniła` for Ada, `udostępnił` for Adam — which is the argument
+Finnish had no use for, read by a language that does. And the term is called
+with an argument, `{ -app-name(case: "locative") }`, because Polish changes the
+stem and not just the ending: `Skarbiec` becomes `Skarbcu`, which no suffix
+written after a placeable could produce.
+
+All of that lives in the `.ftl` files, where the person who speaks the language
+can reach it — as does Japanese counting photos with 枚.
 
 Reading the environment, and honouring the `LC_*` variables a user expects to
 work, is [its own section below](#in-a-posix-environment). Choosing among the
