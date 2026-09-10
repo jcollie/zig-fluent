@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+# SPDX-License-Identifier: MIT
+
+name: test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: nixos-do-s
+    steps:
+      - name: Check out
+        uses: https://code.forgejo.org/actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check REUSE compliance
+        run: nix develop -c reuse lint
+
+      - name: Check Zig formatting compliance
+        run: nix develop -c zig fmt --check --exclude zig-pkg .
+
+      - name: Test
+        run: nix develop -c zig build test --summary all
+
+      - name: Build
+        run: nix develop -c zig build
+
+      # The tools nothing else compiles: the fuzz driver, the docs server and
+      # the CLDR generator. Without this they could stop compiling and no test
+      # would notice.
+      - name: Compile everything else
+        run: nix develop -c zig build check
+
+  # Published only from main, so that a branch build cannot replace the site
+  # with a work in progress, and only after `test` has passed, so that it
+  # cannot document a tree that does not compile.
+  docs:
+    needs: test
+    if: ${{ forge.ref == 'refs/heads/main' }}
+    runs-on: nixos-do-s
+    steps:
+      - name: Check out
+        uses: https://code.forgejo.org/actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build API docs
+        run: nix develop -c zig build docs --system "$(nix build --print-out-paths .#zig-deps)"
+
+      - name: Publish docs
+        run: >
+          nix develop -c git-pages-cli https://jeff.jcollie.page/zig-fluent/
+          --server jcollie.page
+          --token ${{ forge.token }}
+          --upload-dir zig-out/docs

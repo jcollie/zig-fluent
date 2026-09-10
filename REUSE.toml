@@ -1,0 +1,22 @@
+version = 1
+SPDX-PackageName = "zig-fluent"
+SPDX-PackageSupplier = "Jeffrey C. Ollie <jeff@ocjtech.us>"
+SPDX-PackageDownloadLocation = "https://git.jcollie.dev/jeff/zig-fluent"
+
+# Files whose format has nowhere to put a comment, or which are generated and
+# would lose a header the next time they were written.
+[[annotations]]
+path = ["flake.lock", "build.zig.zon", "build.zig.zon.nix", ".gitignore"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "© 2026 Jeffrey C. Ollie <jeff@ocjtech.us>"
+SPDX-License-Identifier = "MIT"
+
+# Generated from the Unicode Common Locale Data Repository by
+# `zig build gen-cldr`. The files carry their own SPDX headers, which the
+# generator writes; this is here so that a reader of the manifest can see where
+# they came from without opening one.
+[[annotations]]
+path = "src/cldr/**"
+precedence = "closest"
+SPDX-FileCopyrightText = "© 1991-2026 Unicode, Inc."
+SPDX-License-Identifier = "Unicode-3.0"
