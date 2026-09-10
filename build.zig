@@ -214,6 +214,11 @@ pub fn build(b: *std.Build) void {
     const fuzz_run_step = b.step("fuzz-run", "Fuzz the targets with a loop of our own");
     fuzz_run_step.dependOn(&run_fuzz.step);
 
+    // The driver has a doctest of its own, and nothing else would run it.
+    test_step.dependOn(&b.addRunArtifact(
+        b.addTest(.{ .root_module = fuzz_run.root_module }),
+    ).step);
+
     // Nothing else builds these, so without this they could stop compiling and
     // `zig build test` would not notice.
     const check_step = b.step("check", "Compile everything without running it");

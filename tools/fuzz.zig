@@ -84,6 +84,47 @@ const Watch = struct {
 
 var watch: Watch = .{};
 
+/// A `std.process.Args.Iterator` in every respect this tool uses, over a
+/// slice of arguments that has already been collected.
+///
+/// `std.process.Args.Iterator.init` is `@compileError("In Windows, use
+/// initAllocator instead.")` on Windows, because Windows hands a process one
+/// command line rather than an argument vector and splitting it needs
+/// somewhere to put the pieces. Collecting the arguments once with
+/// `toSlice` and walking that keeps the parsing below the same on every
+/// platform, which is worth more than the twelve lines it costs.
+const ArgWalk = struct {
+    argv: []const []const u8,
+    index: usize = 0,
+
+    /// Step past one argument, as `Iterator.skip` does, reporting whether
+    /// there was one to step past.
+    fn skip(self: *ArgWalk) bool {
+        if (self.index >= self.argv.len) return false;
+        self.index += 1;
+        return true;
+    }
+
+    /// The next argument, or null at the end.
+    fn next(self: *ArgWalk) ?[]const u8 {
+        if (self.index >= self.argv.len) return null;
+        defer self.index += 1;
+        return self.argv[self.index];
+    }
+};
+
+test ArgWalk {
+    var walk: ArgWalk = .{ .argv = &.{ "fuzz", "--seconds", "30" } };
+    try std.testing.expect(walk.skip());
+    try std.testing.expectEqualStrings("--seconds", walk.next().?);
+    try std.testing.expectEqualStrings("30", walk.next().?);
+    try std.testing.expectEqual(@as(?[]const u8, null), walk.next());
+    // And an empty one is walked without stepping off the end.
+    var empty: ArgWalk = .{ .argv = &.{} };
+    try std.testing.expect(!empty.skip());
+    try std.testing.expectEqual(@as(?[]const u8, null), empty.next());
+}
+
 /// Run each target for its share of the time, reporting what comes back.
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
@@ -108,7 +149,9 @@ pub fn main(init: std.process.Init) !void {
     var dir: []const u8 = "fuzz-findings";
     var timeout_s: u32 = 10;
 
-    var args: std.process.Args.Iterator = .init(init.minimal.args);
+    var arg_arena: std.heap.ArenaAllocator = .init(gpa);
+    defer arg_arena.deinit();
+    var args: ArgWalk = .{ .argv = try init.minimal.args.toSlice(arg_arena.allocator()) };
     _ = args.skip();
     while (args.next()) |arg| {
         if (std.mem.eql(u8, arg, "--seconds")) {
