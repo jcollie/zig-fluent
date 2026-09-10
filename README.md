@@ -392,8 +392,10 @@ Language & Region → Advanced, and those land in `NSGlobalDomain` as well:
 
 These are not read either, and an application that wants them can apply them
 itself, because each has somewhere to go: `Bundle.date_names.date_formats` holds
-the same four patterns, `Bundle.number_symbols` the same symbols, and
-`datetime_format.Options.hour12` is the same switch.
+the same four patterns, `Bundle.number_symbols` the same symbols,
+`datetime_format.Options.hour12` is the same switch, and
+`Bundle.date_names.first_day` is the same week start — which the `Y` field, the
+year a *week* belongs to, is counted against.
 
 **Mind the order of the date patterns.** macOS keys them `"1"` to `"4"` running
 *short to long* — `"1"` is `ddMMMyy` and `"4"` is `EEEE, d MMMM y`. This library
@@ -432,7 +434,25 @@ one carries its own tables, generated from CLDR into `src/cldr/` by
 link.
 
 The one dependency is [zig-datetime](https://git.jcollie.dev/jeff/zig-datetime),
-which supplies the proleptic Gregorian calendar and the IANA timezone database.
+which supplies the proleptic Gregorian calendar, the IANA timezone database, and
+the writing of CLDR date patterns.
+
+That last one used to live here and does not any more. Both libraries had an
+implementation of UTS #35's pattern vocabulary — the field letters, the widths,
+the quoting — and only one of them was diffed against ICU field by field, by
+zig-datetime's `tools/oracle_cldr.cpp`. Three bugs found in the copy here, two
+of which zig-datetime already had right, made the argument: `cldr.formatSkeleton`
+does the writing now, and what is left in `datetime_format.zig` is the part that
+is Fluent's rather than a calendar's — turning `DATETIME()`'s ECMA-402 options
+into a CLDR skeleton.
+
+**The tables did not move with it.** zig-datetime holds its name tables
+width-major, one `[3][12]` of months where `Names` holds three `[12]`s, and
+regenerating `src/cldr/` into that shape was measured at +876 KB across all 766
+locales. Instead the transposition happens on the stack of whatever call is
+formatting, so `Names` keeps the shape documented above for a consumer to
+override, and none of that is paid. The result is 4 KB *smaller* than the
+implementation it replaced, because the deleted code outweighed it.
 
 Each table is a separate declaration in a separate file, so you pay for what you
 reference and nothing else: a program that only parses `.ftl` links none of it.
@@ -458,19 +478,43 @@ application knowing which is which.
 
 ### How closely it agrees with ICU
 
-A matrix of 30 locales against 12 date option sets and 40 number cases — 1560 in
-all — was compared against `Intl` in V8 (ICU 78, CLDR 48). All 400 number cases
-were identical. Of the 1160 date cases, 1134 were identical and the other 26 are
-the two divergences below. There were no others.
+ICU is the reference implementation of the specifications this follows, so
+agreeing with it is the strongest claim available and the way to find out where
+this is wrong.
 
-- **The narrow no-break space.** CLDR 48 writes English's time as
+**Dates.** A matrix of 30 locales against 17 option sets and 4 instants — 2312
+in all, including two either side of an ISO week-year boundary and one before
+the epoch — compared against `Intl` in V8 (node 24, ICU 78.3, CLDR 48.0). 2124
+are identical byte for byte, another 80 differ only by the narrow no-break space
+below, and the remaining 108 are the two divergences after it. There are no
+others.
+
+**Numbers.** Not re-run: the earlier comparison found all 400 number cases
+identical, and nothing since has touched that path.
+
+The date matrix is worth running rather than trusting: an earlier and smaller
+one reported no divergences beyond these, and widening it turned up three real
+bugs — the week-numbering year written as nothing, an abbreviated weekday
+spelled in a way no CLDR key matches, and the era ignoring the width it was
+asked for. All three are fixed, and each is pinned by a test in zig-datetime so
+that the shared implementation cannot lose them again.
+
+- **The narrow no-break space** — 80 cases. CLDR 48 writes English's time as
   `h:mm:ss` U+202F `a`, and Russian's year as `y` U+202F `г.`. V8 substitutes an
   ordinary space. This library follows the data, so it emits U+202F; CLDR ships
   `-alt-ascii` variants for consumers who want otherwise, and they are not used
   here.
-- **Non-Gregorian calendars.** Thai defaults to the Buddhist calendar, so `Intl`
-  writes 2569 where this writes 2026. Only the Gregorian calendar is
-  implemented.
+- **Non-Gregorian calendars** — 104 cases. Thai defaults to the Buddhist
+  calendar and Persian to its own, so `Intl` writes 2568 where this writes 2025.
+  Only the Gregorian calendar is implemented. That this is the calendar and not
+  the formatting is checkable: forced to `-u-ca-gregory`, those two locales
+  agree on 132 of 136 cases, Persian digits and all. The four left over are
+  Thai's `HH:mm น.`, where V8 ships CLDR 48.0 and this pins 48.2.
+- **Flexible day periods** — 4 cases. CLDR divides the day into as many as
+  twelve named periods and gives rules for which one an hour falls in, and the
+  `B` field writes them: Traditional Chinese says 中午 at noon and 晚上 in the
+  evening where this says 下午. Only the meridiem is carried, so `B` writes am
+  or pm. Two locales' patterns use it.
 
 ### What is deliberately not implemented
 
@@ -478,7 +522,10 @@ the two divergences below. There were no others.
   option list cannot select a unit style from FTL anyway.
 - **Time zone display names.** `timeZoneNames.json` is 45 KB per locale. A zone
   is written as its offset, or as the designation the IANA database gives it —
-  never wrong, only less friendly than "Central European Summer Time".
+  never wrong, only less friendly than "Central European Summer Time". The
+  wrapper around that offset is not localized either: CLDR gives French
+  `UTC{0}` and a real minus sign where this writes `GMT` and a hyphen for every
+  locale. Neither is in the date matrix above, which asks for no zone.
 - **Compact notation** ("1.2M"). The plural rules read it, because CLDR's own
   sample data is written in it, but nothing here produces it.
 - **Currency spacing.** CLDR says to insert a non-breaking space between the
@@ -557,7 +604,7 @@ For a Linux target, two packages, 328 KB compressed and 1.9 MB unpacked:
 
 | | | |
 |---|---|---|
-| `zig-datetime` | 1.1 MB | the calendar and the timezone database |
+| `zig-datetime` | 1.1 MB | the calendar, the timezone database, and CLDR pattern writing |
 | `fluent-spec` | 876 KB | the conformance fixtures, used by `zig build test` |
 
 Building for Windows adds `zigwin32` at 64 MB, for the two Win32 calls in
