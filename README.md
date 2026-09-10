@@ -96,18 +96,24 @@ showing:   de
 ```
 
 ```console
-$ zig build example -- ru        # or say so directly, skipping the environment
-  1 новая фотография
-  2 новые фотографии
-  5 новых фотографий
-  21 новая фотография
+$ zig build example -- fi        # or say so directly, skipping the environment
+  Tervetuloa Kuvakirjastoon!
+  1 uusi kuva
+  2 uutta kuvaa
+  Ada jakoi kanssasi 3 kuvaa 14. helmikuuta 2026.
 ```
 
-Those four Russian lines are the argument for Fluent in one screen. The program
-passes a number; it never learns that Russian needs four forms where English
-needs two, that 21 takes the same form as 1 while 11 does not, or that Japanese
-counts photos with 枚. All of that lives in the `.ftl` files, where the person
-who speaks the language can reach it.
+Those four Finnish lines are the argument for Fluent in one screen, and each
+makes a different half of it. The product name is a term, so the translator
+declines it — `Tervetuloa { -app-name }on!` — and the calling code never learns
+that Finnish has a case system. A counted noun goes into the partitive, so one
+photo and two differ in more than the numeral in front of them. And `$gender`
+is passed to that third message and never read, because Finnish has no
+grammatical gender and no gendered pronoun to choose between: a translation may
+ignore an argument the program thought was essential, and nothing has to be
+changed for it to. All of that lives in the `.ftl` files, where the person who
+speaks the language can reach it — as does Russian needing four plural forms
+where English needs two, and Japanese counting photos with 枚.
 
 Reading the environment, and honouring the `LC_*` variables a user expects to
 work, is [its own section below](#in-a-posix-environment). Choosing among the
@@ -218,12 +224,12 @@ the text is written in. Choosing among them by the reader's number-formatting
 preference would look for variants that translation does not have, and fall to
 the default every time.
 
-So English plurals with Russian punctuation is exactly what that combination
+So English plurals with Finnish punctuation is exactly what that combination
 should give, and does:
 
 ```console
-$ LANG=en_US.UTF-8 LC_NUMERIC=ru_RU.UTF-8 zig build example
-showing:   en-US  (numbers: ru-RU)
+$ LANG=en_US.UTF-8 LC_NUMERIC=fi_FI.UTF-8 zig build example
+showing:   en-US  (numbers: fi-FI)
 
   One new photo
   Ada shared 3 photos with you on February 14, 2026.
@@ -737,8 +743,8 @@ Linux machine could have looked:
 The workflow also prints what each machine says its locale is, and runs the
 worked example twice — once as the runner's own user, once with a locale named
 — because the output is the clearest statement of what the library does with
-what it was told. It is worth reading side by side: asked for Russian, all
-three print Russian text, but only the Ubuntu runner prints Russian *numbers
+what it was told. It is worth reading side by side: asked for Finnish, all
+three print Finnish text, but only the Ubuntu runner prints Finnish *numbers
 and dates*. The other two have `LC_ALL=en_US.UTF-8` set, or Windows regional
 settings saying en-US, and `fluent.system.applyCategories` honours them — which
 is the design working, not failing. A translation is a language; a decimal

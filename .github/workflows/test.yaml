@@ -75,4 +75,4 @@ jobs:
         run: zig build example
 
       - name: Run the example with a locale named
-        run: zig build example -- ru
+        run: zig build example -- fi

@@ -6,7 +6,7 @@
 //!
 //! ```console
 //! $ LANG=de_DE.UTF-8 zig build example
-//! $ zig build example -- ru            # or say so directly
+//! $ zig build example -- fi            # or say so directly
 //! ```
 //!
 //! The three steps are the whole of what an application has to do, and only
@@ -20,9 +20,11 @@
 //!  3. **Say it.** `bundle.format`, with the arguments the message needs.
 //!
 //! Everything grammatical stays inside the `.ftl` files. This program passes a
-//! count, a name, a gender and a moment, and never learns that Russian needs
-//! four plural forms where English needs two, that German puts the date before
-//! the object, or that Japanese counts photos with 枚.
+//! count, a name, a gender and a moment, and never learns that Finnish
+//! declines the product name and counts photos in the partitive, that German
+//! puts the date before the object, or that Japanese counts them with 枚. Nor
+//! that Finnish reads the gender it is handed and has no use for it, which is
+//! the same freedom seen from the other side.
 
 const std = @import("std");
 const fluent = @import("fluent");
@@ -41,7 +43,7 @@ const catalog = [_]struct { tag: []const u8, source: []const u8 }{
     .{ .tag = "en-US", .source = @embedFile("locales/en-US.ftl") },
     .{ .tag = "de", .source = @embedFile("locales/de.ftl") },
     .{ .tag = "fr", .source = @embedFile("locales/fr.ftl") },
-    .{ .tag = "ru", .source = @embedFile("locales/ru.ftl") },
+    .{ .tag = "fi", .source = @embedFile("locales/fi.ftl") },
     .{ .tag = "ja", .source = @embedFile("locales/ja.ftl") },
 };
 
