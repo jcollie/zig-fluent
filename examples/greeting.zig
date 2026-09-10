@@ -116,11 +116,19 @@ pub fn main(init: std.process.Init) !void {
     if (wanted.len == 0) try out.print(" (nothing; the environment is unset or C)", .{});
     for (wanted) |locale| try out.print(" {f}", .{locale});
     try out.print("\nshowing:   {f}", .{chosen.locale});
-    if (!chosen.number_locale.eql(&chosen.locale)) {
-        try out.print("  (numbers: {f})", .{chosen.number_locale});
-    }
-    if (!chosen.date_locale.eql(&chosen.locale)) {
-        try out.print("  (dates: {f})", .{chosen.date_locale});
+    // Only worth reporting when the user actually asked for a category to
+    // differ. `LANG` alone sets every category to the same thing, and saying
+    // so three times is noise rather than information.
+    if (categories.messages) |messages| {
+        if (categories.numeric) |locale| {
+            if (!locale.eql(&messages)) try out.print("  (numbers: {f})", .{locale});
+        }
+        if (categories.monetary) |locale| {
+            if (!locale.eql(&messages)) try out.print("  (money: {f})", .{locale});
+        }
+        if (categories.time) |locale| {
+            if (!locale.eql(&messages)) try out.print("  (dates: {f})", .{locale});
+        }
     }
     try out.print("\n\n", .{});
 

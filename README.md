@@ -109,59 +109,11 @@ needs two, that 21 takes the same form as 1 while 11 does not, or that Japanese
 counts photos with 枚. All of that lives in the `.ftl` files, where the person
 who speaks the language can reach it.
 
-Reading the environment is `fluent.posix`, since every application needs it:
-
-```zig
-var buffer: [8]fluent.Locale = undefined;
-const wanted = fluent.posix.fromEnviron(&buffer, init.environ_map);
-```
-
-POSIX spreads "what language does this user read" over `LANGUAGE`, `LC_ALL`,
-`LC_MESSAGES` and `LANG`, ranks them, and answers in something that is not a
-language tag — `de_DE.UTF-8@euro` is `de-DE`, and `sr_RS@latin` really is
-Serbian in Latin script rather than Cyrillic. `C` and `POSIX` mean "no
-translation, thank you", and `LANGUAGE` is deliberately ignored when they are
-in force, so a list left over in a shell profile cannot undo `LC_ALL=C`. The
-rules are applied to a `Variables` struct rather than read from the process, so
-they work equally on values from a config file or a request header;
-`fromEnviron` is the adapter for a real environment.
-
-POSIX does not ask what your locale is but what it is *for a given category*,
-and a user may well answer differently for each. `LANG=en_US.UTF-8
-LC_TIME=en_GB.UTF-8 LC_NUMERIC=de_DE.UTF-8` means English messages, a
-twenty-four hour clock and German number punctuation, and all three are this
-library's business:
-
-```zig
-const c = fluent.posix.categoriesFromEnviron(init.environ_map);
-if (c.numeric)  |l| bundle.setNumberLocale(l);
-if (c.monetary) |l| bundle.setCurrencyLocale(l);
-if (c.time)     |l| bundle.setDateLocale(l);
-```
-
-```console
-$ LANG=en_US.UTF-8 LC_TIME=en_GB.UTF-8 LC_NUMERIC=de_DE.UTF-8 zig build example
-showing:   en-US  (numbers: de-DE)  (dates: en-GB)
-
-  One new photo
-  Ada shared 3 photos with you on 14 February 2026.
-  12.345,7 GB of 50.000 GB used
-```
-
-`Bundle.init` still sets all three from the one locale it is given, so an
-application with only one never sees any of this. And **plural rules stay with
-the message locale**: `[one]` and `[few]` are keys the translator wrote in the
-language of the text, so choosing among them by the reader's number-formatting
-preference would select variants the translation does not have. "One new photo"
-above is English because the message is.
-
-`LC_COLLATE` and `LC_CTYPE` are the two categories this deliberately does not
-read — they govern sorting and character classification, and this library does
-neither.
-
-Choosing among the bundles you shipped is left to the application, and the
-example writes it out: each requested locale in turn, and for each, the closest
-bundle by tag, then by language and script, then by language.
+Reading the environment, and honouring the `LC_*` variables a user expects to
+work, is [its own section below](#in-a-posix-environment). Choosing among the
+bundles you shipped is left to the application, and the example writes that out
+too: each requested locale in turn, and for each, the closest bundle by tag,
+then by language and script, then by language.
 
 ### Just the parser
 
@@ -176,6 +128,158 @@ analyses what is referenced, so a program that only parses never compiles the
 resolver. There is a serializer too, which writes Fluent's canonical formatting
 and so doubles as a formatter, and a JSON writer that emits Fluent's interchange
 AST for tools written against `fluent-syntax`.
+
+## In a POSIX environment
+
+Somebody running a command-line program on a Unix expects `LANG` and the `LC_*`
+variables to work. They are not decoration: `LC_ALL=C` in a script is a promise
+that the output will not move, and a user who set `LC_TIME=en_GB.UTF-8` did it
+because they want a twenty-four hour clock. `fluent.posix` reads them.
+
+| variable | governs | read here |
+|---|---|---|
+| `LANGUAGE` | a ranked list of languages to try | yes — messages only |
+| `LC_ALL` | every category, overriding all others | yes |
+| `LC_MESSAGES` | which language to speak | yes |
+| `LC_NUMERIC` | decimal mark, grouping, digits | yes |
+| `LC_TIME` | month names, field order, the clock | yes |
+| `LC_MONETARY` | where the currency sign goes | yes |
+| `LC_COLLATE` | sort order | no — see below |
+| `LC_CTYPE` | character classification | no — see below |
+| `LANG` | the default for every category | yes |
+
+The whole of it, in an application that ships several translations:
+
+```zig
+// 1. Which languages will do, best first. Only `LANGUAGE` ranks, so this is
+//    the one question with a list for an answer.
+var wanted: [8]fluent.Locale = undefined;
+const chain = fluent.posix.fromEnviron(&wanted, init.environ_map);
+
+// 2. Pick a bundle. Matching a ranked request against what you shipped is
+//    yours to decide; `examples/greeting.zig` writes out a dozen lines of it.
+const bundle = negotiate(&bundles, chain);
+
+// 3. Format the way this user writes numbers and dates, which POSIX lets
+//    them answer separately from the language they read.
+const category = fluent.posix.categoriesFromEnviron(init.environ_map);
+if (category.numeric)  |locale| bundle.setNumberLocale(locale);
+if (category.monetary) |locale| bundle.setCurrencyLocale(locale);
+if (category.time)     |locale| bundle.setDateLocale(locale);
+```
+
+An application that ships one translation needs only the third step, and one
+that does not care about the `LC_*` split needs none of it — `Bundle.init` sets
+all three categories from the locale it is given.
+
+None of it is tied to the process, either. The rules apply to a
+`fluent.posix.Variables` struct, so a server deciding on behalf of a user who is
+not the one running it can feed in values from a config file or a request header
+and get the same answers; `fromEnviron` and `categoriesFromEnviron` are the
+adapters for a real environment.
+
+### The names are not language tags
+
+`de_DE.UTF-8@euro` and `de-DE` are the same locale. The codeset says how bytes
+are encoded and the modifier is usually a variant, and neither keys anything
+here, so both are dropped. `fromName` handles that, along with the one
+exception worth making: a few modifiers name a *script*, and `sr_RS@latin` is
+Serbian written in Latin rather than Cyrillic — a different locale that formats
+differently — so those become the script subtag they mean.
+
+The codeset being dropped has one consequence worth saying out loud: **this
+library emits UTF-8 and nothing else.** A user with `LANG=de_DE.ISO-8859-1`
+gets correct German in UTF-8, and converting it is the caller's business.
+
+### `LC_ALL=C` means do not translate
+
+`C` and `POSIX` are one locale under two names, and both mean the user wants
+the program's own language rather than a translation of it. `fromEnviron`
+returns an **empty chain** for them and `Categories` returns nulls, so nothing
+downstream needs a special case: a negotiation that falls back to your source
+locale when it can satisfy nothing already does the right thing, and the three
+`if (category.x) |locale|` lines above already leave the formatting alone.
+
+This is worth honouring carefully rather than approximately. `LC_ALL=C` in a
+shell script is how somebody guarantees that the output of a command will not
+move under them — that a decimal point stays a point and a month stays
+`Jan` — so that `awk` or `cut` further down the pipe keeps working. A program
+that translates anyway has broken their pipeline.
+
+For the same reason `LANGUAGE` is ignored when `LC_ALL` or `LANG` says `C`,
+which is gettext's rule: a ranked list left over in a shell profile must not
+quietly undo it.
+
+### Plural rules follow the message language
+
+They follow `LC_MESSAGES`, never `LC_NUMERIC`, and the distinction matters.
+`[one]` and `[few]` are variant keys the *translator* wrote, in the language
+the text is written in. Choosing among them by the reader's number-formatting
+preference would look for variants that translation does not have, and fall to
+the default every time.
+
+So English plurals with Russian punctuation is exactly what that combination
+should give, and does:
+
+```console
+$ LANG=en_US.UTF-8 LC_NUMERIC=ru_RU.UTF-8 zig build example
+showing:   en-US  (numbers: ru-RU)
+
+  One new photo
+  Ada shared 3 photos with you on February 14, 2026.
+  12 345,7 GB of 50 000 GB used
+```
+
+All three categories at once, which is the setting the whole feature exists
+for:
+
+```console
+$ LANG=en_US.UTF-8 LC_TIME=en_GB.UTF-8 LC_NUMERIC=de_DE.UTF-8 zig build example
+showing:   en-US  (numbers: de-DE)  (dates: en-GB)
+
+  One new photo
+  Ada shared 3 photos with you on 14 February 2026.
+  12.345,7 GB of 50.000 GB used
+```
+
+### Writing to a terminal
+
+Turn isolation off:
+
+```zig
+bundle.use_isolating = false;
+```
+
+It is on by default and should be. It wraps every interpolation in U+2068 and
+U+2069 so that a right-to-left name dropped into a left-to-right sentence does
+not drag the punctuation around it to the wrong end of the line. A browser
+honours those marks; a terminal prints them, and `Ada` comes out as `⁨Ada⁩`.
+
+Leave it on wherever the text is going into a paragraph a person reads, and
+turn it off for a terminal, for a value about to be compared or stored, and for
+a test asserting on exact text.
+
+### What is not read, and why
+
+`LC_COLLATE` and `LC_CTYPE` govern sort order and character classification.
+This library does neither, so there is nothing here for them to change; an
+application that sorts a list of translated strings should read `LC_COLLATE`
+itself.
+
+`LC_MONETARY` is read but not fully served. CLDR keeps one set of separators
+per locale rather than a separate monetary set, so `setCurrencyLocale` moves
+the currency sign but not the decimal mark. POSIX distinguishes them
+(`mon_decimal_point`), and a pair of locales that disagrees about it will not
+be exact.
+
+### Not Windows
+
+Windows has none of these variables. `GetUserDefaultLocaleName` is the
+equivalent, it already answers in a BCP 47 tag, and `Locale.parse` takes its
+answer directly — so nothing in `fluent.posix` helps there and nothing in it is
+needed. The rest of the library is platform-independent: it cross-compiles to
+`x86_64-windows-gnu`, and so does the test suite, though there is no Windows
+here to run it on.
 
 ## Pure Zig
 
