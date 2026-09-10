@@ -665,7 +665,28 @@ git clone https://github.com/jcollie/zig-fluent.git
 The mirror also earns its keep: the Forgejo runners are Linux, and
 `.github/workflows/test.yaml` runs the same tests on macOS and Windows as well,
 which is the only way the Win32 calls and the macOS locale conventions get
-exercised at all.
+exercised at all. It paid for itself over four runs, each failing somewhere no
+Linux machine could have looked:
+
+1. Every Zig file failed `zig fmt --check` on Windows, because GitHub's runners
+   check out with CRLF. `.gitattributes` now pins LF.
+2. `zig-datetime` would not *unpack* on either Windows or macOS: it held both
+   `src/datetime.zig` and `src/DateTime.zig`, which are one file on a
+   case-insensitive filesystem. Fixed upstream by renaming the module root.
+3. `LC_ALL=C` did not silence translation on Windows. See above.
+4. `tools/fuzz.zig` would not compile for Windows, because
+   `std.process.Args.Iterator.init` is a compile error there.
+
+The workflow also prints what each machine says its locale is, and runs the
+worked example twice — once as the runner's own user, once with a locale named
+— because the output is the clearest statement of what the library does with
+what it was told. It is worth reading side by side: asked for Russian, all
+three print Russian text, but only the Ubuntu runner prints Russian *numbers
+and dates*. The other two have `LC_ALL=en_US.UTF-8` set, or Windows regional
+settings saying en-US, and `fluent.system.applyCategories` honours them — which
+is the design working, not failing. A translation is a language; a decimal
+comma is a preference; POSIX and Windows both let you hold them separately, and
+so does this.
 
 ## Licence
 
