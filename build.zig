@@ -306,7 +306,7 @@ pub fn build(b: *std.Build) void {
     install_c.dependOn(&b.addInstallArtifact(c_static, .{}).step);
     install_c.dependOn(&b.addInstallArtifact(c_shared, .{}).step);
     install_c.dependOn(&b.addInstallFileWithDir(
-        b.addWriteFiles().add("fluent.pc", pkgConfig(b)),
+        b.addWriteFiles().add("fluent.pc", pkgConfig(b, target)),
         .{ .custom = "share/pkgconfig" },
         "fluent.pc",
     ).step);
@@ -423,7 +423,14 @@ fn parseVersion(text: []const u8) std.SemanticVersion {
 /// whole thing, and what lets a packaging tool rewrite one line rather than
 /// three. Nix already relies on that: it moves the header into a separate
 /// output and rewrites `includedir` to match.
-fn pkgConfig(b: *std.Build) []const u8 {
+fn pkgConfig(b: *std.Build, target: std.Build.ResolvedTarget) []const u8 {
+    // `--prefix zig-out` is an ordinary thing to write and would put a
+    // relative path in a file that is read from anywhere but here.
+    const prefix = if (std.fs.path.isAbsolute(b.install_prefix))
+        b.install_prefix
+    else
+        b.pathFromRoot(b.install_prefix);
+
     return b.fmt(
         \\prefix={s}
         \\exec_prefix=${{prefix}}
@@ -435,7 +442,27 @@ fn pkgConfig(b: *std.Build) []const u8 {
         \\URL: https://git.jcollie.dev/jeff/zig-fluent
         \\Version: {s}
         \\Libs: -L${{libdir}} -lfluent
+        \\Libs.private:{s}
         \\Cflags: -I${{includedir}}
         \\
-    , .{ b.install_prefix, manifest.version });
+    , .{ prefix, manifest.version, privateLibs(target) });
+}
+
+/// What a **static** link additionally needs, for `Libs.private`.
+///
+/// A shared library carries its own dependencies and a static one cannot: an
+/// archive records that it calls `CFPreferencesCopyAppValue` and nothing about
+/// where that lives, so the framework has to be named again at the final link
+/// or `ld` reports every symbol of it as missing. `pkg-config --libs --static`
+/// is how a consumer finds that out without being told.
+fn privateLibs(target: std.Build.ResolvedTarget) []const u8 {
+    return switch (target.result.os.tag) {
+        // Where `src/darwin.zig` reads the user's language from.
+        .macos, .ios, .tvos, .watchos, .visionos => " -framework CoreFoundation",
+        // Zig's standard library wants both underneath. Windows needs nothing
+        // named: the two calls `src/windows.zig` makes are in kernel32, which
+        // every Windows link already has.
+        .windows => "",
+        else => " -lm -lpthread",
+    };
 }

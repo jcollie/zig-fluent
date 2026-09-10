@@ -46,9 +46,16 @@ LDLIBS += $(STATIC_LIB)
 LIBRARY := $(STATIC_LIB)
 endif
 
-# libfluent is Zig's standard library and a good deal of CLDR, and both want
-# libm and pthreads underneath.
+# What a static link needs underneath, which is what `pkg-config --libs
+# --static fluent` would tell you. An archive records that it calls
+# `CFPreferencesCopyAppValue` and nothing about where that lives, so macOS
+# wants the framework named again here or `ld` reports every symbol of it as
+# missing; elsewhere it is Zig's standard library wanting libm and pthreads.
+ifeq ($(shell uname -s),Darwin)
+LDLIBS += -framework CoreFoundation
+else
 LDLIBS += -lm -lpthread
+endif
 
 # Zig's object files carry no `.note.GNU-stack`, and GNU ld then warns that it
 # is assuming an executable stack. Saying so explicitly is quieter and safer

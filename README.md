@@ -167,6 +167,11 @@ $ pkg-config --cflags --libs fluent
 -I/usr/local/include -L/usr/local/lib -lfluent
 ```
 
+Ask for `--static` as well if you are linking `libfluent.a`, since an archive
+cannot carry its dependencies with it: on macOS that adds `-framework
+CoreFoundation`, which is where the user's language is read from, and
+elsewhere the `-lm -lpthread` that Zig's standard library wants underneath.
+
 ```c
 #include <fluent.h>
 
