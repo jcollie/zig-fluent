@@ -29,6 +29,7 @@ pub const DateTime = datetime.DateTime;
 pub const Instant = datetime.Instant;
 pub const TimeZone = datetime.TimeZone;
 pub const DayOfWeek = datetime.DayOfWeek;
+pub const DayPeriodRule = datetime.cldr.DayPeriodRule;
 
 /// Decompose a moment given as milliseconds since the Unix epoch, as UTC.
 pub fn fromEpochMilli(epoch_ms: i64) DateTime {
@@ -192,7 +193,30 @@ pub const Names = struct {
     weekdays_standalone_abbreviated: [7][]const u8 = .{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" },
     weekdays_standalone_narrow: [7][]const u8 = .{ "S", "M", "T", "W", "T", "F", "S" },
     /// Before noon, then after.
+    ///
+    /// What `a` writes, and what `B` falls back to in a locale CLDR gives
+    /// no flexible periods; see `day_periods_flexible`.
     day_periods: [2][]const u8 = .{ "AM", "PM" },
+
+    /// CLDR's twelve day periods, at the three widths, for a locale that
+    /// has rules for choosing between them.
+    ///
+    /// `B` is the flexible day period: where `a` knows only morning and
+    /// afternoon, this divides the day as the language actually does, and
+    /// which period an hour falls in is `day_period_rules`. Traditional
+    /// Chinese writes 凌晨 before dawn, 上午 in the morning, 中午 around noon,
+    /// 下午 in the afternoon and 晚上 in the evening, and its own short time
+    /// pattern is `Bh:mm` -- so a locale without this writes 下午 at noon
+    /// where ICU writes 中午.
+    ///
+    /// Null for the 344 locales CLDR gives no rules for, which can never
+    /// reach any period but the meridiem and would carry thirty-six mostly
+    /// empty slots for nothing. Indexed as `[width][period]`, in the order
+    /// of `cldr.Width` and `cldr.DayPeriod`.
+    day_periods_flexible: ?*const [3][12][]const u8 = null,
+
+    /// When each of those periods runs. Empty where there are none.
+    day_period_rules: []const DayPeriodRule = &.{},
     /// Before the common era, then within it.
     eras: [2][]const u8 = .{ "BCE", "CE" },
     eras_wide: [2][]const u8 = .{ "BCE", "CE" },
@@ -223,6 +247,20 @@ pub const Names = struct {
     /// the fields; the locale decides their order and what goes between them,
     /// and nothing but its own data can supply that.
     available_formats: []const Available = &.{},
+
+    /// How an offset from UTC is wrapped when a zone has no name to give:
+    /// `GMT{0}` in English, `UTC{0}` in French, `{0} گرینویچ` in Persian,
+    /// with `{0}` standing for the offset itself.
+    gmt_format: []const u8 = "GMT{0}",
+    /// What the locale writes for a zero offset with nothing after it.
+    gmt_zero_format: []const u8 = "GMT",
+    /// How the offset itself is written east of UTC, as a miniature pattern
+    /// of `H`, `HH`, `mm` and `ss` with the sign as a literal.
+    hour_format_positive: []const u8 = "+HH:mm",
+    /// The same west of UTC. Held separately rather than derived, because
+    /// the sign is not always a hyphen: French writes a real minus sign and
+    /// Persian puts a bidirectional mark in front of it.
+    hour_format_negative: []const u8 = "-HH:mm",
 
     /// Whether the locale writes the time on a twelve-hour clock.
     hour12: bool = false,
@@ -308,13 +346,27 @@ pub const Formatter = struct {
         }
         if (o.time_style) |time| return cldr.formatTime(moment, style(time), locale, w);
 
+        // ECMA-402 asks for the flexible day period only when `dayPeriod`
+        // was, and `Intl` bears that out: Traditional Chinese files `hms` as
+        // `Bh:mm:ss`, and asking for hour, minute and second gives 下午
+        // 12:00:00 where asking for a `timeStyle` gives 中午 12:00:00. The
+        // same pattern, written two ways, because the field path substitutes
+        // the meridiem for `B` unless the caller said it wanted the period.
+        //
+        // Withholding the rules is that substitution: with nothing to say
+        // which period an hour falls in, `B` falls back to writing am or pm,
+        // which is what `a` would have written. The styled path above keeps
+        // them, so `timeStyle` still says 中午.
+        var flexible = locale;
+        if (self.options.day_period == null) flexible.day_period_rules = &.{};
+
         // A `Names` with no `availableFormats` has nothing to match a
         // skeleton against -- the root's tables are like that, and so is one
         // a consumer wrote by hand -- so the locale's short date stands in.
         // It is what this did before the matching was `zig-datetime`'s, and
         // a date in the wrong order beats no date at all.
         if (locale.available_formats.len == 0) {
-            return cldr.formatRuntime(moment, self.names.date_formats[3], locale, w);
+            return cldr.formatRuntime(moment, self.names.date_formats[3], flexible, w);
         }
 
         var buffer: [64]u8 = undefined;
@@ -322,7 +374,7 @@ pub const Formatter = struct {
         // ECMA-402's default when nothing at all was asked for.
         if (skeleton.len == 0) skeleton = "yMd";
 
-        return cldr.formatSkeleton(moment, skeleton, locale, w);
+        return cldr.formatSkeleton(moment, skeleton, flexible, w);
     }
 
     /// `Options.Style` and `cldr.Length` are the same four lengths in the
@@ -353,6 +405,87 @@ pub const Formatter = struct {
             .options = .{ .hour = .@"2-digit", .minute = .@"2-digit" },
         }).format(0, &w);
         try testing.expectEqualStrings("00:00", w.buffered());
+    }
+
+    test "B writes the period the hour falls in, and only when asked" {
+        // Traditional Chinese divides the day and files its short time as
+        // `Bh:mm`, so noon is 中午 and the evening 晚上 where the meridiem
+        // would say 下午 for both.
+        const flexible: [3][12][]const u8 = @splat(.{
+            "",
+            "上午",
+            "",
+            "下午",
+            "",
+            "上午",
+            "中午",
+            "下午",
+            "晚上",
+            "",
+            "凌晨",
+            "",
+        });
+        const names: Names = .{
+            .time_formats = .{ "Bh:mm", "Bh:mm", "Bh:mm", "Bh:mm" },
+            .available_formats = &.{.{ .skeleton = "hm", .pattern = "Bh:mm" }},
+            .day_periods = .{ "上午", "下午" },
+            .day_periods_flexible = &flexible,
+            .day_period_rules = &.{
+                .{ .period = .night1, .from = 0, .before = 300 },
+                .{ .period = .morning1, .from = 300, .before = 480 },
+                .{ .period = .morning2, .from = 480, .before = 720 },
+                .{ .period = .afternoon1, .from = 720, .before = 780 },
+                .{ .period = .afternoon2, .from = 780, .before = 1140 },
+                .{ .period = .evening1, .from = 1140, .before = 1440 },
+            },
+            .hour12 = true,
+        };
+        var buffer: [64]u8 = undefined;
+
+        // A time style takes the locale's pattern as it stands, so `B` is
+        // the period: noon is 中午 and 20:17 is 晚上.
+        var noon = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .names = names, .options = .{ .time_style = .short } }).format(43_200_000, &noon);
+        try testing.expectEqualStrings("中午12:00", noon.buffered());
+
+        var evening = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .names = names, .options = .{ .time_style = .short } }).format(73_020_000, &evening);
+        try testing.expectEqualStrings("晚上8:17", evening.buffered());
+
+        // Asking for the fields instead is ECMA-402's other path, and there
+        // `B` stands for the meridiem unless `dayPeriod` was asked for --
+        // which is what `Intl` does with the very same pattern.
+        var fields = std.Io.Writer.fixed(&buffer);
+        try (Formatter{
+            .names = names,
+            .options = .{ .hour = .numeric, .minute = .numeric },
+        }).format(43_200_000, &fields);
+        try testing.expectEqualStrings("下午12:00", fields.buffered());
+
+        // Unless it was.
+        var asked = std.Io.Writer.fixed(&buffer);
+        try (Formatter{
+            .names = names,
+            .options = .{ .hour = .numeric, .minute = .numeric, .day_period = .short },
+        }).format(43_200_000, &asked);
+        try testing.expectEqualStrings("中午12:00", asked.buffered());
+    }
+
+    test "the wrapper around a zone offset is the locale's own" {
+        // French writes `UTC` where English writes `GMT`, and a real minus
+        // sign where English writes a hyphen. Both are CLDR data rather than
+        // anything this could work out.
+        const names: Names = .{
+            .time_formats = @splat("HH:mm zzzz"),
+            .gmt_format = "UTC{0}",
+            .gmt_zero_format = "UTC",
+            .hour_format_positive = "+HH:mm",
+            .hour_format_negative = "\u{2212}HH:mm",
+        };
+        var buffer: [64]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .names = names, .options = .{ .time_style = .full } }).format(0, &w);
+        try testing.expectEqualStrings("00:00 UTC+00:00", w.buffered());
     }
 
     test "a locale with no availableFormats still writes a date" {
@@ -557,7 +690,8 @@ pub const Formatter = struct {
             };
 
             // `DayPeriod` numbers am 1 and pm 3, with midnight, noon and the
-            // eight flexible periods around them; `Names` has only the two.
+            // eight flexible periods around them. A locale that has the whole
+            // table points at it instead of building this one; see `locale`.
             var periods: [12][]const u8 = @splat("");
             periods[1] = names.day_periods[0];
             periods[3] = names.day_periods[1];
@@ -583,13 +717,21 @@ pub const Formatter = struct {
                 .weekdays = &self.weekdays,
                 .weekdays_stand_alone = &self.weekdays_standalone,
                 .quarters = &unused_quarters,
-                .day_periods = &self.day_periods,
+                // CLDR's own table where there is one, so that `B` writes the
+                // period the hour actually falls in; the meridiem in the two
+                // slots it knows otherwise.
+                .day_periods = names.day_periods_flexible orelse &self.day_periods,
+                .day_period_rules = names.day_period_rules,
                 .eras = &self.eras,
                 .date_formats = &names.date_formats,
                 .time_formats = &names.time_formats,
                 .date_time_formats = &names.datetime_formats,
                 .date_time_at_time_formats = &names.datetime_at_formats,
                 .available_formats = names.available_formats,
+                .gmt_format = names.gmt_format,
+                .gmt_zero_format = names.gmt_zero_format,
+                .hour_format_positive = names.hour_format_positive,
+                .hour_format_negative = names.hour_format_negative,
                 .first_day = names.first_day,
                 .min_days_in_first_week = names.min_days_in_first_week,
                 .digits = if (std.mem.eql(u8, self.digits[0], "0")) null else &self.digits,

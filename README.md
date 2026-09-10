@@ -458,7 +458,7 @@ Each table is a separate declaration in a separate file, so you pay for what you
 reference and nothing else: a program that only parses `.ftl` links none of it.
 Measured, `-OReleaseSmall`, on x86-64 Linux — a program that parses a resource
 and reads the tree is **164 KB**; one that also formats a number and a date for
-a locale is **2.6 MB**, which is the CLDR data for all 766 of them.
+a locale is **2.7 MB**, which is the CLDR data for all 766 of them.
 
 **Plural rules** are CLDR's, cardinal and ordinal, for the 224 and 108 locales
 CLDR covers. They are compiled from CLDR's own rule language into tables at
@@ -476,6 +476,14 @@ fields matched against CLDR's skeletons, so that `month: "long", day: "numeric"`
 comes out as "September 9" in English and "9. September" in German without the
 application knowing which is which.
 
+**Flexible day periods** are CLDR's, for the 422 locales it gives rules for.
+Where the meridiem knows only morning and afternoon, these divide the day as the
+language does: Traditional Chinese writes 凌晨 before dawn, 中午 around noon and
+晚上 in the evening, and its own short time pattern asks for them. ECMA-402 uses
+them for a `timeStyle` and substitutes the meridiem on the field path unless
+`dayPeriod` was asked for, which is what `Intl` does, and the 344 locales with no
+rules carry no table.
+
 ### How closely it agrees with ICU
 
 ICU is the reference implementation of the specifications this follows, so
@@ -484,10 +492,10 @@ this is wrong.
 
 **Dates.** A matrix of 30 locales against 17 option sets and 4 instants — 2312
 in all, including two either side of an ISO week-year boundary and one before
-the epoch — compared against `Intl` in V8 (node 24, ICU 78.3, CLDR 48.0). 2124
+the epoch — compared against `Intl` in V8 (node 24, ICU 78.3, CLDR 48.0). 2128
 are identical byte for byte, another 80 differ only by the narrow no-break space
-below, and the remaining 108 are the two divergences after it. There are no
-others.
+below, and the remaining 104 are all the one divergence after it. **No case
+differs on formatting.**
 
 **Numbers.** Not re-run: the earlier comparison found all 400 number cases
 identical, and nothing since has touched that path.
@@ -497,35 +505,38 @@ one reported no divergences beyond these, and widening it turned up three real
 bugs — the week-numbering year written as nothing, an abbreviated weekday
 spelled in a way no CLDR key matches, and the era ignoring the width it was
 asked for. All three are fixed, and each is pinned by a test in zig-datetime so
-that the shared implementation cannot lose them again.
+that the shared implementation cannot lose them again. It also found the
+flexible day period, which used to be listed here as a divergence and is now
+closed. The other one closed since — the wrapper a locale puts around a zone
+offset — the matrix did *not* find, because none of its option sets asks for a
+zone; that one came out of reading the CLDR data beside the code, which is the
+other way to find these and the reason the list below says what is untested.
 
 - **The narrow no-break space** — 80 cases. CLDR 48 writes English's time as
   `h:mm:ss` U+202F `a`, and Russian's year as `y` U+202F `г.`. V8 substitutes an
   ordinary space. This library follows the data, so it emits U+202F; CLDR ships
   `-alt-ascii` variants for consumers who want otherwise, and they are not used
   here.
-- **Non-Gregorian calendars** — 104 cases. Thai defaults to the Buddhist
-  calendar and Persian to its own, so `Intl` writes 2568 where this writes 2025.
-  Only the Gregorian calendar is implemented. That this is the calendar and not
-  the formatting is checkable: forced to `-u-ca-gregory`, those two locales
-  agree on 132 of 136 cases, Persian digits and all. The four left over are
-  Thai's `HH:mm น.`, where V8 ships CLDR 48.0 and this pins 48.2.
-- **Flexible day periods** — 4 cases. CLDR divides the day into as many as
-  twelve named periods and gives rules for which one an hour falls in, and the
-  `B` field writes them: Traditional Chinese says 中午 at noon and 晚上 in the
-  evening where this says 下午. Only the meridiem is carried, so `B` writes am
-  or pm. Two locales' patterns use it.
+- **Non-Gregorian calendars** — 104 cases, and the whole remainder. Thai
+  defaults to the Buddhist calendar and Persian to its own, so `Intl` writes
+  2568 where this writes 2025. Only the Gregorian calendar is implemented. That
+  this is the calendar and not the formatting is checkable: forced to
+  `-u-ca-gregory`, those two locales agree on 132 of 136 cases, Persian digits
+  and all. The four left over are Thai's `HH:mm น.`, where V8 ships CLDR 48.0
+  and this pins 48.2.
 
 ### What is deliberately not implemented
 
 - **Measurement units.** `cldr-units-full` is a further ~100 MB, and `NUMBER()`'s
   option list cannot select a unit style from FTL anyway.
-- **Time zone display names.** `timeZoneNames.json` is 45 KB per locale. A zone
-  is written as its offset, or as the designation the IANA database gives it —
-  never wrong, only less friendly than "Central European Summer Time". The
-  wrapper around that offset is not localized either: CLDR gives French
-  `UTC{0}` and a real minus sign where this writes `GMT` and a hyphen for every
-  locale. Neither is in the date matrix above, which asks for no zone.
+- **Time zone display names.** `timeZoneNames.json` is 45 KB per locale, nearly
+  all of it names. A zone is written as its offset, or as the designation the
+  IANA database gives it — never wrong, only less friendly than "Central
+  European Summer Time". The *wrapper* around that offset is localized, since
+  it is four strings rather than a table: French writes `UTC−05:00` with a real
+  minus sign and Persian `(‎−۰۵:۰۰ گرینویچ)`, both of which agree with `Intl`
+  asked for a `longOffset`. That is checked by hand rather than by the matrix
+  above, which asks for no zone.
 - **Compact notation** ("1.2M"). The plural rules read it, because CLDR's own
   sample data is written in it, but nothing here produces it.
 - **Currency spacing.** CLDR says to insert a non-breaking space between the

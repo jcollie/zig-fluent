@@ -922,6 +922,13 @@ const DateLocale = struct {
     weekdays_standalone_abbreviated: [7][]const u8,
     weekdays_standalone_narrow: [7][]const u8,
     day_periods: [2][]const u8,
+    /// `[width][period]`, or null where CLDR has no rules to choose with.
+    day_periods_flexible: ?[3][12][]const u8,
+    day_period_rules: []const DayPeriodRule,
+    gmt_format: []const u8,
+    gmt_zero_format: []const u8,
+    hour_format_positive: []const u8,
+    hour_format_negative: []const u8,
     eras: [2][]const u8,
     eras_wide: [2][]const u8,
     eras_narrow: [2][]const u8,
@@ -938,7 +945,26 @@ const DateLocale = struct {
         skeleton: []const u8,
         pattern: []const u8,
     };
+
+    /// The four numbers `datetime_format.DayPeriodRule` holds, in its own
+    /// field order.
+    const DayPeriodRule = struct {
+        period: []const u8,
+        from: u16,
+        before: u16,
+        at: bool,
+    };
 };
+
+/// CLDR's twelve day periods, in the order `cldr.DayPeriod` numbers them.
+const period_keys = [12][]const u8{
+    "midnight", "am",       "noon",       "pm",
+    "morning1", "morning2", "afternoon1", "afternoon2",
+    "evening1", "evening2", "night1",     "night2",
+};
+
+/// The three widths, in the order `cldr.Width` numbers them.
+const period_widths = [3][]const u8{ "wide", "abbreviated", "narrow" };
 
 /// The field letters this implementation can put in a skeleton.
 ///
@@ -1013,9 +1039,43 @@ fn generateDates(
             locale.weekdays_standalone_narrow[i] = days_standalone.get("narrow").?.object.get(key).?.string;
         }
 
-        const periods = gregorian.get("dayPeriods").?.object.get("format").?.object
-            .get("abbreviated").?.object;
+        const periods_format = gregorian.get("dayPeriods").?.object.get("format").?.object;
+        const periods = periods_format.get("abbreviated").?.object;
         locale.day_periods = .{ periods.get("am").?.string, periods.get("pm").?.string };
+
+        // The flexible periods, and only for a locale that has rules to
+        // choose between them: without rules `B` can never write anything
+        // but the meridiem, so the other thirty-six slots would be carried
+        // for nothing.
+        locale.day_period_rules = week_data.dayPeriodRules(arena, locale.tag) catch &.{};
+        locale.day_periods_flexible = if (locale.day_period_rules.len == 0) null else flexible: {
+            var table: [3][12][]const u8 = undefined;
+            for (period_widths, 0..) |width, wi| {
+                const set = periods_format.get(width).?.object;
+                for (period_keys, 0..) |key, pi| {
+                    table[wi][pi] = if (set.get(key)) |value| value.string else "";
+                }
+            }
+            break :flexible table;
+        };
+
+        {
+            const zone_path = try std.fmt.allocPrint(arena, "main/{s}/timeZoneNames.json", .{entry.name});
+            const zone_text = try dates_root.readFileAlloc(io, zone_path, arena, .limited(4 << 20));
+            const zone_parsed = try std.json.parseFromSlice(std.json.Value, arena, zone_text, .{});
+            const zone_names = zone_parsed.value.object.get("main").?.object
+                .values()[0].object.get("dates").?.object
+                .get("timeZoneNames").?.object;
+            locale.gmt_format = zone_names.get("gmtFormat").?.string;
+            locale.gmt_zero_format = zone_names.get("gmtZeroFormat").?.string;
+            // One string holding both signs, e.g. `+HH:mm;-HH:mm`. The sign
+            // is not always a hyphen -- French writes U+2212 -- which is why
+            // CLDR carries the negative form rather than deriving it.
+            const hour_format = zone_names.get("hourFormat").?.string;
+            const semicolon = std.mem.findScalar(u8, hour_format, ';').?;
+            locale.hour_format_positive = hour_format[0..semicolon];
+            locale.hour_format_negative = hour_format[semicolon + 1 ..];
+        }
 
         const eras = gregorian.get("eras").?.object;
         const abbreviated = eras.get("eraAbbr").?.object;
@@ -1102,8 +1162,57 @@ const WeekData = struct {
     min_days: std.StringHashMap(u8),
     /// A tag to the tag `likelySubtags` expands it to.
     likely: std.StringHashMap([]const u8),
+    /// CLDR's day-period rule sets, keyed by language rather than locale.
+    day_periods: std.json.Value,
 
     const WeekRule = struct { first_day: []const u8, min_days: u8 };
+
+    /// When each flexible day period runs, for the rule set `tag` inherits.
+    ///
+    /// CLDR keys these by language and not by locale -- there is an `en` and
+    /// no `en-GB` -- so a tag is truncated a subtag at a time until one
+    /// matches, and 422 of the 766 locales find a set that way. The rest
+    /// have none, and for them `B` writes the meridiem.
+    fn dayPeriodRules(
+        self: WeekData,
+        arena: Allocator,
+        tag: []const u8,
+    ) ![]const DateLocale.DayPeriodRule {
+        var candidate = tag;
+        const set = while (true) {
+            if (self.day_periods.object.get(candidate)) |value| break value.object;
+            candidate = if (std.mem.findScalarLast(u8, candidate, '-')) |dash|
+                candidate[0..dash]
+            else
+                return &.{};
+        };
+
+        var rules: std.ArrayList(DateLocale.DayPeriodRule) = .empty;
+        var it = set.iterator();
+        while (it.next()) |entry| {
+            const period = entry.key_ptr.*;
+            const body = entry.value_ptr.*.object;
+            // A period with an `_at` names an instant -- noon and midnight
+            // are the only two -- and everything else is a half-open span
+            // that may wrap around midnight.
+            if (body.get("_at")) |at| {
+                try rules.append(arena, .{
+                    .period = period,
+                    .from = try minutesOf(at.string),
+                    .before = 0,
+                    .at = true,
+                });
+            } else {
+                try rules.append(arena, .{
+                    .period = period,
+                    .from = try minutesOf(body.get("_from").?.string),
+                    .before = try minutesOf(body.get("_before").?.string),
+                    .at = false,
+                });
+            }
+        }
+        return rules.toOwnedSlice(arena);
+    }
 
     /// The rule for `tag`, falling back to the root territory `001`.
     fn lookup(self: WeekData, tag: []const u8) WeekRule {
@@ -1163,6 +1272,7 @@ fn readWeekData(arena: Allocator, io: std.Io, core: std.Io.Dir) !WeekData {
         .first_day = .init(arena),
         .min_days = .init(arena),
         .likely = .init(arena),
+        .day_periods = undefined,
     };
 
     const week_text = try core.readFileAlloc(io, "supplemental/weekData.json", arena, .limited(1 << 20));
@@ -1184,6 +1294,12 @@ fn readWeekData(arena: Allocator, io: std.Io, core: std.Io.Dir) !WeekData {
         try data.min_days.put(entry.key_ptr.*, try std.fmt.parseInt(u8, entry.value_ptr.*.string, 10));
     }
 
+    const periods_text = try core.readFileAlloc(io, "supplemental/dayPeriods.json", arena, .limited(4 << 20));
+    const periods_parsed = try std.json.parseFromSlice(std.json.Value, arena, periods_text, .{});
+    data.day_periods = periods_parsed.value.object
+        .get("supplemental").?.object
+        .get("dayPeriodRuleSet").?;
+
     const likely_text = try core.readFileAlloc(io, "supplemental/likelySubtags.json", arena, .limited(4 << 20));
     const likely_parsed = try std.json.parseFromSlice(std.json.Value, arena, likely_text, .{});
     var likely_it = likely_parsed.value.object
@@ -1194,6 +1310,15 @@ fn readWeekData(arena: Allocator, io: std.Io, core: std.Io.Dir) !WeekData {
     }
 
     return data;
+}
+
+/// "18:00" as minutes from midnight. CLDR writes 24:00 for midnight at the
+/// end of the day, which is 1440 and fits.
+fn minutesOf(text: []const u8) !u16 {
+    const colon = std.mem.findScalar(u8, text, ':').?;
+    const hours = try std.fmt.parseInt(u16, text[0..colon], 10);
+    const minutes = try std.fmt.parseInt(u16, text[colon + 1 ..], 10);
+    return hours * 60 + minutes;
 }
 
 /// CLDR's "mon" as `DayOfWeek`'s `Mon`.
@@ -1275,6 +1400,26 @@ fn writeDatesFile(arena: Allocator, io: std.Io, out_dir: std.Io.Dir, locales: []
         try writeNameArray(w, "weekdays_standalone_abbreviated", &locale.weekdays_standalone_abbreviated);
         try writeNameArray(w, "weekdays_standalone_narrow", &locale.weekdays_standalone_narrow);
         try writeNameArray(w, "day_periods", &locale.day_periods);
+        if (locale.day_periods_flexible) |table| {
+            try w.writeAll("        .day_periods_flexible = &.{\n");
+            for (table) |row| {
+                try w.writeAll("            .{");
+                for (row, 0..) |name, i| {
+                    if (i != 0) try w.writeAll(",");
+                    try w.print(" \"{f}\"", .{escaped(name)});
+                }
+                try w.writeAll(" },\n");
+            }
+            try w.writeAll("        },\n");
+            try w.writeAll("        .day_period_rules = &.{\n");
+            for (locale.day_period_rules) |rule| {
+                try w.print(
+                    "            .{{ .period = .{s}, .from = {d}, .before = {d}, .at = {} }},\n",
+                    .{ rule.period, rule.from, rule.before, rule.at },
+                );
+            }
+            try w.writeAll("        },\n");
+        }
         try writeNameArray(w, "eras", &locale.eras);
         try writeNameArray(w, "eras_wide", &locale.eras_wide);
         try writeNameArray(w, "eras_narrow", &locale.eras_narrow);
@@ -1282,6 +1427,10 @@ fn writeDatesFile(arena: Allocator, io: std.Io, out_dir: std.Io.Dir, locales: []
         try writeNameArray(w, "time_formats", &locale.time_formats);
         try writeNameArray(w, "datetime_formats", &locale.datetime_formats);
         try writeNameArray(w, "datetime_at_formats", &locale.datetime_at_formats);
+        try w.print("        .gmt_format = \"{f}\",\n", .{escaped(locale.gmt_format)});
+        try w.print("        .gmt_zero_format = \"{f}\",\n", .{escaped(locale.gmt_zero_format)});
+        try w.print("        .hour_format_positive = \"{f}\",\n", .{escaped(locale.hour_format_positive)});
+        try w.print("        .hour_format_negative = \"{f}\",\n", .{escaped(locale.hour_format_negative)});
         try w.print("        .hour12 = {},\n", .{locale.hour12});
         try w.print("        .first_day = .{s},\n", .{locale.first_day});
         try w.print("        .min_days_in_first_week = {d},\n", .{locale.min_days_in_first_week});
