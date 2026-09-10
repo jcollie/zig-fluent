@@ -10,8 +10,8 @@
             .lazy = true,
         },
         .datetime = .{
-            .url = "git+https://github.com/jcollie/zig-datetime#a1f69392e41d68c92d7ee493091075b2115364c2",
-            .hash = "datetime-0.0.1-6-va7-VRDgD-26M0OuBB10ZhJC1ErNxufDFcqQ-S6jw-",
+            .url = "git+https://github.com/jcollie/zig-datetime#25a2344667481567d0eb4582f0809116f953b084",
+            .hash = "datetime-0.0.1-6-va70-XDgD-xwW2lu-OTESBfh2etZFs9unjEL-ZArl5",
         },
         // The Unicode CLDR, in the Unicode Consortium's JSON distribution.
         // Read only by `zig build gen-cldr -Dcldr`, which rewrites `src/cldr/`

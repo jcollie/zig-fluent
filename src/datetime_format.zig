@@ -240,11 +240,12 @@ pub const Names = struct {
     first_day: DayOfWeek = .Mon,
     min_days_in_first_week: u8 = 1,
 
-    pub const Available = struct {
-        /// The field letters, in CLDR's canonical order, e.g. `"MMMMd"`.
-        skeleton: []const u8,
-        pattern: []const u8,
-    };
+    /// A skeleton and the pattern it maps to.
+    ///
+    /// `zig-datetime`'s own type, so that a table generated here can be
+    /// handed to `cldr.formatSkeleton` as it stands rather than copied into
+    /// a structurally identical one on every call.
+    pub const Available = datetime.cldr.AvailableFormat;
 };
 
 /// Everything needed to write a moment for one locale.
@@ -261,14 +262,74 @@ pub const Formatter = struct {
     digits: []const u8 = "0123456789",
 
     /// Write the moment `epoch_ms` the way this locale writes dates.
+    ///
+    /// The three cases are ECMA-402's, in the order it gives them. A
+    /// `dateStyle` or `timeStyle` names one of the locale's four presets
+    /// outright, and both together are joined by the locale's own "at time"
+    /// pattern. A set of individual fields becomes a CLDR skeleton, which
+    /// the locale's `availableFormats` turns into a pattern. And nothing at
+    /// all means year, month and day, which is what a bare `DATETIME($d)`
+    /// shows.
+    ///
+    /// The writing itself is `zig-datetime`'s: it owns the CLDR pattern
+    /// vocabulary and checks its rendering against ICU, so this decides
+    /// *what* to ask for and lets that decide how it is written. What is
+    /// left here is the part that is Fluent's rather than a calendar's --
+    /// turning `DATETIME()`'s options into a skeleton.
     pub fn format(self: Formatter, epoch_ms: i64, w: *std.Io.Writer) std.Io.Writer.Error!void {
         const zone = self.options.time_zone orelse self.zone;
         const moment = if (zone) |z| fromEpochMilliIn(epoch_ms, z.*) else fromEpochMilli(epoch_ms);
 
-        var glue_buffer: [192]u8 = undefined;
-        var adjust_buffer: [192]u8 = undefined;
-        const pattern = self.choosePattern(&glue_buffer, &adjust_buffer);
-        try self.writePattern(pattern, moment, w);
+        const tables: Tables = .init(self.names, self.digits);
+        const locale = tables.locale(self.names);
+
+        // A pattern that came out of CLDR is a pattern, and a `Names` a
+        // consumer wrote by hand may not be. Neither is worth failing a
+        // whole message for, so a bad one writes nothing rather than
+        // propagating an error `DATETIME()` has no way to report.
+        self.write(moment, locale, w) catch |err| switch (err) {
+            error.WriteFailed => return error.WriteFailed,
+            else => {},
+        };
+    }
+
+    fn write(
+        self: Formatter,
+        moment: DateTime,
+        locale: datetime.cldr.Locale,
+        w: *std.Io.Writer,
+    ) !void {
+        const cldr = datetime.cldr;
+        const o = self.options;
+
+        if (o.date_style) |date| {
+            if (o.time_style) |time| return cldr.formatDateTime(moment, style(date), style(time), locale, w);
+            return cldr.formatDate(moment, style(date), locale, w);
+        }
+        if (o.time_style) |time| return cldr.formatTime(moment, style(time), locale, w);
+
+        // A `Names` with no `availableFormats` has nothing to match a
+        // skeleton against -- the root's tables are like that, and so is one
+        // a consumer wrote by hand -- so the locale's short date stands in.
+        // It is what this did before the matching was `zig-datetime`'s, and
+        // a date in the wrong order beats no date at all.
+        if (locale.available_formats.len == 0) {
+            return cldr.formatRuntime(moment, self.names.date_formats[3], locale, w);
+        }
+
+        var buffer: [64]u8 = undefined;
+        var skeleton = self.buildSkeleton(&buffer);
+        // ECMA-402's default when nothing at all was asked for.
+        if (skeleton.len == 0) skeleton = "yMd";
+
+        return cldr.formatSkeleton(moment, skeleton, locale, w);
+    }
+
+    /// `Options.Style` and `cldr.Length` are the same four lengths in the
+    /// same order, named by two specifications that do not know about each
+    /// other.
+    fn style(value: Options.Style) datetime.cldr.Length {
+        return @enumFromInt(@intFromEnum(value));
     }
 
     test format {
@@ -292,6 +353,15 @@ pub const Formatter = struct {
             .options = .{ .hour = .@"2-digit", .minute = .@"2-digit" },
         }).format(0, &w);
         try testing.expectEqualStrings("00:00", w.buffered());
+    }
+
+    test "a locale with no availableFormats still writes a date" {
+        // Nothing to match against, so the short date stands in rather than
+        // the field options producing an empty string.
+        var buffer: [64]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .options = .{ .year = .numeric, .month = .long, .day = .numeric } }).format(0, &w);
+        try testing.expectEqualStrings("1970-01-01", w.buffered());
     }
 
     test "an abbreviated weekday is a single E in a skeleton key" {
@@ -392,70 +462,6 @@ pub const Formatter = struct {
         try testing.expectEqualStrings("2023-01", w.buffered());
     }
 
-    /// Work out which CLDR pattern to use for the options in force.
-    ///
-    /// Three cases, in the order ECMA-402 gives them. A `dateStyle` or
-    /// `timeStyle` names one of the locale's four presets outright. A set of
-    /// individual fields is turned into a skeleton and matched against the
-    /// locale's `availableFormats`. And nothing at all means year, month and
-    /// day, which is what a bare `DATETIME($d)` shows.
-    fn choosePattern(self: Formatter, glue_buffer: []u8, adjust_buffer: []u8) []const u8 {
-        if (self.options.date_style != null or self.options.time_style != null) {
-            return self.chooseStyledPattern(glue_buffer);
-        }
-
-        var skeleton_buffer: [64]u8 = undefined;
-        var skeleton = self.buildSkeleton(&skeleton_buffer);
-        // ECMA-402's default when nothing at all was asked for: the year, the
-        // month and the day, each numeric. It is what makes a bare
-        // `DATETIME($d)` show a date rather than nothing.
-        if (skeleton.len == 0) skeleton = "yMd";
-
-        const matched = self.matchSkeleton(skeleton);
-        return adjustWidths(matched.pattern, matched.skeleton, skeleton, adjust_buffer);
-    }
-
-    /// Join the locale's preset date and time formats, or take whichever of the two was asked for on its own.
-    fn chooseStyledPattern(self: Formatter, buffer: []u8) []const u8 {
-        const date = if (self.options.date_style) |style| self.names.date_formats[@intFromEnum(style)] else null;
-        const time = if (self.options.time_style) |style| self.names.time_formats[@intFromEnum(style)] else null;
-
-        if (date != null and time == null) return date.?;
-        if (time != null and date == null) return time.?;
-
-        // Both: the locale says how they are joined, and the glue is chosen by
-        // the *date* style, which is what ECMA-402 specifies. It is the "at
-        // time" form, because asking for a date style and a time style
-        // together is asking when something happened.
-        const glue = self.names.datetime_at_formats[@intFromEnum(self.options.date_style.?)];
-        var w = std.Io.Writer.fixed(buffer);
-        var rest = glue;
-        while (std.mem.indexOfScalar(u8, rest, '{')) |at| {
-            w.writeAll(rest[0..at]) catch return date.?;
-
-            // `{1}` is the date and `{0}` the time. A brace that does not
-            // begin a complete placeholder is literal text: CLDR's own glue
-            // never has one, but a `Names` supplied by a consumer is arbitrary
-            // and a glue ending in `{` would otherwise be read past the end.
-            if (at + 2 >= rest.len or rest[at + 2] != '}') {
-                w.writeByte('{') catch return date.?;
-                rest = rest[at + 1 ..];
-                continue;
-            }
-
-            w.writeAll(if (rest[at + 1] == '1') date.? else time.?) catch return date.?;
-            rest = rest[at + 3 ..];
-        }
-        w.writeAll(rest) catch return date.?;
-        return w.buffered();
-    }
-
-    /// Turn the requested fields into a CLDR skeleton.
-    ///
-    /// The letters and their counts are CLDR's: a numeric month is `M`, a
-    /// two-digit one `MM`, an abbreviated name `MMM`, a full name `MMMM`. The
-    /// order is CLDR's canonical field order, because that is the order the
-    /// `availableFormats` keys are written in and the match is on the text.
     fn buildSkeleton(self: Formatter, buffer: []u8) []const u8 {
         var w = std.Io.Writer.fixed(buffer);
         const o = self.options;
@@ -498,409 +504,98 @@ pub const Formatter = struct {
         return w.buffered();
     }
 
-    /// Find the locale's pattern for a skeleton, or the closest thing to it.
+    /// The tables a `datetime.cldr.Locale` points at.
     ///
-    /// An exact match is what usually happens, since CLDR lists the
-    /// combinations people actually ask for. Failing that, the best match is
-    /// the one sharing the most field letters, so asking for a long month and
-    /// a day in a locale that only lists `MMMd` gets that rather than nothing.
-    fn matchSkeleton(self: Formatter, skeleton: []const u8) Names.Available {
-        var best: ?Names.Available = null;
-        var best_score: isize = -1;
+    /// zig-datetime holds its name tables width-major -- one `[3][12]` of
+    /// months rather than three `[12]`s -- and `Names` holds them the other
+    /// way round, so a `Locale` cannot simply borrow them. They are built
+    /// here, on the stack of whatever call is formatting, which is what
+    /// keeps `Names` the shape a consumer overrides it in.
+    const Tables = struct {
+        months: [3][12][]const u8,
+        months_standalone: [3][12][]const u8,
+        weekdays: [4][7][]const u8,
+        weekdays_standalone: [4][7][]const u8,
+        day_periods: [3][12][]const u8,
+        eras: [3][2][]const u8,
+        digits: [10][]const u8,
 
-        for (self.names.available_formats) |available| {
-            if (std.mem.eql(u8, available.skeleton, skeleton)) return available;
+        /// Quarters and the flexible day periods are fields no `DATETIME()`
+        /// option can ask for and no pattern under `src/cldr/` writes --
+        /// checked across all 1383 of them. A `Locale` still has to have
+        /// them, so every locale here shares this one rather than carrying
+        /// 766 copies of the same nothing.
+        const unused_quarters: [3][4][]const u8 = @splat(@splat(""));
 
-            var score: isize = 0;
-            for ("GyMEdhHmsSa") |letter| {
-                const wanted = std.mem.count(u8, skeleton, &.{letter});
-                const has = std.mem.count(u8, available.skeleton, &.{letter});
-                if (wanted == 0 and has == 0) continue;
+        fn init(names: Names, digits: []const u8) Tables {
+            var self: Tables = undefined;
 
-                // Having the field at all is most of the battle.
-                if (wanted == 0 or has == 0) {
-                    score -= 16;
-                    continue;
-                }
-                score += 16;
+            // Width-major, in CLDR's order: wide, abbreviated, narrow.
+            self.months = .{ names.months_wide, names.months_abbreviated, names.months_narrow };
+            self.months_standalone = .{
+                names.months_standalone_wide,
+                names.months_standalone_abbreviated,
+                names.months_standalone_narrow,
+            };
 
-                // Then how nearly the widths agree -- but crossing between a
-                // number and a name is a far bigger difference than one digit,
-                // and has to cost more. Without that, German scores `yMMdd`
-                // ("dd.MM.y") and `yMMMd` ("d. MMM y") equally for a request
-                // wanting a named month, and picks whichever comes first.
-                const wanted_is_text = wanted >= 3;
-                const has_is_text = has >= 3;
-                if (wanted_is_text != has_is_text) {
-                    score -= 8;
-                } else {
-                    score -= @intCast(@max(wanted, has) - @min(wanted, has));
-                }
-            }
-            if (score > best_score) {
-                best_score = score;
-                best = available;
-            }
+            // Weekdays have a fourth width between the abbreviated and the
+            // narrow one -- English's "Tu" -- which `Names` does not carry
+            // and no `DATETIME()` option asks for. The abbreviated name
+            // stands in, which is what CLDR's own generator does for a
+            // locale that leaves it out.
+            self.weekdays = .{
+                names.weekdays_wide,
+                names.weekdays_abbreviated,
+                names.weekdays_abbreviated,
+                names.weekdays_narrow,
+            };
+            self.weekdays_standalone = .{
+                names.weekdays_standalone_wide,
+                names.weekdays_standalone_abbreviated,
+                names.weekdays_standalone_abbreviated,
+                names.weekdays_standalone_narrow,
+            };
+
+            // `DayPeriod` numbers am 1 and pm 3, with midnight, noon and the
+            // eight flexible periods around them; `Names` has only the two.
+            var periods: [12][]const u8 = @splat("");
+            periods[1] = names.day_periods[0];
+            periods[3] = names.day_periods[1];
+            self.day_periods = .{ periods, periods, periods };
+
+            self.eras = .{ names.eras_wide, names.eras, names.eras_narrow };
+
+            // `Names` keeps the numbering system as one UTF-8 string of ten
+            // codepoints, which is how CLDR writes it; a `Locale` wants ten
+            // slices.
+            self.digits = @splat("");
+            var it: std.unicode.Utf8Iterator = .{ .bytes = digits, .i = 0 };
+            for (&self.digits) |*slot| slot.* = it.nextCodepointSlice() orelse "";
+
+            return self;
         }
 
-        return best orelse .{ .skeleton = skeleton, .pattern = self.names.date_formats[3] };
-    }
-
-    /// Widen or narrow the fields of a matched pattern to what was asked for.
-    ///
-    /// The rule is not "make the pattern match the request", which sounds
-    /// right and is wrong. It is: **for each field, if the request asks for a
-    /// different width than the matched entry was filed under, use the
-    /// requested width; otherwise leave the pattern exactly as the locale
-    /// wrote it.**
-    ///
-    /// The difference is the entry's declared skeleton -- the key CLDR filed
-    /// the pattern under -- rather than the widths in the pattern itself, and
-    /// it matters because the two often disagree on purpose:
-    ///
-    ///   - Japanese files `y年M月d日` under `yMMMd`. The key says "an
-    ///     abbreviated month"; the pattern writes it as a numeral followed by
-    ///     月, because that *is* the abbreviated month in Japanese. A request
-    ///     for `MMM` agrees with the key, so the pattern is left alone.
-    ///     Rewriting its `M` as `MMM` would look up the month name and produce
-    ///     "9月月".
-    ///   - Czech files `d. M. y` under `yMMMd` for the same reason.
-    ///   - French files `d MMM y` under `yMMMd`, and a request for a two-digit
-    ///     day disagrees with the key's `d`, so the day is widened and the
-    ///     month is not: "09 sept. 2026".
-    ///
-    /// This is what ICU does, and so what `Intl` gives.
-    fn adjustWidths(
-        pattern: []const u8,
-        matched: []const u8,
-        skeleton: []const u8,
-        buffer: []u8,
-    ) []const u8 {
-        var w = std.Io.Writer.fixed(buffer);
-
-        var i: usize = 0;
-        while (i < pattern.len) {
-            const c = pattern[i];
-
-            // Quoted runs are literal text and hold no fields.
-            if (c == '\'') {
-                const start = i;
-                i += 1;
-                if (i < pattern.len and pattern[i] == '\'') {
-                    i += 1;
-                } else {
-                    while (i < pattern.len and pattern[i] != '\'') i += 1;
-                    if (i < pattern.len) i += 1;
-                }
-                w.writeAll(pattern[start..i]) catch return pattern;
-                continue;
-            }
-
-            if (!std.ascii.isAlphabetic(c)) {
-                w.writeByte(c) catch return pattern;
-                i += 1;
-                continue;
-            }
-
-            var count: usize = 0;
-            while (i + count < pattern.len and pattern[i + count] == c) count += 1;
-            i += count;
-
-            // `c` and `e` are other spellings of the weekday field, and a
-            // skeleton always spells it `E`.
-            const field = if (c == 'c' or c == 'e') 'E' else c;
-            const requested = std.mem.count(u8, skeleton, &.{field});
-            const declared = std.mem.count(u8, matched, &.{field});
-
-            // The month is the one field that is a number at one width and a
-            // name at another, and the two are never interchangeable. Japanese
-            // files `y年M月d日` under `yMMMd`: the key calls the month
-            // abbreviated, and in Japanese the abbreviated month *is* the
-            // numeral with 月 after it. Turning that `M` into `MMMM` because a
-            // long month was asked for looks up the name and writes "9月月".
-            const crosses_kind = (field == 'M' or field == 'L') and
-                (count >= 3) != (requested >= 3);
-
-            // The era is the one field whose declared width says nothing.
-            // Every `availableFormats` key in CLDR spells it with a single
-            // `G` -- all 5486 of them -- while 259 of the patterns those keys
-            // map to write `GGGG` or `GGGGG`. So `requested != declared` can
-            // never fire for `G`, and Russian's `E, dd.MM.y GGGGG` kept its
-            // narrow era however wide a one was asked for: "н.э." where ICU,
-            // asked for a short era, says "н. э.". Take the request every
-            // time, since the key had no opinion to override.
-            const era = field == 'G';
-
-            const adjust = requested != 0 and (era or requested != declared) and !crosses_kind;
-            w.splatByteAll(c, if (adjust) requested else count) catch return pattern;
+        fn locale(self: *const Tables, names: Names) datetime.cldr.Locale {
+            return .{
+                .tag = "",
+                .months = &self.months,
+                .months_stand_alone = &self.months_standalone,
+                .weekdays = &self.weekdays,
+                .weekdays_stand_alone = &self.weekdays_standalone,
+                .quarters = &unused_quarters,
+                .day_periods = &self.day_periods,
+                .eras = &self.eras,
+                .date_formats = &names.date_formats,
+                .time_formats = &names.time_formats,
+                .date_time_formats = &names.datetime_formats,
+                .date_time_at_time_formats = &names.datetime_at_formats,
+                .available_formats = names.available_formats,
+                .first_day = names.first_day,
+                .min_days_in_first_week = names.min_days_in_first_week,
+                .digits = if (std.mem.eql(u8, self.digits[0], "0")) null else &self.digits,
+            };
         }
-
-        return w.buffered();
-    }
-
-    /// Render a CLDR date pattern.
-    ///
-    /// The letters are UTS #35's date field symbols, repeated to say how wide
-    /// the field should be. Text between single quotes is literal, and `''`
-    /// is a literal quote -- which is why a pattern cannot simply be copied
-    /// through looking for letters.
-    fn writePattern(
-        self: Formatter,
-        pattern: []const u8,
-        moment: DateTime,
-        w: *std.Io.Writer,
-    ) std.Io.Writer.Error!void {
-        var i: usize = 0;
-        while (i < pattern.len) {
-            const c = pattern[i];
-
-            if (c == '\'') {
-                i += 1;
-                if (i < pattern.len and pattern[i] == '\'') {
-                    try w.writeByte('\'');
-                    i += 1;
-                    continue;
-                }
-                while (i < pattern.len and pattern[i] != '\'') : (i += 1) try w.writeByte(pattern[i]);
-                if (i < pattern.len) i += 1;
-                continue;
-            }
-
-            if (!std.ascii.isAlphabetic(c)) {
-                try w.writeByte(c);
-                i += 1;
-                continue;
-            }
-
-            var count: usize = 0;
-            while (i + count < pattern.len and pattern[i + count] == c) count += 1;
-            i += count;
-
-            try self.writeField(c, count, moment, w);
-        }
-    }
-
-    /// Write one field of a pattern, given its letter and how many were written.
-    fn writeField(
-        self: Formatter,
-        letter: u8,
-        count: usize,
-        moment: DateTime,
-        w: *std.Io.Writer,
-    ) std.Io.Writer.Error!void {
-        switch (letter) {
-            'G' => {
-                const era: usize = if (moment.year > 0) 1 else 0;
-                // UTS #35's three widths: one through three letters is the
-                // abbreviated name, four is the wide one, five is the narrow.
-                try w.writeAll(switch (count) {
-                    4 => self.names.eras_wide[era],
-                    5 => self.names.eras_narrow[era],
-                    else => self.names.eras[era],
-                });
-            },
-            'y', 'u' => {
-                // A year is written within its era, never as a negative
-                // number. Astronomical year 0 *is* 1 BC and -1 is 2 BC, so the
-                // era-relative year below the common era is `1 - y`; checked
-                // against `Intl`, which writes those two as "1 BC" and "2 BC".
-                //
-                // Widened to `i64` first, because `1 - y` overflows an `i32`
-                // at the bottom of the range and a date is decoded from a
-                // timestamp that a caller chose.
-                const astronomical: i64 = moment.year;
-                const year: u64 = @abs(if (astronomical <= 0) 1 - astronomical else astronomical);
-                if (count == 2) {
-                    try self.writePadded(w, year % 100, 2);
-                } else {
-                    try self.writePadded(w, year, count);
-                }
-            },
-            // `Y` is the year the *week* belongs to, which is not always the
-            // calendar year: the last days of December fall in week 1 of the
-            // year after wherever the locale's week rule puts the boundary
-            // there. Four locales' patterns use it -- `ksh` writes `Y-MM`,
-            // `sc` writes `MM/Y`, `gd` writes `LLL Y` and `de-CH` writes
-            // `E, MM.dd.Y G` -- and until this case existed all four wrote
-            // nothing at all, because an unhandled letter falls off the end
-            // of this switch.
-            //
-            // Written astronomically, sign and all, rather than within its
-            // era: that is what ICU does, and it is why `Y` and `y` can
-            // differ by more than a year on the far side of year 0.
-            'Y' => {
-                const week = moment.asDate().weekOfYear(
-                    self.names.first_day,
-                    @intCast(self.names.min_days_in_first_week),
-                );
-                if (week.year < 0) try w.writeByte('-');
-                const magnitude: u64 = @abs(@as(i64, week.year));
-                if (count == 2) {
-                    try self.writePadded(w, magnitude % 100, 2);
-                } else {
-                    try self.writePadded(w, magnitude, count);
-                }
-            },
-            'M', 'L' => try self.writeMonth(letter == 'L', count, moment, w),
-            'd' => try self.writePadded(w, moment.day, count),
-            'D' => try self.writePadded(w, moment.dayOfThisYear(), count),
-            'E', 'e', 'c' => try self.writeWeekday(letter, count, moment, w),
-            // `a` is am/pm, `b` adds noon and midnight, and `B` is the
-            // locale's flexible period -- morning, afternoon, evening, night.
-            // All three are written with the am/pm names: several East Asian
-            // locales write their short time with `B`, and the two names CLDR
-            // gives for those hours are the ones it would use.
-            'a', 'b', 'B' => {
-                const half: usize = if (moment.hour < 12) 0 else 1;
-                try w.writeAll(self.names.day_periods[half]);
-            },
-            'h' => {
-                const hour = moment.hour % 12;
-                try self.writePadded(w, if (hour == 0) 12 else hour, count);
-            },
-            'H' => try self.writePadded(w, moment.hour, count),
-            'K' => try self.writePadded(w, moment.hour % 12, count),
-            'k' => try self.writePadded(w, if (moment.hour == 0) 24 else moment.hour, count),
-            'm' => try self.writePadded(w, moment.minute, count),
-            's' => try self.writePadded(w, moment.second, count),
-            'S' => {
-                // Fractions of a second, truncated to the width asked for.
-                //
-                // A nanosecond is nine digits and there is no tenth: past that
-                // the answer is zeros, and dividing to find them is a division
-                // by zero. A pattern may ask for more -- patterns are data,
-                // and `Options.fractional_second_digits` is a `u8` -- so the
-                // bound is checked rather than assumed. A fuzz seed found it.
-                var scale: u64 = 1_000_000_000;
-                const value: u64 = moment.nanosecond;
-                for (0..count) |_| {
-                    if (scale == 0) {
-                        try self.writeDigit(w, '0');
-                        continue;
-                    }
-                    scale /= 10;
-                    const digit: u8 = if (scale == 0) 0 else @intCast((value / scale) % 10);
-                    try self.writeDigit(w, '0' + digit);
-                }
-            },
-            'z', 'Z', 'O', 'v', 'V', 'x', 'X' => try self.writeZone(letter, count, moment, w),
-            else => {},
-        }
-    }
-
-    /// Write the month as a number or as one of its three names.
-    fn writeMonth(
-        self: Formatter,
-        standalone: bool,
-        count: usize,
-        moment: DateTime,
-        w: *std.Io.Writer,
-    ) std.Io.Writer.Error!void {
-        const index: usize = @as(usize, moment.month.as(u8)) - 1;
-        switch (count) {
-            1, 2 => try self.writePadded(w, moment.month.as(u8), count),
-            3 => try w.writeAll(if (standalone)
-                self.names.months_standalone_abbreviated[index]
-            else
-                self.names.months_abbreviated[index]),
-            4 => try w.writeAll(if (standalone)
-                self.names.months_standalone_wide[index]
-            else
-                self.names.months_wide[index]),
-            else => try w.writeAll(if (standalone)
-                self.names.months_standalone_narrow[index]
-            else
-                self.names.months_narrow[index]),
-        }
-    }
-
-    /// Write the weekday, in its format or its stand-alone form.
-    fn writeWeekday(
-        self: Formatter,
-        letter: u8,
-        count: usize,
-        moment: DateTime,
-        w: *std.Io.Writer,
-    ) std.Io.Writer.Error!void {
-        const index: usize = @intFromEnum(moment.weekday);
-        // `e` and `c` in their one- and two-letter forms are the day's number
-        // within the week rather than its name.
-        if (letter != 'E' and count <= 2) return self.writePadded(w, index + 1, count);
-
-        // `c` is the stand-alone weekday; `E` and `e` are the format one.
-        const standalone = letter == 'c';
-        switch (count) {
-            5 => try w.writeAll(if (standalone)
-                self.names.weekdays_standalone_narrow[index]
-            else
-                self.names.weekdays_narrow[index]),
-            4 => try w.writeAll(if (standalone)
-                self.names.weekdays_standalone_wide[index]
-            else
-                self.names.weekdays_wide[index]),
-            else => try w.writeAll(if (standalone)
-                self.names.weekdays_standalone_abbreviated[index]
-            else
-                self.names.weekdays_abbreviated[index]),
-        }
-    }
-
-    /// Write the zone as an offset from UTC.
-    ///
-    /// Only the offset forms are produced, whatever was asked for. The names --
-    /// "Central European Summer Time", "CEST" -- are a per-locale table as
-    /// large as everything else here put together, and an offset is never
-    /// wrong, only less friendly.
-    fn writeZone(
-        self: Formatter,
-        letter: u8,
-        count: usize,
-        moment: DateTime,
-        w: *std.Io.Writer,
-    ) std.Io.Writer.Error!void {
-        // A `Designation` is what the zone calls itself at this instant, and
-        // only a real timezone can say. When there is one, it is better than
-        // an offset.
-        if ((letter == 'z' or letter == 'v') and count <= 3) {
-            const designation = moment.designation.slice();
-            if (designation.len != 0) return w.writeAll(designation);
-        }
-
-        const total_minutes = @divTrunc(moment.offset, 60);
-        if (total_minutes == 0 and (letter == 'X' or letter == 'x')) {
-            return w.writeAll("Z");
-        }
-
-        if (letter == 'z' or letter == 'O' or letter == 'v' or letter == 'V') try w.writeAll("GMT");
-
-        try w.writeByte(if (total_minutes < 0) '-' else '+');
-        const magnitude: u32 = @abs(total_minutes);
-        try self.writePadded(w, magnitude / 60, 2);
-        try w.writeByte(':');
-        try self.writePadded(w, magnitude % 60, 2);
-    }
-
-    /// Write a number to at least `width` digits, in the locale's numbering
-    /// system.
-    fn writePadded(self: Formatter, w: *std.Io.Writer, value: anytype, width: usize) std.Io.Writer.Error!void {
-        var buffer: [24]u8 = undefined;
-        const text = std.fmt.bufPrint(&buffer, "{d}", .{value}) catch return;
-        if (text.len < width) for (0..width - text.len) |_| try self.writeDigit(w, '0');
-        for (text) |digit| try self.writeDigit(w, digit);
-    }
-
-    /// Write one ASCII digit in the locale's numbering system.
-    fn writeDigit(self: Formatter, w: *std.Io.Writer, digit: u8) std.Io.Writer.Error!void {
-        if (self.digits.ptr == default_digits.ptr) return w.writeByte(digit);
-
-        var it = std.unicode.Utf8Iterator{ .bytes = self.digits, .i = 0 };
-        var wanted = digit -% '0';
-        while (it.nextCodepointSlice()) |slice| {
-            if (wanted == 0) return w.writeAll(slice);
-            wanted -= 1;
-        }
-        try w.writeByte(digit);
-    }
+    };
 };
 
 // -- tests -------------------------------------------------------------------
