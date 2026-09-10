@@ -79,6 +79,14 @@ pub const Code = enum {
     pub fn name(code: Code) []const u8 {
         return @tagName(code);
     }
+
+    test name {
+        try std.testing.expectEqualStrings("E0016", Code.E0016.name());
+        // The numbering has a hole in it where Fluent retired E0023, and the
+        // codes either side of it are unmoved.
+        try std.testing.expectEqualStrings("E0022", Code.E0022.name());
+        try std.testing.expectEqualStrings("E0024", Code.E0024.name());
+    }
 };
 
 /// A parse error attached to the `Junk` it produced.
@@ -132,29 +140,41 @@ pub const Annotation = struct {
         }
     }
 
+    test writeMessage {
+        var buffer: [128]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+
+        // The message alone, without the code in front of it.
+        try (Annotation{ .code = .E0016, .position = 0 }).writeMessage(&w);
+        try std.testing.expectEqualStrings(
+            "Message references cannot be used as selectors",
+            w.buffered(),
+        );
+    }
+
     /// `{f}` prints `E0016: Message references cannot be used as selectors`.
     pub fn format(self: Annotation, w: *std.Io.Writer) std.Io.Writer.Error!void {
         try w.print("{s}: ", .{self.code.name()});
         try self.writeMessage(w);
     }
+
+    test format {
+        var buffer: [128]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+
+        // The ones that take an argument interpolate it...
+        try w.print("{f}", .{Annotation{ .code = .E0005, .argument = "hello", .position = 0 }});
+        try std.testing.expectEqualStrings(
+            "E0005: Expected message \"hello\" to have a value or attributes",
+            w.buffered(),
+        );
+
+        // ...and the ones that do not simply ignore it.
+        w = std.Io.Writer.fixed(&buffer);
+        try w.print("{f}", .{Annotation{ .code = .E0027, .position = 3 }});
+        try std.testing.expectEqualStrings(
+            "E0027: Unbalanced closing brace in TextElement.",
+            w.buffered(),
+        );
+    }
 };
-
-test "annotation messages interpolate their argument" {
-    var buf: [128]u8 = undefined;
-    var w = std.Io.Writer.fixed(&buf);
-    try (Annotation{ .code = .E0005, .argument = "hello", .position = 0 }).format(&w);
-    try std.testing.expectEqualStrings(
-        "E0005: Expected message \"hello\" to have a value or attributes",
-        w.buffered(),
-    );
-}
-
-test "annotation messages without an argument ignore it" {
-    var buf: [128]u8 = undefined;
-    var w = std.Io.Writer.fixed(&buf);
-    try (Annotation{ .code = .E0027, .position = 3 }).format(&w);
-    try std.testing.expectEqualStrings(
-        "E0027: Unbalanced closing brace in TextElement.",
-        w.buffered(),
-    );
-}

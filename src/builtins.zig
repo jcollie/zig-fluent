@@ -38,11 +38,20 @@ const value_mod = @import("value.zig");
 const Bundle = bundle_mod.Bundle;
 const Call = bundle_mod.Call;
 const Value = value_mod.Value;
+const Args = value_mod.Args;
 
 /// Register the builtins on a new bundle.
 pub fn install(bundle: *Bundle) std.mem.Allocator.Error!void {
     try bundle.addFunction("NUMBER", number);
     try bundle.addFunction("DATETIME", datetime);
+}
+
+test install {
+    var bundle: Bundle = try .init(std.testing.allocator, .root);
+    defer bundle.deinit();
+    // `Bundle.init` calls this, so both are already there.
+    try std.testing.expect(bundle.getFunction("NUMBER") != null);
+    try std.testing.expect(bundle.getFunction("DATETIME") != null);
 }
 
 /// `NUMBER(value, ...options)` -- a number, formatted as asked.
@@ -81,6 +90,35 @@ pub fn number(call: Call) Value {
     };
 }
 
+test number {
+    var bundle: Bundle = try .init(std.testing.allocator, .root);
+    defer bundle.deinit();
+    bundle.use_isolating = false;
+    try bundle.addResource(
+        \\plain = { NUMBER($n) }
+        \\rounded = { NUMBER($n, maximumFractionDigits: 2) }
+        \\ungrouped = { NUMBER($n, useGrouping: "false") }
+        \\
+    , .{}, null);
+
+    const args: Args = &.{.{ .name = "n", .value = .num(1234.56789) }};
+    for ([_]struct { []const u8, []const u8 }{
+        .{ "plain", "1,234.568" },
+        .{ "rounded", "1,234.57" },
+        .{ "ungrouped", "1234.568" },
+    }) |case| {
+        const name, const expected = case;
+        const text = (try bundle.format(std.testing.allocator, name, args, null)).?;
+        defer std.testing.allocator.free(text);
+        try std.testing.expectEqualStrings(expected, text);
+    }
+}
+
+/// Read the options a `NUMBER()` call was written with.
+///
+/// Only the ones on the reference implementation's list; anything else is
+/// ignored rather than refused, so a file written for a newer version still
+/// works.
 fn numberOptions(call: Call) number_format.Options {
     var options: number_format.Options = .{};
 
@@ -137,6 +175,27 @@ pub fn datetime(call: Call) Value {
     };
 }
 
+test datetime {
+    var bundle: Bundle = try .init(std.testing.allocator, .root);
+    defer bundle.deinit();
+    bundle.use_isolating = false;
+    try bundle.addResource("m = { DATETIME($t, dateStyle: \"short\") }\n", .{}, null);
+
+    // A moment...
+    const from_time = (try bundle.format(std.testing.allocator, "m", &.{
+        .{ .name = "t", .value = .time(0) },
+    }, null)).?;
+    defer std.testing.allocator.free(from_time);
+    try std.testing.expectEqualStrings("1970-01-01", from_time);
+
+    // ...or a bare number, which is seconds since the epoch.
+    const from_number = (try bundle.format(std.testing.allocator, "m", &.{
+        .{ .name = "t", .value = .num(0) },
+    }, null)).?;
+    defer std.testing.allocator.free(from_number);
+    try std.testing.expectEqualStrings("1970-01-01", from_number);
+}
+
 /// Seconds since the epoch as a millisecond count, for any float at all.
 ///
 /// Clamping with `@min` and `@max` against the ends of `i64` is not enough,
@@ -168,6 +227,7 @@ test "a timestamp out of range clamps rather than panicking" {
     try testing.expectEqual(@as(i64, std.math.maxInt(i64)), epochMilliFromSeconds(9223372036854775808.0));
 }
 
+/// Read the options a `DATETIME()` call was written with.
 fn datetimeOptions(call: Call) datetime_format.Options {
     const O = datetime_format.Options;
     var options: O = .{};

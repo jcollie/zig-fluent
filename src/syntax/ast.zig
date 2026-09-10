@@ -93,6 +93,18 @@ pub const Pattern = struct {
     pub fn isSimple(self: Pattern) bool {
         return self.elements.len == 1 and self.elements[0] == .text;
     }
+
+    test isSimple {
+        const parse = @import("parser.zig").parse;
+
+        var plain = try parse(std.testing.allocator, "m = just text\n");
+        defer plain.deinit();
+        try std.testing.expect(plain.body[0].message.value.?.isSimple());
+
+        var interpolated = try parse(std.testing.allocator, "m = text and { $x }\n");
+        defer interpolated.deinit();
+        try std.testing.expect(!interpolated.body[0].message.value.?.isSimple());
+    }
 };
 
 pub const PatternElement = union(enum) {
@@ -193,6 +205,22 @@ pub const StringLiteral = struct {
             }
         }
     }
+
+    test unescape {
+        var buffer: [64]u8 = undefined;
+
+        var w = std.Io.Writer.fixed(&buffer);
+        try (StringLiteral{ .value = "a\\\\b\\\"c\\u0041\\U01F600" }).unescape(&w);
+        try std.testing.expectEqualStrings("a\\b\"cA\u{1F600}", w.buffered());
+
+        // An escape that is well-formed but names no character at all becomes
+        // U+FFFD rather than failing: `\UFFFFFF` is six valid hex digits.
+        for ([_][]const u8{ "\\uD800", "\\U110000", "\\UFFFFFF" }) |literal| {
+            w = std.Io.Writer.fixed(&buffer);
+            try (StringLiteral{ .value = literal }).unescape(&w);
+            try std.testing.expectEqualStrings("\u{FFFD}", w.buffered());
+        }
+    }
 };
 
 /// A number, `1`, `-2` or `3.14`.
@@ -209,10 +237,23 @@ pub const NumberLiteral = struct {
         return std.fmt.parseFloat(f64, self.value) catch 0;
     }
 
+    test toFloat {
+        try std.testing.expectEqual(@as(f64, 1), (NumberLiteral{ .value = "1" }).toFloat());
+        try std.testing.expectEqual(@as(f64, -2.5), (NumberLiteral{ .value = "-2.500" }).toFloat());
+    }
+
     /// How many digits were written after the decimal point.
     pub fn precision(self: NumberLiteral) u8 {
         const dot = std.mem.indexOfScalar(u8, self.value, '.') orelse return 0;
         return @intCast(self.value.len - dot - 1);
+    }
+
+    test precision {
+        // The digits written are the point: `{ NUMBER(1.0) }` must print
+        // "1.0", so the literal's own precision becomes a floor on the value.
+        try std.testing.expectEqual(@as(u8, 0), (NumberLiteral{ .value = "1" }).precision());
+        try std.testing.expectEqual(@as(u8, 1), (NumberLiteral{ .value = "1.0" }).precision());
+        try std.testing.expectEqual(@as(u8, 3), (NumberLiteral{ .value = "-2.500" }).precision());
     }
 };
 
@@ -264,6 +305,20 @@ pub const SelectExpression = struct {
         for (self.variants, 0..) |v, i| if (v.default) return i;
         unreachable;
     }
+
+    test defaultIndex {
+        var resource = try @import("parser.zig").parse(std.testing.allocator,
+            \\count = { $n ->
+            \\    [one] One
+            \\   *[other] Many
+            \\ }
+            \\
+        );
+        defer resource.deinit();
+
+        const select = resource.body[0].message.value.?.elements[0].placeable.select_expression;
+        try std.testing.expectEqual(@as(usize, 1), select.defaultIndex());
+    }
 };
 
 pub const Variant = struct {
@@ -308,9 +363,16 @@ pub const Resource = struct {
     source: []const u8,
     body: []const Entry,
 
+    /// Free the whole tree, which is one arena, in a single call.
     pub fn deinit(self: *Resource) void {
         self.arena.deinit();
         self.* = undefined;
+    }
+
+    test deinit {
+        // One call frees the whole tree, because the whole tree is one arena.
+        var resource = try @import("parser.zig").parse(std.testing.allocator, "m = v\n");
+        resource.deinit();
     }
 
     /// Whether any entry failed to parse.
@@ -318,33 +380,16 @@ pub const Resource = struct {
         for (self.body) |entry| if (entry == .junk) return true;
         return false;
     }
-};
 
-test "number literals report the precision they were written with" {
-    try std.testing.expectEqual(@as(u8, 0), (NumberLiteral{ .value = "1" }).precision());
-    try std.testing.expectEqual(@as(u8, 1), (NumberLiteral{ .value = "1.0" }).precision());
-    try std.testing.expectEqual(@as(u8, 3), (NumberLiteral{ .value = "-2.500" }).precision());
-    try std.testing.expectEqual(@as(f64, -2.5), (NumberLiteral{ .value = "-2.500" }).toFloat());
-}
+    test hasJunk {
+        const parse = @import("parser.zig").parse;
 
-test "string literals unescape the sequences Fluent defines" {
-    var buf: [64]u8 = undefined;
-    var w = std.Io.Writer.fixed(&buf);
-    try (StringLiteral{ .value = "a\\\\b\\\"c\\u0041\\U01F600" }).unescape(&w);
-    try std.testing.expectEqualStrings("a\\b\"cA\u{1F600}", w.buffered());
-}
+        var good = try parse(std.testing.allocator, "m = v\n");
+        defer good.deinit();
+        try std.testing.expect(!good.hasJunk());
 
-test "an escape that names no character becomes the replacement character" {
-    // Each of these is a well-formed literal as far as the grammar goes, and
-    // none of them is a Unicode scalar value.
-    for ([_][]const u8{
-        "\\uD800", // a lone surrogate
-        "\\U110000", // one past the last code point
-        "\\UFFFFFF", // the largest six hex digits can express
-    }) |literal| {
-        var buf: [16]u8 = undefined;
-        var w = std.Io.Writer.fixed(&buf);
-        try (StringLiteral{ .value = literal }).unescape(&w);
-        try std.testing.expectEqualStrings("\u{FFFD}", w.buffered());
+        var bad = try parse(std.testing.allocator, "m = { $x\n");
+        defer bad.deinit();
+        try std.testing.expect(bad.hasJunk());
     }
-}
+};

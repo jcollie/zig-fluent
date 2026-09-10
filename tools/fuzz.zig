@@ -84,6 +84,7 @@ const Watch = struct {
 
 var watch: Watch = .{};
 
+/// Run each target for its share of the time, reporting what comes back.
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
 
@@ -205,11 +206,13 @@ pub fn main(init: std.process.Init) !void {
     if (failures != 0) std.process.exit(1);
 }
 
+/// The target called `name`, or null.
 fn find(name: []const u8) ?targets.Target {
     for (targets.all) |t| if (std.mem.eql(u8, t.name, name)) return t;
     return null;
 }
 
+/// The names of every target, for the usage message.
 fn targetNames() []const u8 {
     comptime var names: []const u8 = "";
     inline for (targets.all, 0..) |t, i| {
@@ -271,6 +274,7 @@ fn makeInput(
     for (0..tail) |_| out.appendAssumeCapacity(random.int(u8));
 }
 
+/// Change one thing about `content`, in place.
 fn mutate(gpa: std.mem.Allocator, content: *std.ArrayList(u8), random: std.Random) !void {
     if (content.items.len == 0) {
         try content.append(gpa, random.int(u8));

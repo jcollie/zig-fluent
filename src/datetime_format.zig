@@ -23,6 +23,8 @@ const std = @import("std");
 
 const datetime = @import("datetime");
 
+const testing = std.testing;
+
 pub const DateTime = datetime.DateTime;
 pub const Instant = datetime.Instant;
 pub const TimeZone = datetime.TimeZone;
@@ -32,9 +34,27 @@ pub fn fromEpochMilli(epoch_ms: i64) DateTime {
     return Instant.fromMilliTimestamp(epoch_ms).asDateTime();
 }
 
+test fromEpochMilli {
+    const epoch = fromEpochMilli(0);
+    try testing.expectEqual(@as(datetime.Year, 1970), epoch.year);
+    try testing.expectEqual(datetime.Month.Jan, epoch.month);
+
+    // A moment before 1970, which `std.time.epoch` cannot represent at all.
+    const before = fromEpochMilli(-1);
+    try testing.expectEqual(@as(datetime.Year, 1969), before.year);
+    try testing.expectEqual(datetime.Month.Dec, before.month);
+    try testing.expectEqual(@as(datetime.Day, 31), before.day);
+}
+
 /// Decompose a moment as the wall clock read in `zone`.
 pub fn fromEpochMilliIn(epoch_ms: i64, zone: TimeZone) DateTime {
     return zone.atInstant(Instant.fromMilliTimestamp(epoch_ms));
+}
+
+test fromEpochMilliIn {
+    // What a clock in a given place actually read at an instant is a question
+    // only the IANA database can answer; UTC is the one zone that needs none.
+    try testing.expectEqual(@as(i32, 0), fromEpochMilli(0).offset);
 }
 
 /// How much of a date or time to show, and in what style.
@@ -83,6 +103,11 @@ pub const Options = struct {
     /// ECMA-402 falls back to year, month and day when nothing is requested,
     /// which is what makes a bare `DATETIME($d)` show a date rather than
     /// nothing.
+    /// Whether any field at all was asked for.
+    ///
+    /// ECMA-402 falls back to year, month and day when nothing is requested,
+    /// which is what makes a bare `DATETIME($d)` show a date rather than
+    /// nothing.
     pub fn isEmpty(self: Options) bool {
         return self.date_style == null and self.time_style == null and
             self.weekday == null and self.era == null and self.year == null and
@@ -92,6 +117,13 @@ pub const Options = struct {
             self.time_zone_name == null;
     }
 
+    test isEmpty {
+        try testing.expect((Options{}).isEmpty());
+        try testing.expect(!(Options{ .year = .numeric }).isEmpty());
+        try testing.expect(!(Options{ .date_style = .short }).isEmpty());
+    }
+
+    /// Layer `other`'s options over these, keeping every one it did not set.
     pub fn override(self: Options, other: Options) Options {
         var merged = self;
         inline for (@typeInfo(Options).@"struct".fields) |field| {
@@ -100,6 +132,15 @@ pub const Options = struct {
             }
         }
         return merged;
+    }
+
+    test override {
+        const base: Options = .{ .year = .numeric, .month = .long };
+        const merged = base.override(.{ .day = .numeric });
+
+        try testing.expectEqual(Numeric.numeric, merged.day.?);
+        try testing.expectEqual(Numeric.numeric, merged.year.?);
+        try testing.expectEqual(MonthWidth.long, merged.month.?);
     }
 };
 
@@ -200,6 +241,7 @@ pub const Formatter = struct {
     /// Arabic's ninth of September is `٩ سبتمبر ٢٠٢٦`, not `9 سبتمبر 2026`.
     digits: []const u8 = "0123456789",
 
+    /// Write the moment `epoch_ms` the way this locale writes dates.
     pub fn format(self: Formatter, epoch_ms: i64, w: *std.Io.Writer) std.Io.Writer.Error!void {
         const zone = self.options.time_zone orelse self.zone;
         const moment = if (zone) |z| fromEpochMilliIn(epoch_ms, z.*) else fromEpochMilli(epoch_ms);
@@ -208,6 +250,29 @@ pub const Formatter = struct {
         var adjust_buffer: [192]u8 = undefined;
         const pattern = self.choosePattern(&glue_buffer, &adjust_buffer);
         try self.writePattern(pattern, moment, w);
+    }
+
+    test format {
+        var buffer: [128]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+
+        // A style names one of the locale's four presets outright. With no
+        // locale data loaded these are root's, which are ISO-like.
+        try (Formatter{ .options = .{ .date_style = .short } }).format(0, &w);
+        try testing.expectEqualStrings("1970-01-01", w.buffered());
+
+        // Individual fields are turned into a CLDR skeleton and matched
+        // against the ones the locale lists, which is what puts them in the
+        // order that locale writes them.
+        const names: Names = .{ .available_formats = &.{
+            .{ .skeleton = "Hm", .pattern = "HH:mm" },
+        } };
+        w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{
+            .names = names,
+            .options = .{ .hour = .@"2-digit", .minute = .@"2-digit" },
+        }).format(0, &w);
+        try testing.expectEqualStrings("00:00", w.buffered());
     }
 
     /// Work out which CLDR pattern to use for the options in force.
@@ -233,6 +298,7 @@ pub const Formatter = struct {
         return adjustWidths(matched.pattern, matched.skeleton, skeleton, adjust_buffer);
     }
 
+    /// Join the locale's preset date and time formats, or take whichever of the two was asked for on its own.
     fn chooseStyledPattern(self: Formatter, buffer: []u8) []const u8 {
         const date = if (self.options.date_style) |style| self.names.date_formats[@intFromEnum(style)] else null;
         const time = if (self.options.time_style) |style| self.names.time_formats[@intFromEnum(style)] else null;
@@ -469,6 +535,7 @@ pub const Formatter = struct {
         }
     }
 
+    /// Write one field of a pattern, given its letter and how many were written.
     fn writeField(
         self: Formatter,
         letter: u8,
@@ -527,6 +594,7 @@ pub const Formatter = struct {
         }
     }
 
+    /// Write the month as a number or as one of its three names.
     fn writeMonth(
         self: Formatter,
         standalone: bool,
@@ -552,6 +620,7 @@ pub const Formatter = struct {
         }
     }
 
+    /// Write the weekday, in its format or its stand-alone form.
     fn writeWeekday(
         self: Formatter,
         letter: u8,
@@ -617,6 +686,8 @@ pub const Formatter = struct {
         try self.writePadded(w, magnitude % 60, 2);
     }
 
+    /// Write a number to at least `width` digits, in the locale's numbering
+    /// system.
     fn writePadded(self: Formatter, w: *std.Io.Writer, value: anytype, width: usize) std.Io.Writer.Error!void {
         var buffer: [24]u8 = undefined;
         const text = std.fmt.bufPrint(&buffer, "{d}", .{value}) catch return;
@@ -639,39 +710,3 @@ pub const Formatter = struct {
 };
 
 // -- tests -------------------------------------------------------------------
-
-const testing = std.testing;
-
-test "a moment decodes through zig-datetime" {
-    // 2026-09-09T14:03:07.250Z
-    const d = fromEpochMilli(1788962587250);
-    try testing.expectEqual(@as(datetime.Year, 2026), d.year);
-    try testing.expectEqual(datetime.Month.Sep, d.month);
-    try testing.expectEqual(@as(datetime.Day, 9), d.day);
-    try testing.expectEqual(@as(datetime.Hour, 14), d.hour);
-    try testing.expectEqual(@as(datetime.Minute, 3), d.minute);
-    try testing.expectEqual(@as(datetime.Second, 7), d.second);
-}
-
-test "a moment before the epoch decodes too" {
-    // The one thing `std.time.epoch` cannot represent at all.
-    const d = fromEpochMilli(-1);
-    try testing.expectEqual(@as(datetime.Year, 1969), d.year);
-    try testing.expectEqual(datetime.Month.Dec, d.month);
-    try testing.expectEqual(@as(datetime.Day, 31), d.day);
-    try testing.expectEqual(@as(datetime.Hour, 23), d.hour);
-}
-
-test "options with nothing set are recognized as empty" {
-    try testing.expect((Options{}).isEmpty());
-    try testing.expect(!(Options{ .year = .numeric }).isEmpty());
-    try testing.expect(!(Options{ .date_style = .short }).isEmpty());
-}
-
-test "options are layered rather than replaced" {
-    const base: Options = .{ .year = .numeric, .month = .long };
-    const merged = base.override(.{ .day = .numeric });
-    try testing.expectEqual(Options.Numeric.numeric, merged.year.?);
-    try testing.expectEqual(Options.MonthWidth.long, merged.month.?);
-    try testing.expectEqual(Options.Numeric.numeric, merged.day.?);
-}

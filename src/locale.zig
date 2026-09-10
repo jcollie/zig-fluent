@@ -87,6 +87,20 @@ pub const Locale = struct {
         return self;
     }
 
+    test parse {
+        // Case is normalized as BCP 47 says: language lower, script title,
+        // region upper.
+        try testing.expectEqualStrings("en-Latn-US", (try Locale.parse("EN-latn-us")).tag());
+        // Underscores separate subtags too, since that is how POSIX spells them.
+        try testing.expectEqualStrings("pt-BR", (try Locale.parse("pt_BR")).tag());
+        // Anything that keys no table here is dropped.
+        try testing.expectEqualStrings("de-DE", (try Locale.parse("de-DE-u-co-phonebk")).tag());
+
+        try testing.expectError(error.InvalidLanguageTag, Locale.parse("e"));
+        try testing.expectError(error.InvalidLanguageTag, Locale.parse("123"));
+    }
+
+    /// Append `s` to the tag, lower-cased.
     fn appendLower(self: *Locale, s: []const u8) void {
         for (s) |c| {
             self.text[self.len] = std.ascii.toLower(c);
@@ -94,16 +108,19 @@ pub const Locale = struct {
         }
     }
 
+    /// Append the `-` between two subtags.
     fn appendSeparator(self: *Locale) void {
         self.text[self.len] = '-';
         self.len += 1;
     }
 
+    /// Whether every byte of `s` is a letter.
     fn isAllAlphabetic(s: []const u8) bool {
         for (s) |c| if (!std.ascii.isAlphabetic(c)) return false;
         return true;
     }
 
+    /// Whether every byte of `s` is a digit, which is how an M.49 region reads.
     fn isAllDigits(s: []const u8) bool {
         for (s) |c| if (!std.ascii.isDigit(c)) return false;
         return true;
@@ -114,29 +131,74 @@ pub const Locale = struct {
         return self.text[0..self.len];
     }
 
+    test tag {
+        try testing.expectEqualStrings("sr-Latn-RS", (try Locale.parse("SR-latn-rs")).tag());
+        try testing.expectEqualStrings("und", Locale.root.tag());
+    }
+
+    /// The language subtag, e.g. `"en"` or `"fil"`. Always present.
     pub fn language(self: *const Locale) []const u8 {
         return self.text[0..self.language_len];
     }
 
+    test language {
+        try testing.expectEqualStrings("en", (try Locale.parse("en-Latn-US")).language());
+        // Three letters is a language, not a script.
+        try testing.expectEqualStrings("fil", (try Locale.parse("fil-PH")).language());
+    }
+
+    /// The script subtag in title case, e.g. `"Latn"`, or null if there is none.
     pub fn script(self: *const Locale) ?[]const u8 {
         if (self.script_len == 0) return null;
         const start = self.language_len + 1;
         return self.text[start..][0..self.script_len];
     }
 
+    test script {
+        try testing.expectEqualStrings("Latn", (try Locale.parse("sr-latn-RS")).script().?);
+        try testing.expectEqual(@as(?[]const u8, null), (try Locale.parse("sr-RS")).script());
+    }
+
+    /// The region subtag in upper case, or null if there is none.
+    ///
+    /// Two letters is a country; three digits is a UN M.49 area, which CLDR
+    /// uses for the locales that span several -- `es-419` is Latin America.
     pub fn region(self: *const Locale) ?[]const u8 {
         if (self.region_len == 0) return null;
         const start = self.len - self.region_len;
         return self.text[start..self.len];
     }
 
+    test region {
+        try testing.expectEqualStrings("US", (try Locale.parse("en-us")).region().?);
+        try testing.expectEqualStrings("419", (try Locale.parse("es-419")).region().?);
+        try testing.expectEqual(@as(?[]const u8, null), (try Locale.parse("en")).region());
+    }
+
+    /// Whether two locales are the same, once both have been canonicalized.
     pub fn eql(self: *const Locale, other: *const Locale) bool {
         return std.mem.eql(u8, self.tag(), other.tag());
+    }
+
+    test eql {
+        const a = try Locale.parse("EN-latn-us");
+        const b = try Locale.parse("en_Latn_US");
+        try testing.expect(a.eql(&b));
+
+        const c = try Locale.parse("en-GB");
+        try testing.expect(!a.eql(&c));
     }
 
     /// `{f}` prints the canonical tag.
     pub fn format(self: Locale, w: *std.Io.Writer) std.Io.Writer.Error!void {
         try w.writeAll(self.tag());
+    }
+
+    test format {
+        var buffer: [32]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+        try w.print("{f}", .{try Locale.parse("pt_br")});
+        try testing.expectEqualStrings("pt-BR", w.buffered());
     }
 
     /// The tags to try, most specific first.
@@ -168,6 +230,16 @@ pub const Locale = struct {
         return buffer[0..n];
     }
 
+    test fallbacks {
+        var buffer: [3][]const u8 = undefined;
+
+        const full = try Locale.parse("sr-Latn-RS");
+        try expectChain(&.{ "sr-Latn-RS", "sr-Latn", "sr" }, full.fallbacks(&buffer));
+
+        const bare = try Locale.parse("en");
+        try expectChain(&.{"en"}, bare.fallbacks(&buffer));
+    }
+
     /// Find `self` in a sorted table of tags, trying each fallback in turn.
     ///
     /// The table is the `keys` of a generated CLDR table, which the generator
@@ -179,8 +251,22 @@ pub const Locale = struct {
         }
         return null;
     }
+
+    test lookup {
+        const keys: []const []const u8 = &.{ "en", "pt", "pt-PT", "sr" };
+
+        // The most specific entry that exists wins...
+        try testing.expectEqual(@as(?usize, 2), (try Locale.parse("pt-PT")).lookup(keys));
+        // ...and a locale with no entry of its own inherits its language's.
+        try testing.expectEqual(@as(?usize, 1), (try Locale.parse("pt-BR")).lookup(keys));
+        try testing.expectEqual(@as(?usize, null), (try Locale.parse("zz")).lookup(keys));
+    }
 };
 
+/// Find `needle` in a sorted table of tags.
+///
+/// The generated CLDR tables are written in sorted order precisely so that
+/// this can be a binary search rather than a scan of several hundred entries.
 fn binarySearch(keys: []const []const u8, needle: []const u8) ?usize {
     var low: usize = 0;
     var high: usize = keys.len;
@@ -199,54 +285,6 @@ fn binarySearch(keys: []const []const u8, needle: []const u8) ?usize {
 
 const testing = std.testing;
 
-test "a bare language tag" {
-    const l = try Locale.parse("en");
-    try testing.expectEqualStrings("en", l.tag());
-    try testing.expectEqualStrings("en", l.language());
-    try testing.expectEqual(@as(?[]const u8, null), l.script());
-    try testing.expectEqual(@as(?[]const u8, null), l.region());
-}
-
-test "case is normalized" {
-    const l = try Locale.parse("EN-latn-us");
-    try testing.expectEqualStrings("en-Latn-US", l.tag());
-    try testing.expectEqualStrings("Latn", l.script().?);
-    try testing.expectEqualStrings("US", l.region().?);
-}
-
-test "underscores separate subtags too" {
-    const l = try Locale.parse("pt_BR");
-    try testing.expectEqualStrings("pt-BR", l.tag());
-}
-
-test "a numeric region is kept" {
-    const l = try Locale.parse("es-419");
-    try testing.expectEqualStrings("es-419", l.tag());
-    try testing.expectEqualStrings("419", l.region().?);
-}
-
-test "extensions and variants are dropped" {
-    const l = try Locale.parse("de-DE-u-co-phonebk");
-    try testing.expectEqualStrings("de-DE", l.tag());
-
-    const with_variant = try Locale.parse("sl-IT-nedis");
-    try testing.expectEqualStrings("sl-IT", with_variant.tag());
-}
-
-test "a three-letter language is a language, not a script" {
-    const l = try Locale.parse("fil-PH");
-    try testing.expectEqualStrings("fil-PH", l.tag());
-    try testing.expectEqualStrings("fil", l.language());
-    try testing.expectEqual(@as(?[]const u8, null), l.script());
-}
-
-test "malformed tags are rejected" {
-    try testing.expectError(error.InvalidLanguageTag, Locale.parse(""));
-    try testing.expectError(error.InvalidLanguageTag, Locale.parse("e"));
-    try testing.expectError(error.InvalidLanguageTag, Locale.parse("engl"));
-    try testing.expectError(error.InvalidLanguageTag, Locale.parse("12"));
-}
-
 /// Compare a fallback chain by content.
 ///
 /// `expectEqualSlices` would compare the `[]const u8` elements themselves,
@@ -255,38 +293,4 @@ test "malformed tags are rejected" {
 fn expectChain(expected: []const []const u8, actual: []const []const u8) !void {
     try testing.expectEqual(expected.len, actual.len);
     for (expected, actual) |want, got| try testing.expectEqualStrings(want, got);
-}
-
-test "the fallback chain drops subtags from the right" {
-    var buffer: [3][]const u8 = undefined;
-
-    const full = try Locale.parse("sr-Latn-RS");
-    try expectChain(&.{ "sr-Latn-RS", "sr-Latn", "sr" }, full.fallbacks(&buffer));
-
-    const with_region = try Locale.parse("pt-PT");
-    try expectChain(&.{ "pt-PT", "pt" }, with_region.fallbacks(&buffer));
-
-    const with_script = try Locale.parse("zh-Hant");
-    try expectChain(&.{ "zh-Hant", "zh" }, with_script.fallbacks(&buffer));
-
-    const bare = try Locale.parse("en");
-    try expectChain(&.{"en"}, bare.fallbacks(&buffer));
-}
-
-test "lookup takes the most specific entry that exists" {
-    const keys: []const []const u8 = &.{ "en", "pt", "pt-PT", "sr" };
-
-    const pt_pt = try Locale.parse("pt-PT");
-    try testing.expectEqual(@as(?usize, 2), pt_pt.lookup(keys));
-
-    // No entry for pt-BR, so the one filed under `pt` is the right answer.
-    const pt_br = try Locale.parse("pt-BR");
-    try testing.expectEqual(@as(?usize, 1), pt_br.lookup(keys));
-
-    const missing = try Locale.parse("zz");
-    try testing.expectEqual(@as(?usize, null), missing.lookup(keys));
-}
-
-test "root is a locale like any other" {
-    try testing.expectEqualStrings("und", Locale.root.tag());
 }

@@ -99,8 +99,21 @@ test {
     _ = plural;
     _ = number_format;
     _ = datetime_format;
-    _ = bundle_mod;
     _ = builtins;
     _ = @import("resolver.zig");
-    _ = value_mod;
+
+    // Naming a file analyses that file's own container, which is enough for
+    // the tests written at its top level -- but a doctest lives in the same
+    // container as the declaration it documents, and Zig analyses a type only
+    // when something uses it. A doctest inside a type nothing referenced is
+    // simply never run, and passes by not existing. `refAllDecls` names each
+    // of a file's declarations, which is what pulls those tests in.
+    const std = @import("std");
+    std.testing.refAllDecls(bundle_mod);
+    std.testing.refAllDecls(value_mod);
+    std.testing.refAllDecls(syntax);
+    std.testing.refAllDecls(plural);
+    std.testing.refAllDecls(number_format);
+    std.testing.refAllDecls(datetime_format);
+    std.testing.refAllDecls(@This());
 }

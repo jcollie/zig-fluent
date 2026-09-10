@@ -49,12 +49,28 @@ pub fn parse(gpa: Allocator, source: []const u8) Allocator.Error!ast.Resource {
     return .{ .arena = arena, .source = owned, .body = body };
 }
 
+test parse {
+    var resource = try parse(std.testing.allocator,
+        \\hello = Hello, world!
+        \\broken = { $x
+        \\
+    );
+    defer resource.deinit();
+
+    // The good entry is there...
+    try std.testing.expectEqualStrings("hello", resource.body[0].message.id.name);
+    // ...and the broken one is junk carrying the reason, rather than an error
+    // that would have cost us the whole file.
+    try std.testing.expectEqual(ast.Code.E0003, resource.body[1].junk.annotations[0].code);
+}
+
 const Parser = struct {
     arena: Allocator,
     stream: Stream,
 
     // -- the file -----------------------------------------------------------
 
+    /// Read entries until the source runs out.
     fn parseResource(self: *Parser) Allocator.Error![]const ast.Entry {
         var entries: std.ArrayList(ast.Entry) = .empty;
         _ = self.stream.skipBlankBlockCount();
@@ -96,6 +112,7 @@ const Parser = struct {
         return entries.toOwnedSlice(self.arena);
     }
 
+    /// Read one entry, or make junk of whatever could not be read.
     fn getEntryOrJunk(self: *Parser) Allocator.Error!ast.Entry {
         const entry_start = self.stream.index;
 
@@ -126,6 +143,7 @@ const Parser = struct {
         } };
     }
 
+    /// Dispatch on the first character, which is what decides the kind.
     fn getEntry(self: *Parser) Error!ast.Entry {
         if (self.stream.currentChar() == '#') return .{ .comment = try self.getComment() };
         if (self.stream.currentChar() == '-') return .{ .term = try self.getTerm() };
@@ -135,6 +153,7 @@ const Parser = struct {
 
     // -- entries ------------------------------------------------------------
 
+    /// Read a comment, joining the consecutive lines of the same depth.
     fn getComment(self: *Parser) Error!ast.Comment {
         // -1 until the first line has been read and has said how deep this
         // comment is; after that, every continuation line must be exactly as
@@ -174,10 +193,12 @@ const Parser = struct {
         };
     }
 
+    /// Whether `ch` may appear in the body of a comment line.
     fn notNewline(ch: u8) bool {
         return ch != '\n';
     }
 
+    /// Read `id = value` with its attributes.
     fn getMessage(self: *Parser) Error!ast.Message {
         const id = try self.getIdentifier();
         _ = self.stream.skipBlankInline();
@@ -194,6 +215,7 @@ const Parser = struct {
         return .{ .id = id, .value = value, .attributes = attributes, .comment = null };
     }
 
+    /// Read `-id = value` with its attributes.
     fn getTerm(self: *Parser) Error!ast.Term {
         try self.stream.expectChar('-');
         const id = try self.getIdentifier();
@@ -208,6 +230,7 @@ const Parser = struct {
         return .{ .id = id, .value = value, .attributes = attributes, .comment = null };
     }
 
+    /// Read one `.name = value`.
     fn getAttribute(self: *Parser) Error!ast.Attribute {
         try self.stream.expectChar('.');
         const id = try self.getIdentifier();
@@ -257,6 +280,7 @@ const Parser = struct {
         return attributes.toOwnedSlice(self.arena);
     }
 
+    /// Read a name: a letter, then letters, digits, `_` and `-`.
     fn getIdentifier(self: *Parser) Error!ast.Identifier {
         const start = self.stream.index;
         _ = try self.stream.takeIdStart();
@@ -299,6 +323,7 @@ const Parser = struct {
         return null;
     }
 
+    /// Read a value, tracking the indent that will be stripped from it.
     fn getPattern(self: *Parser, is_block: bool) Error!ast.Pattern {
         var elements: std.ArrayList(RawElement) = .empty;
         // Tracked as "no indent seen yet" rather than as a number, because
@@ -392,6 +417,7 @@ const Parser = struct {
         return out.toOwnedSlice(self.arena);
     }
 
+    /// Read a run of literal text, stopping at a brace or a line end.
     fn getTextElement(self: *Parser) Error![]const u8 {
         const start = self.stream.index;
         while (self.stream.currentChar()) |ch| {
@@ -403,6 +429,7 @@ const Parser = struct {
 
     // -- placeables and expressions -----------------------------------------
 
+    /// Read `{ expression }`.
     fn getPlaceable(self: *Parser) Error!*const ast.Expression {
         try self.stream.expectChar('{');
         self.stream.skipBlank();
@@ -411,6 +438,7 @@ const Parser = struct {
         return expression;
     }
 
+    /// Move an expression into the arena and return a pointer to it.
     fn box(self: *Parser, expression: ast.Expression) Error!*const ast.Expression {
         const p = try self.arena.create(ast.Expression);
         p.* = expression;
@@ -467,6 +495,7 @@ const Parser = struct {
         return selector;
     }
 
+    /// Read whatever may appear in a placeable other than a select.
     fn getInlineExpression(self: *Parser) Error!*const ast.Expression {
         if (self.stream.currentChar() == '{') {
             return self.box(.{ .placeable = try self.getPlaceable() });
@@ -525,6 +554,7 @@ const Parser = struct {
         return self.stream.fail(.E0028, null);
     }
 
+    /// Whether a name is all upper case, which is how a call is recognized.
     fn isFunctionName(name: []const u8) bool {
         if (name.len == 0) return false;
         if (!std.ascii.isUpper(name[0])) return false;
@@ -541,6 +571,7 @@ const Parser = struct {
         named: ast.NamedArgument,
     };
 
+    /// Read one argument, which is positional unless a `:` follows it.
     fn getCallArgument(self: *Parser) Error!Argument {
         const expression = try self.getInlineExpression();
         self.stream.skipBlank();
@@ -560,6 +591,7 @@ const Parser = struct {
         return self.stream.fail(.E0009, null);
     }
 
+    /// Read `(a, b, name: "c")`.
     fn getCallArguments(self: *Parser) Error!ast.CallArguments {
         var positional: std.ArrayList(ast.Expression) = .empty;
         var named: std.ArrayList(ast.NamedArgument) = .empty;
@@ -600,12 +632,14 @@ const Parser = struct {
 
     // -- variants -----------------------------------------------------------
 
+    /// Read the `[key]` of a variant: a number or an identifier.
     fn getVariantKey(self: *Parser) Error!ast.VariantKey {
         const ch = self.stream.currentChar() orelse return self.stream.fail(.E0013, null);
         if (std.ascii.isDigit(ch) or ch == '-') return .{ .number = try self.getNumber() };
         return .{ .identifier = try self.getIdentifier() };
     }
 
+    /// Read one variant of a select expression.
     fn getVariant(self: *Parser, has_default: bool) Error!ast.Variant {
         var is_default = false;
         if (self.stream.currentChar() == '*') {
@@ -624,6 +658,7 @@ const Parser = struct {
         return .{ .key = key, .value = value, .default = is_default };
     }
 
+    /// Read every variant, checking that exactly one is the default.
     fn getVariants(self: *Parser) Error![]const ast.Variant {
         var variants: std.ArrayList(ast.Variant) = .empty;
         var has_default = false;
@@ -648,12 +683,14 @@ const Parser = struct {
 
     // -- literals -----------------------------------------------------------
 
+    /// Consume one or more digits, failing if there are none.
     fn getDigits(self: *Parser) Error!void {
         var any = false;
         while (self.stream.takeDigit()) |_| any = true;
         if (!any) return self.stream.fail(.E0004, "0-9");
     }
 
+    /// Read a number literal, keeping the text as written.
     fn getNumber(self: *Parser) Error!ast.NumberLiteral {
         const start = self.stream.index;
         if (self.stream.currentChar() == '-') _ = self.stream.next();
@@ -665,6 +702,7 @@ const Parser = struct {
         return .{ .value = self.stream.source[start..self.stream.index] };
     }
 
+    /// Read a `"quoted string"`, validating its escapes as it goes.
     fn getString(self: *Parser) Error!ast.StringLiteral {
         try self.stream.expectChar('"');
         const start = self.stream.index;
@@ -685,10 +723,12 @@ const Parser = struct {
         return .{ .value = value };
     }
 
+    /// Whether `ch` may appear in a string literal unescaped.
     fn isStringChar(ch: u8) bool {
         return ch != '"' and ch != '\n';
     }
 
+    /// Check the escape after a backslash and consume it.
     fn getEscapeSequence(self: *Parser) Error!void {
         const next = self.stream.currentChar() orelse return self.stream.fail(.E0025, "");
         switch (next) {
@@ -699,6 +739,7 @@ const Parser = struct {
         }
     }
 
+    /// Check the hex digits of a `\\u` or `\\U` escape.
     fn getUnicodeEscapeSequence(self: *Parser, digits: usize) Error!void {
         const start = self.stream.index;
         _ = self.stream.next(); // the `u` or `U`
@@ -716,6 +757,7 @@ const Parser = struct {
         }
     }
 
+    /// Read the literal on the right of a named argument.
     fn getLiteral(self: *Parser) Error!ast.Literal {
         if (self.stream.isNumberStart()) return .{ .number = try self.getNumber() };
         if (self.stream.currentChar() == '"') return .{ .string = try self.getString() };
@@ -727,6 +769,7 @@ const Parser = struct {
 
 const testing = std.testing;
 
+/// Parse `source` and check the names of the messages it defines.
 fn expectMessages(source: []const u8, expected: []const []const u8) !void {
     var resource = try parse(testing.allocator, source);
     defer resource.deinit();

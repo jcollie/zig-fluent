@@ -35,6 +35,8 @@ const Io = std.Io;
 /// stray huge file cannot exhaust memory.
 const max_file_size = 64 * 1024 * 1024;
 
+/// Serve the directory named by the first argument on the port named by the
+/// second.
 pub fn main(init: std.process.Init) !void {
     const gpa = init.gpa;
     const io = init.io;
@@ -115,6 +117,7 @@ fn handleConnection(io: Io, gpa: std.mem.Allocator, docs_dir: Io.Dir, stream: Io
     }
 }
 
+/// Answer one connection and close it.
 fn serve(
     request: *std.http.Server.Request,
     io: Io,

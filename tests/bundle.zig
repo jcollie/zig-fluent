@@ -26,6 +26,7 @@ fn bundleFor(tag: []const u8, source: []const u8) !Bundle {
     return bundle;
 }
 
+/// Format `name` and check the result against `expected`.
 fn expectMessage(bundle: *const Bundle, name: []const u8, args: fluent.Args, expected: []const u8) !void {
     const text = try bundle.format(testing.allocator, name, args, null) orelse {
         std.debug.print("no such message: {s}\n", .{name});
@@ -405,6 +406,7 @@ test "an unknown function renders as a call and is reported" {
     try testing.expectEqual(fluent.Error.Kind.unknown_function, errors.items[errors.items.len - 1].kind);
 }
 
+/// A function an application might add: upper-case whatever it is given.
 fn shout(call: fluent.Call) fluent.Value {
     const text = switch (call.first()) {
         .string => |s| s,
@@ -566,6 +568,7 @@ test "a locale CLDR does not know at all keeps the root defaults" {
 /// 2026-09-09T14:03:07.250Z, a Wednesday.
 const moment: i64 = 1788962587250;
 
+/// Format `moment` with `options` for `tag` and check the result.
 fn expectDate(tag: []const u8, options: []const u8, expected: []const u8) !void {
     const source = try std.fmt.allocPrint(testing.allocator, "d = {{ DATETIME($t{s}) }}\n", .{options});
     defer testing.allocator.free(source);

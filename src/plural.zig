@@ -60,6 +60,8 @@ const std = @import("std");
 const Locale = @import("locale.zig").Locale;
 const data = @import("cldr/plurals.zig");
 
+const testing = std.testing;
+
 /// The plural categories. Every language uses `other`; the rest are used by
 /// the languages that need them, and a variant key naming a category a
 /// language does not use simply never matches.
@@ -71,14 +73,28 @@ pub const Category = enum {
     many,
     other,
 
+    /// The category as a variant key spells it, e.g. `"few"`.
     pub fn name(self: Category) []const u8 {
         return @tagName(self);
+    }
+
+    test name {
+        try std.testing.expectEqualStrings("few", Category.few.name());
+        try std.testing.expectEqualStrings("other", Category.other.name());
     }
 
     /// The category a variant key names, or null if the key is not a category
     /// at all -- `[masculine]`, say, which selects on something else.
     pub fn fromName(text: []const u8) ?Category {
         return std.meta.stringToEnum(Category, text);
+    }
+
+    test fromName {
+        try std.testing.expectEqual(Category.few, Category.fromName("few").?);
+        // A key that names something else entirely -- a gender, a case -- is
+        // not a category, and selecting on a number will never match it.
+        try std.testing.expectEqual(@as(?Category, null), Category.fromName("masculine"));
+        try std.testing.expectEqual(@as(?Category, null), Category.fromName(""));
     }
 };
 
@@ -218,12 +234,38 @@ pub const Operands = struct {
         return self;
     }
 
+    test fromDecimal {
+        // The same value shown two ways is two different sets of operands,
+        // which is the whole reason this takes text rather than a number.
+        const one = Operands.fromDecimal("1");
+        try std.testing.expectEqual(@as(u64, 1), one.i);
+        try std.testing.expectEqual(@as(u32, 0), one.v);
+
+        const padded = Operands.fromDecimal("1.00");
+        try std.testing.expectEqual(@as(u64, 1), padded.i);
+        try std.testing.expectEqual(@as(u32, 2), padded.v);
+        try std.testing.expectEqual(@as(u32, 0), padded.w);
+
+        // Trailing zeros are what separate v from w and f from t.
+        const trailing = Operands.fromDecimal("1.230");
+        try std.testing.expectEqual(@as(u64, 230), trailing.f);
+        try std.testing.expectEqual(@as(u64, 23), trailing.t);
+
+        // CLDR's compact notation: 1c6 is a million, with no fraction digits.
+        const compact = Operands.fromDecimal("1c6");
+        try std.testing.expectEqual(@as(u64, 1000000), compact.i);
+        try std.testing.expectEqual(@as(u32, 0), compact.v);
+    }
+
+    /// Multiply by a power of ten, saturating rather than wrapping.
     /// Multiply by a power of ten, saturating rather than wrapping.
     fn saturatingScale(value: u64, power: u32) u64 {
         const factor = std.math.powi(u64, 10, power) catch return std.math.maxInt(u64);
         return std.math.mul(u64, value, factor) catch std.math.maxInt(u64);
     }
 
+    /// Read a run of digits as an integer, skipping anything that is not one
+    /// and saturating rather than overflowing.
     fn parseDigits(text: []const u8) u64 {
         var total: u64 = 0;
         for (text) |c| {
@@ -234,6 +276,7 @@ pub const Operands = struct {
         return total;
     }
 
+    /// The value of one CLDR operand, as the rule evaluator wants it.
     fn operandValue(self: Operands, operand: Operand) f64 {
         return switch (operand) {
             .n => self.n,
@@ -262,6 +305,28 @@ pub fn select(locale: *const Locale, kind: Kind, operands: Operands) Category {
     return selectFrom(table.rules[index], operands);
 }
 
+test select {
+    const en = try Locale.parse("en");
+    try testing.expectEqual(Category.one, select(&en, .cardinal, .fromDecimal("1")));
+    try testing.expectEqual(Category.other, select(&en, .cardinal, .fromDecimal("2")));
+    // English's `one` is "one integer digit and no fraction digits", so a
+    // value shown to one place is `other` however close to 1 it is.
+    try testing.expectEqual(Category.other, select(&en, .cardinal, .fromDecimal("1.0")));
+
+    // Counting and ranking are different rule sets: 3 is `other` when you are
+    // counting and `few` when you are ranking -- "3rd".
+    try testing.expectEqual(Category.other, select(&en, .cardinal, .fromDecimal("3")));
+    try testing.expectEqual(Category.few, select(&en, .ordinal, .fromDecimal("3")));
+
+    // Russian needs three forms where English needs two, and 11 is not 1.
+    const ru = try Locale.parse("ru");
+    try testing.expectEqual(Category.one, select(&ru, .cardinal, .fromDecimal("21")));
+    try testing.expectEqual(Category.many, select(&ru, .cardinal, .fromDecimal("11")));
+
+    // A language CLDR does not cover gets the category every language has.
+    try testing.expectEqual(Category.other, select(&Locale.root, .cardinal, .fromDecimal("1")));
+}
+
 /// Apply a rule set. The rules are tried in order and the first whose
 /// condition holds wins, so a generated table must keep CLDR's order.
 pub fn selectFrom(rules: RuleSet, operands: Operands) Category {
@@ -271,6 +336,23 @@ pub fn selectFrom(rules: RuleSet, operands: Operands) Category {
     return .other;
 }
 
+test selectFrom {
+    // English's cardinal rule, written out: `one` is `i = 1 and v = 0`.
+    const english: RuleSet = &.{
+        .{ .category = .one, .condition = &.{&.{
+            .{ .operand = .i, .ranges = &.{.{ .low = 1, .high = 1 }} },
+            .{ .operand = .v, .ranges = &.{.{ .low = 0, .high = 0 }} },
+        }} },
+        // An empty condition is the unconditional rule CLDR writes for `other`.
+        .{ .category = .other, .condition = &.{} },
+    };
+
+    try testing.expectEqual(Category.one, selectFrom(english, .fromDecimal("1")));
+    try testing.expectEqual(Category.other, selectFrom(english, .fromDecimal("1.0")));
+    try testing.expectEqual(Category.other, selectFrom(english, .fromDecimal("2")));
+}
+
+/// Whether a condition holds: any conjunction all of whose relations hold.
 fn matches(condition: Condition, operands: Operands) bool {
     // An empty condition is the unconditional rule CLDR writes for `other`.
     if (condition.len == 0) return true;
@@ -288,6 +370,7 @@ fn matches(condition: Condition, operands: Operands) bool {
     return false;
 }
 
+/// Whether one relation holds, such as `n % 10 = 2..4`.
 fn relationHolds(relation: Relation, operands: Operands) bool {
     var x = operands.operandValue(relation.operand);
     if (relation.modulus != 0) {
@@ -330,35 +413,6 @@ fn inRange(x: f64, range: Range) bool {
 }
 
 // -- tests -------------------------------------------------------------------
-
-const testing = std.testing;
-
-test "operands come from the digits, not the value" {
-    const one = Operands.fromDecimal("1");
-    try testing.expectEqual(@as(f64, 1), one.n);
-    try testing.expectEqual(@as(u64, 1), one.i);
-    try testing.expectEqual(@as(u32, 0), one.v);
-    try testing.expectEqual(@as(u32, 0), one.w);
-
-    // The same value, shown to two places, is a different set of operands --
-    // which is exactly why English says "1.00 files" and not "1.00 file".
-    const padded = Operands.fromDecimal("1.00");
-    try testing.expectEqual(@as(f64, 1), padded.n);
-    try testing.expectEqual(@as(u64, 1), padded.i);
-    try testing.expectEqual(@as(u32, 2), padded.v);
-    try testing.expectEqual(@as(u32, 0), padded.w);
-    try testing.expectEqual(@as(u64, 0), padded.f);
-    try testing.expectEqual(@as(u64, 0), padded.t);
-}
-
-test "trailing zeros separate v from w and f from t" {
-    const o = Operands.fromDecimal("1.230");
-    try testing.expectEqual(@as(u32, 3), o.v);
-    try testing.expectEqual(@as(u32, 2), o.w);
-    try testing.expectEqual(@as(u64, 230), o.f);
-    try testing.expectEqual(@as(u64, 23), o.t);
-    try testing.expectApproxEqAbs(@as(f64, 1.23), o.n, 1e-12);
-}
 
 test "nonsense decimals saturate instead of panicking" {
     // `fromDecimal` is public and takes any slice at all, so every one of
@@ -526,10 +580,4 @@ test "every sample CLDR publishes lands in the category CLDR assigns it" {
             }
         }
     }
-}
-
-test "a variant key is only a category if it names one" {
-    try testing.expectEqual(Category.few, Category.fromName("few").?);
-    try testing.expectEqual(@as(?Category, null), Category.fromName("masculine"));
-    try testing.expectEqual(@as(?Category, null), Category.fromName(""));
 }

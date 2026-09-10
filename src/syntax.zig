@@ -36,4 +36,10 @@ test {
     _ = @import("syntax/parser.zig");
     _ = @import("syntax/serializer.zig");
     _ = @import("syntax/stream.zig");
+
+    // See the note in `root.zig`: this is what makes the doctests nested
+    // inside the AST's types run.
+    const std = @import("std");
+    std.testing.refAllDecls(ast);
+    std.testing.refAllDecls(@This());
 }

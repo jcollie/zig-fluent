@@ -33,6 +33,7 @@ const std = @import("std");
 
 const Allocator = std.mem.Allocator;
 
+/// Read the CLDR packages named on the command line and write `src/cldr/`.
 pub fn main(init: std.process.Init) !void {
     const arena = init.arena.allocator();
     const io = init.io;
@@ -96,6 +97,7 @@ const RuleSet = struct {
     rules: []const Rule,
 };
 
+/// Write the plural rule tables and CLDR's own samples for them.
 fn generatePlurals(
     arena: Allocator,
     io: std.Io,
@@ -109,6 +111,7 @@ fn generatePlurals(
     try writeSamplesFile(arena, io, out_dir, cardinal, ordinal);
 }
 
+/// Read one plural file and compile every locale's rules out of it.
 fn readRuleSets(
     arena: Allocator,
     io: std.Io,
@@ -153,6 +156,7 @@ fn readRuleSets(
     const owned = try sets.toOwnedSlice(arena);
     // Sorted so that the lookup at run time can be a binary search.
     std.mem.sort(RuleSet, owned, {}, struct {
+        /// Order rule sets by tag, so the table can be binary-searched.
         fn lessThan(_: void, a: RuleSet, b: RuleSet) bool {
             return std.mem.order(u8, a.tag, b.tag) == .lt;
         }
@@ -160,6 +164,7 @@ fn readRuleSets(
     return owned;
 }
 
+/// Drop `prefix` from the front of `text` if it is there.
 fn stripPrefix(text: []const u8, prefix: []const u8) []const u8 {
     return if (std.mem.startsWith(u8, text, prefix)) text[prefix.len..] else text;
 }
@@ -182,6 +187,7 @@ fn conditionOf(source: []const u8) []const u8 {
 // It has no parentheses and `and` binds tighter than `or`, so every condition
 // is a disjunction of conjunctions and needs no tree.
 
+/// Compile a rule's condition into a disjunction of conjunctions.
 fn parseCondition(arena: Allocator, source: []const u8) !Condition {
     if (source.len == 0) return &.{};
 
@@ -198,6 +204,7 @@ fn parseCondition(arena: Allocator, source: []const u8) !Condition {
     return conjunctions.toOwnedSlice(arena);
 }
 
+/// Compile one comparison, such as `n % 10 = 2..4`.
 fn parseRelation(arena: Allocator, source: []const u8) !Relation {
     const negated = std.mem.indexOf(u8, source, "!=") != null;
     const operator = if (negated) "!=" else "=";
@@ -326,11 +333,13 @@ fn formatScaled(arena: Allocator, value: u64, scale: u64, places: u6) ![]const u
     });
 }
 
+/// How many digits `text` has after its decimal point.
 fn decimalPlaces(text: []const u8) u6 {
     const dot = std.mem.indexOfScalar(u8, text, '.') orelse return 0;
     return @intCast(text.len - dot - 1);
 }
 
+/// Read `text` as an integer scaled by ten to the power of `places`.
 fn scaledValue(text: []const u8, places: u6) !u64 {
     const dot = std.mem.indexOfScalar(u8, text, '.') orelse
         return (try std.fmt.parseInt(u64, text, 10)) * std.math.pow(u64, 10, places);
@@ -341,6 +350,7 @@ fn scaledValue(text: []const u8, places: u6) !u64 {
 
 // -- writing the tables ------------------------------------------------------
 
+/// Write `src/cldr/plurals.zig`.
 fn writeRulesFile(
     arena: Allocator,
     io: std.Io,
@@ -370,6 +380,7 @@ fn writeRulesFile(
     try writeFormatted(arena, io, out_dir, "plurals.zig", out.written());
 }
 
+/// Write one named table of rule sets, with its sorted key list.
 fn writeTable(
     w: *std.Io.Writer,
     name: []const u8,
@@ -398,6 +409,7 @@ fn writeTable(
     try w.writeAll("    },\n};\n");
 }
 
+/// Write a condition as the nested slice literals the evaluator reads.
 fn writeCondition(w: *std.Io.Writer, condition: Condition) !void {
     if (condition.len == 0) {
         try w.writeAll("&.{}");
@@ -424,6 +436,7 @@ fn writeCondition(w: *std.Io.Writer, condition: Condition) !void {
     try w.writeAll(" }");
 }
 
+/// Write `src/cldr/plural_samples.zig`.
 fn writeSamplesFile(
     arena: Allocator,
     io: std.Io,
@@ -463,6 +476,7 @@ fn writeSamplesFile(
     try writeFormatted(arena, io, out_dir, "plural_samples.zig", out.written());
 }
 
+/// Write one named table of samples, and say how many there were.
 fn writeSamples(w: *std.Io.Writer, name: []const u8, sets: []const RuleSet) !void {
     var count: usize = 0;
     for (sets) |set| for (set.rules) |rule| {
@@ -519,6 +533,7 @@ fn writeFormatted(
     try dir.writeFile(io, .{ .sub_path = sub_path, .data = formatted });
 }
 
+/// Write the licence header and module documentation of a generated file.
 fn writeHeader(w: *std.Io.Writer, doc: []const u8) !void {
     try w.writeAll(
         \\// SPDX-FileCopyrightText: © 1991-2026 Unicode, Inc.
@@ -567,6 +582,7 @@ const NumberPattern = struct {
     maximum_fraction_digits: u8 = 0,
 };
 
+/// Write `src/cldr/numbers.zig` from every locale's number data.
 fn generateNumbers(
     arena: Allocator,
     io: std.Io,
@@ -596,6 +612,8 @@ fn generateNumbers(
         const symbols = (data.get(symbols_key) orelse continue).object;
 
         const pattern = struct {
+            /// The standard pattern of one format kind for one numbering
+            /// system, or the root's if the locale lists none.
             fn get(d: std.json.ObjectMap, comptime kind: []const u8, sys: []const u8, a: Allocator) ![]const u8 {
                 const key = try std.fmt.allocPrint(a, kind ++ "Formats-numberSystem-{s}", .{sys});
                 return (d.get(key) orelse return "#,##0.###").object.get("standard").?.string;
@@ -625,6 +643,7 @@ fn generateNumbers(
 
     const owned = try locales.toOwnedSlice(arena);
     std.mem.sort(NumberLocale, owned, {}, struct {
+        /// Order locales by tag, so the table can be binary-searched.
         fn lessThan(_: void, a: NumberLocale, b: NumberLocale) bool {
             return std.mem.order(u8, a.tag, b.tag) == .lt;
         }
@@ -699,6 +718,7 @@ const PatternParts = struct {
     maximum_fraction_digits: u8,
 };
 
+/// Split one subpattern into its affixes and its digit placeholders.
 fn splitNumberPattern(arena: Allocator, source: []const u8) !PatternParts {
     const numeric = "#0,.";
 
@@ -768,6 +788,7 @@ fn unquoteAffix(arena: Allocator, source: []const u8) ![]const u8 {
     return out.toOwnedSlice(arena);
 }
 
+/// Write `src/cldr/numbers.zig`.
 fn writeNumbersFile(
     arena: Allocator,
     io: std.Io,
@@ -836,6 +857,7 @@ fn writeNumbersFile(
     try writeFormatted(arena, io, out_dir, "numbers.zig", out.written());
 }
 
+/// Write one compiled number pattern as a struct literal.
 fn writeNumberPattern(w: *std.Io.Writer, pattern: NumberPattern, minimum_grouping_digits: u8) !void {
     try w.print("    .{{ .positive_prefix = \"{f}\", .positive_suffix = \"{f}\"", .{
         escaped(pattern.positive_prefix),
@@ -869,6 +891,7 @@ fn escaped(text: []const u8) Escaped {
 const Escaped = struct {
     text: []const u8,
 
+    /// `{f}` writes the text escaped for a Zig source literal.
     pub fn format(self: Escaped, w: *std.Io.Writer) std.Io.Writer.Error!void {
         for (self.text) |c| switch (c) {
             '"' => try w.writeAll("\\\""),
@@ -925,6 +948,7 @@ const skeleton_letters = "GyMEdhHms";
 const style_names = [4][]const u8{ "full", "long", "medium", "short" };
 const weekday_keys = [7][]const u8{ "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
 
+/// Write `src/cldr/dates.zig` from every locale's Gregorian calendar data.
 fn generateDates(arena: Allocator, io: std.Io, dates_root: std.Io.Dir, out_dir: std.Io.Dir) !void {
     var main_dir = try dates_root.openDir(io, "main", .{ .iterate = true });
     defer main_dir.close(io);
@@ -1033,6 +1057,7 @@ fn generateDates(arena: Allocator, io: std.Io, dates_root: std.Io.Dir, out_dir: 
 
     const owned = try locales.toOwnedSlice(arena);
     std.mem.sort(DateLocale, owned, {}, struct {
+        /// Order locales by tag, so the table can be binary-searched.
         fn lessThan(_: void, a: DateLocale, b: DateLocale) bool {
             return std.mem.order(u8, a.tag, b.tag) == .lt;
         }
@@ -1057,6 +1082,7 @@ fn patternText(value: std.json.Value) []const u8 {
     };
 }
 
+/// Whether every letter of `skeleton` is one `DATETIME()` can ask for.
 fn isRequestableSkeleton(skeleton: []const u8) bool {
     if (skeleton.len == 0) return false;
     for (skeleton) |c| {
@@ -1065,6 +1091,7 @@ fn isRequestableSkeleton(skeleton: []const u8) bool {
     return true;
 }
 
+/// Write `src/cldr/dates.zig`.
 fn writeDatesFile(arena: Allocator, io: std.Io, out_dir: std.Io.Dir, locales: []const DateLocale) !void {
     var out: std.Io.Writer.Allocating = .init(arena);
     const w = &out.writer;
@@ -1128,6 +1155,7 @@ fn writeDatesFile(arena: Allocator, io: std.Io, out_dir: std.Io.Dir, locales: []
     try writeFormatted(arena, io, out_dir, "dates.zig", out.written());
 }
 
+/// Write one fixed-length array of names as a struct field.
 fn writeNameArray(w: *std.Io.Writer, field: []const u8, values: []const []const u8) !void {
     try w.print("        .{s} = .{{", .{field});
     for (values, 0..) |value, i| {

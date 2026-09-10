@@ -86,6 +86,7 @@ fn parseProperty(input: []const u8) !void {
     };
 }
 
+/// Drive `parseProperty` from a fuzzer's byte stream.
 fn fuzzParse(_: void, smith: *Smith) !void {
     var buffer: [4096]u8 = undefined;
     const len = smith.slice(&buffer);
@@ -131,6 +132,7 @@ fn roundTripProperty(input: []const u8) !void {
     try testing.expectEqualStrings(a.written(), b.written());
 }
 
+/// Drive `roundTripProperty` from a fuzzer's byte stream.
 fn fuzzRoundTrip(_: void, smith: *Smith) !void {
     var buffer: [4096]u8 = undefined;
     const len = smith.slice(&buffer);
@@ -170,6 +172,7 @@ fn resolveProperty(input: []const u8, count: f64, word: []const u8) !void {
     }
 }
 
+/// Drive `resolveProperty` from a fuzzer's byte stream.
 fn fuzzResolve(_: void, smith: *Smith) !void {
     var source_buffer: [4096]u8 = undefined;
     const source_len = smith.slice(&source_buffer);
@@ -218,6 +221,7 @@ fn numberProperty(value: f64, options: fluent.number_format.Options) !void {
     _ = fluent.plural.Operands.fromDecimal(w.buffered());
 }
 
+/// Drive `numberProperty` from a fuzzer's byte stream.
 fn fuzzNumber(_: void, smith: *Smith) !void {
     // Every bit pattern, so the infinities, the NaNs and the subnormals all
     // come up rather than only the numbers a person would think to write.
@@ -276,6 +280,7 @@ fn operandsProperty(text: []const u8) !void {
     }
 }
 
+/// Drive `operandsProperty` from a fuzzer's byte stream.
 fn fuzzOperands(_: void, smith: *Smith) !void {
     var buffer: [64]u8 = undefined;
     const len = smith.slice(&buffer);
@@ -309,6 +314,7 @@ fn localeProperty(text: []const u8) !void {
     _ = locale.fallbacks(&buffer);
 }
 
+/// Drive `localeProperty` from a fuzzer's byte stream.
 fn fuzzLocale(_: void, smith: *Smith) !void {
     var buffer: [64]u8 = undefined;
     const len = smith.slice(&buffer);
@@ -338,6 +344,7 @@ pub const Target = struct {
 /// Wraps one of the `fuzz*` functions above so that it takes raw bytes.
 fn Driven(comptime one: fn (void, *Smith) anyerror!void) type {
     return struct {
+        /// Hand the raw bytes to the wrapped target as a `Smith`.
         fn run(input: []const u8) anyerror!void {
             var smith: Smith = .{ .in = input };
             return one({}, &smith);

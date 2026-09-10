@@ -69,6 +69,19 @@ pub fn serialize(resource: ast.Resource, w: *std.Io.Writer, options: Options) st
     }
 }
 
+test serialize {
+    var resource = try parse(std.testing.allocator, "hello   =    Hi\n");
+    defer resource.deinit();
+
+    var out: std.Io.Writer.Allocating = .init(std.testing.allocator);
+    defer out.deinit();
+    try serialize(resource, &out.writer, .{});
+
+    // Canonical formatting rather than the original layout, which is what
+    // makes this a formatter as well as a serializer.
+    try std.testing.expectEqualStrings("hello = Hi\n", out.written());
+}
+
 /// What has been written so far, as far as the spacing between entries goes.
 const State = struct {
     wrote_any: bool = false,
@@ -127,6 +140,8 @@ fn startsWithComment(entry: ast.Entry) bool {
     };
 }
 
+/// Write one entry, with the blank line that has to come before it if any
+/// does.
 fn writeEntry(out: *Out, entry: ast.Entry, state: State) std.Io.Writer.Error!void {
     // An entry that begins with a comment is set off from what came before by
     // a blank line. That is partly how a standalone comment should read -- as
@@ -176,6 +191,7 @@ fn writeEntry(out: *Out, entry: ast.Entry, state: State) std.Io.Writer.Error!voi
     }
 }
 
+/// Write a comment, prefixing each of its lines with the right number of `#`.
 fn writeComment(out: *Out, comment: ast.Comment) std.Io.Writer.Error!void {
     const prefix = switch (comment.level) {
         .comment => "#",
@@ -196,6 +212,7 @@ fn writeComment(out: *Out, comment: ast.Comment) std.Io.Writer.Error!void {
     }
 }
 
+/// Write one attribute, indented under the entry it belongs to.
 fn writeAttribute(out: *Out, attribute: ast.Attribute) std.Io.Writer.Error!void {
     try out.write("\n    .");
     try out.write(attribute.id.name);
@@ -206,6 +223,7 @@ fn writeAttribute(out: *Out, attribute: ast.Attribute) std.Io.Writer.Error!void 
     try writePattern(out, attribute.value);
 }
 
+/// Write a value, on the `=` line or under it as its shape requires.
 fn writePattern(out: *Out, pattern: ast.Pattern) std.Io.Writer.Error!void {
     if (shouldStartOnNewLine(pattern)) {
         try out.write("\n");
@@ -249,6 +267,7 @@ fn shouldStartOnNewLine(pattern: ast.Pattern) bool {
     return true;
 }
 
+/// Write a placeable, choosing the spacing its contents call for.
 fn writePlaceable(out: *Out, expression: *const ast.Expression) std.Io.Writer.Error!void {
     switch (expression.*) {
         // `{{ ... }}`: the braces go together, with no spaces between them.
@@ -272,6 +291,7 @@ fn writePlaceable(out: *Out, expression: *const ast.Expression) std.Io.Writer.Er
     }
 }
 
+/// Write one expression -- the contents of a placeable, without its braces.
 pub fn writeExpression(out: *Out, expression: *const ast.Expression) std.Io.Writer.Error!void {
     switch (expression.*) {
         .string_literal => |l| {
@@ -314,6 +334,21 @@ pub fn writeExpression(out: *Out, expression: *const ast.Expression) std.Io.Writ
     }
 }
 
+test writeExpression {
+    var resource = try parse(std.testing.allocator, "m = { NUMBER($n, minimumFractionDigits: 2) }\n");
+    defer resource.deinit();
+
+    var out: std.Io.Writer.Allocating = .init(std.testing.allocator);
+    defer out.deinit();
+    var writer: Out = .{ .w = &out.writer };
+
+    // The expression alone, without the braces a placeable would add.
+    const placeable = resource.body[0].message.value.?.elements[0].placeable;
+    try writeExpression(&writer, placeable);
+    try testing.expectEqualStrings("NUMBER($n, minimumFractionDigits: 2)", out.written());
+}
+
+/// Write one variant of a select expression, on a line of its own.
 fn writeVariant(out: *Out, variant: ast.Variant) std.Io.Writer.Error!void {
     // The default variant's `*` sits in the column the others indent into, so
     // that the keys themselves stay aligned.
@@ -329,6 +364,7 @@ fn writeVariant(out: *Out, variant: ast.Variant) std.Io.Writer.Error!void {
     try writePattern(out, variant.value);
 }
 
+/// Write a call's arguments, positional ones first as the grammar requires.
 fn writeCallArguments(out: *Out, args: ast.CallArguments) std.Io.Writer.Error!void {
     try out.write("(");
     for (args.positional, 0..) |*a, i| {
@@ -356,6 +392,7 @@ fn writeCallArguments(out: *Out, args: ast.CallArguments) std.Io.Writer.Error!vo
 const testing = std.testing;
 const parse = @import("parser.zig").parse;
 
+/// Parse `source`, serialize it, and check the result against `expected`.
 fn expectSerialized(source: []const u8, expected: []const u8) !void {
     var resource = try parse(testing.allocator, source);
     defer resource.deinit();

@@ -94,10 +94,34 @@ pub const Scope = struct {
     dirty: std.ArrayList([*]const ast.PatternElement) = .empty,
     placeables: usize = 0,
 
+    /// Release the bookkeeping the scope allocated.
+    ///
+    /// The strings it built are the arena's business and go with it.
     pub fn deinit(self: *Scope) void {
         self.dirty.deinit(self.arena);
     }
 
+    test deinit {
+        var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+        defer arena.deinit();
+
+        var bundle: Bundle = try .init(std.testing.allocator, .root);
+        defer bundle.deinit();
+
+        var scope: Scope = .{
+            .bundle = &bundle,
+            .arena = arena.allocator(),
+            .gpa = std.testing.allocator,
+            .args = &.{},
+        };
+        scope.deinit();
+    }
+
+    /// Record a problem, if the caller asked for them.
+    ///
+    /// `name` must outlive the call: it points into a resource or a string
+    /// literal, never into the arena, because the error list does not go away
+    /// when the arena does.
     fn report(self: *Scope, kind: bundle_mod.Error.Kind, name: []const u8) void {
         const errors = self.errors orelse return;
         errors.append(self.gpa, .{ .kind = kind, .name = name }) catch {};
@@ -119,6 +143,29 @@ pub fn write(scope: *Scope, pattern: ast.Pattern, w: *std.Io.Writer) (Error || s
         else => |e| return e,
     };
     try writeValue(scope, resolved, w);
+}
+
+test write {
+    var bundle: Bundle = try .init(std.testing.allocator, .root);
+    defer bundle.deinit();
+    bundle.use_isolating = false;
+    try bundle.addResource("m = Hello, { $name }!\n", .{}, null);
+
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    defer arena.deinit();
+
+    var scope: Scope = .{
+        .bundle = &bundle,
+        .arena = arena.allocator(),
+        .gpa = std.testing.allocator,
+        .args = &.{.{ .name = "name", .value = .{ .string = "Ada" } }},
+    };
+    defer scope.deinit();
+
+    var buffer: [64]u8 = undefined;
+    var w = std.Io.Writer.fixed(&buffer);
+    try write(&scope, bundle.getMessage("m").?.value.?, &w);
+    try std.testing.expectEqualStrings("Hello, Ada!", w.buffered());
 }
 
 /// Resolve a pattern to a string value.
@@ -179,6 +226,7 @@ fn transform(scope: *Scope, text: []const u8) Error![]const u8 {
     return out.written();
 }
 
+/// Resolve whatever was inside a placeable.
 fn resolveExpression(scope: *Scope, expression: *const ast.Expression) Error!Value {
     return switch (expression.*) {
         .string_literal => |literal| blk: {
@@ -203,6 +251,7 @@ fn resolveExpression(scope: *Scope, expression: *const ast.Expression) Error!Val
     };
 }
 
+/// Look up `$name` in the term's parameters, or in the caller's arguments.
 fn resolveVariable(scope: *Scope, name: []const u8) Value {
     if (scope.params) |params| {
         // Inside a term. Its parameters are all it can see, and one it was not
@@ -217,10 +266,12 @@ fn resolveVariable(scope: *Scope, name: []const u8) Value {
     return .{ .none = dollarName(scope, name) };
 }
 
+/// The `$name` label a missing variable renders as.
 fn dollarName(scope: *Scope, name: []const u8) []const u8 {
     return std.fmt.allocPrint(scope.arena, "${s}", .{name}) catch "???";
 }
 
+/// Resolve `name` or `name.attribute`.
 fn resolveMessageReference(scope: *Scope, reference: ast.MessageReference) Error!Value {
     const message = scope.bundle.getMessage(reference.id.name) orelse {
         scope.report(.unknown_message, reference.id.name);
@@ -245,6 +296,7 @@ fn resolveMessageReference(scope: *Scope, reference: ast.MessageReference) Error
     return resolvePattern(scope, pattern);
 }
 
+/// Resolve `-name`, with its arguments in scope for the duration.
 fn resolveTermReference(scope: *Scope, reference: ast.TermReference) Error!Value {
     const term = scope.bundle.getTerm(reference.id.name) orelse {
         scope.report(.unknown_term, reference.id.name);
@@ -276,6 +328,7 @@ fn resolveTermReference(scope: *Scope, reference: ast.TermReference) Error!Value
     return resolvePattern(scope, pattern);
 }
 
+/// Evaluate the named arguments of a call, in the caller's scope.
 fn resolveNamedArguments(scope: *Scope, call: ast.CallArguments) Error!Args {
     const arguments = try scope.arena.alloc(value_mod.Argument, call.named.len);
     for (call.named, arguments) |named, *out| {
@@ -297,6 +350,7 @@ fn resolveNamedArguments(scope: *Scope, call: ast.CallArguments) Error!Args {
     return arguments;
 }
 
+/// Call a function with its arguments already resolved.
 fn resolveFunctionReference(scope: *Scope, reference: ast.FunctionReference) Error!Value {
     const function = scope.bundle.getFunction(reference.id.name) orelse {
         scope.report(.unknown_function, reference.id.name);
@@ -319,6 +373,7 @@ fn resolveFunctionReference(scope: *Scope, reference: ast.FunctionReference) Err
     });
 }
 
+/// Choose a variant, falling to the default when nothing matches.
 fn resolveSelect(scope: *Scope, select: ast.SelectExpression) Error!Value {
     const selector = try resolveExpression(scope, select.selector);
 
@@ -399,4 +454,37 @@ pub fn writeValue(scope: *Scope, v: Value, w: *std.Io.Writer) std.Io.Writer.Erro
         .number => |number| try scope.bundle.numberFormatter(number.options).format(number.value, w),
         .datetime => |moment| try scope.bundle.writeDateTime(moment, w),
     }
+}
+
+test writeValue {
+    var bundle: Bundle = try .init(std.testing.allocator, .root);
+    defer bundle.deinit();
+
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    defer arena.deinit();
+
+    var scope: Scope = .{
+        .bundle = &bundle,
+        .arena = arena.allocator(),
+        .gpa = std.testing.allocator,
+        .args = &.{},
+    };
+    defer scope.deinit();
+
+    var buffer: [64]u8 = undefined;
+
+    var w = std.Io.Writer.fixed(&buffer);
+    try writeValue(&scope, .{ .string = "plain" }, &w);
+    try std.testing.expectEqualStrings("plain", w.buffered());
+
+    w = std.Io.Writer.fixed(&buffer);
+    try writeValue(&scope, .num(1234.5), &w);
+    try std.testing.expectEqualStrings("1,234.5", w.buffered());
+
+    // A value that could not be resolved renders inside braces, so that it
+    // looks wrong to whoever sees it rather than like something a translator
+    // wrote.
+    w = std.Io.Writer.fixed(&buffer);
+    try writeValue(&scope, .{ .none = "$missing" }, &w);
+    try std.testing.expectEqualStrings("{$missing}", w.buffered());
 }

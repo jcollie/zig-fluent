@@ -37,6 +37,8 @@
 
 const std = @import("std");
 
+const testing = std.testing;
+
 /// The characters a locale writes numbers with.
 ///
 /// The defaults are CLDR's root locale, which is what an unknown language
@@ -125,6 +127,11 @@ pub const Options = struct {
     /// This is how `NUMBER()` layers a call's options over those a value
     /// already carried: `{ NUMBER($n, maximumFractionDigits: 2) }` where `$n`
     /// arrived as a currency amount must stay a currency amount.
+    /// Layer `other`'s options over these, keeping what it did not set.
+    ///
+    /// This is how `NUMBER()` applies a call's options to a value that already
+    /// carried some: `{ NUMBER($n, maximumFractionDigits: 2) }` where `$n`
+    /// arrived as a currency amount has to stay a currency amount.
     pub fn override(self: Options, other: Options) Options {
         var merged = self;
         if (other.style != .decimal) merged.style = other.style;
@@ -139,6 +146,17 @@ pub const Options = struct {
         if (other.currency_text.len != 0) merged.currency_text = other.currency_text;
         if (other.currency_digits != 2) merged.currency_digits = other.currency_digits;
         return merged;
+    }
+
+    test override {
+        const base: Options = .{ .style = .currency, .currency = "EUR", .currency_digits = 2 };
+        const merged = base.override(.{ .maximum_fraction_digits = 4 });
+
+        // What the call asked for...
+        try testing.expectEqual(@as(?u8, 4), merged.maximum_fraction_digits);
+        // ...and what the value already was.
+        try testing.expectEqual(Style.currency, merged.style);
+        try testing.expectEqualStrings("EUR", merged.currency.?);
     }
 };
 
@@ -165,6 +183,7 @@ pub const Formatter = struct {
     /// A fuzz target found this the hard way, against a 64-entry array.
     const max_digits = 512;
 
+    /// Write `value` as this locale writes numbers.
     pub fn format(self: Formatter, value: f64, w: *std.Io.Writer) std.Io.Writer.Error!void {
         if (std.math.isNan(value)) {
             try w.writeAll(self.symbols.nan);
@@ -201,15 +220,37 @@ pub const Formatter = struct {
         try self.writeAffix(w, self.suffix(negative));
     }
 
+    test format {
+        var buffer: [64]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+
+        // The root defaults: at most three decimal places, groups of three.
+        try (Formatter{}).format(1234.5, &w);
+        try testing.expectEqualStrings("1,234.5", w.buffered());
+
+        // A German formatter is the same engine with different data.
+        w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .symbols = .{ .decimal = ",", .group = "." } }).format(1234.5, &w);
+        try testing.expectEqualStrings("1.234,5", w.buffered());
+
+        // Options ride along with the value.
+        w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{ .options = .{ .maximum_fraction_digits = 2 } }).format(1.23456, &w);
+        try testing.expectEqualStrings("1.23", w.buffered());
+    }
+
+    /// Whether the pattern says where a negative number's sign goes.
     fn hasNegativePattern(self: Formatter) bool {
         return self.pattern.negative_prefix != null or self.pattern.negative_suffix != null;
     }
 
+    /// The text that goes before the digits.
     fn prefix(self: Formatter, negative: bool) []const u8 {
         if (!negative) return self.pattern.positive_prefix;
         return self.pattern.negative_prefix orelse self.pattern.positive_prefix;
     }
 
+    /// The text that goes after the digits.
     fn suffix(self: Formatter, negative: bool) []const u8 {
         if (!negative) return self.pattern.positive_suffix;
         return self.pattern.negative_suffix orelse self.pattern.positive_suffix;
@@ -250,6 +291,7 @@ pub const Formatter = struct {
     };
 
     /// Round `magnitude` and return its digits, already padded to the minima.
+    /// Round `magnitude` and return its digits, padded to the minima.
     fn round(
         self: Formatter,
         magnitude: f64,
@@ -408,6 +450,8 @@ pub const Formatter = struct {
         return .{ @min(minimum, max_precision), @min(maximum, max_precision) };
     }
 
+    /// Pad the integer digits out to the minimum the options or the pattern ask
+    /// for.
     fn padInteger(self: Formatter, digits: []const u8, buffer: []u8) []const u8 {
         const requested: usize = self.options.minimum_integer_digits orelse
             self.pattern.minimum_integer_digits;
@@ -446,6 +490,7 @@ pub const Formatter = struct {
         }
     }
 
+    /// Write a run of ASCII digits in the locale's numbering system.
     fn writeDigits(self: Formatter, w: *std.Io.Writer, digits: []const u8) std.Io.Writer.Error!void {
         for (digits) |digit| try self.writeDigit(w, digit);
     }
@@ -469,6 +514,7 @@ pub const Formatter = struct {
 
 const default_digits = "0123456789";
 
+/// Copy `text` into `buffer` and return the part of it that was written.
 fn copy(buffer: []u8, text: []const u8) []const u8 {
     @memcpy(buffer[0..text.len], text);
     return buffer[0..text.len];
@@ -476,8 +522,7 @@ fn copy(buffer: []u8, text: []const u8) []const u8 {
 
 // -- tests -------------------------------------------------------------------
 
-const testing = std.testing;
-
+/// Format `value` with `formatter` and check it against `expected`.
 fn expectFormat(formatter: Formatter, value: f64, expected: []const u8) !void {
     var buffer: [256]u8 = undefined;
     var w = std.Io.Writer.fixed(&buffer);
@@ -632,12 +677,4 @@ test "not a number, and the infinities" {
 
 test "negative zero keeps its sign" {
     try expectFormat(.{}, -0.0, "-0");
-}
-
-test "options are layered rather than replaced" {
-    const base: Options = .{ .style = .currency, .currency = "EUR", .currency_digits = 2 };
-    const merged = base.override(.{ .maximum_fraction_digits = 4 });
-    try testing.expectEqual(Style.currency, merged.style);
-    try testing.expectEqualStrings("EUR", merged.currency.?);
-    try testing.expectEqual(@as(?u8, 4), merged.maximum_fraction_digits);
 }

@@ -90,6 +90,10 @@ test "every fixture survives being written back out" {
     }
 }
 
+/// Whether the source holds a carriage return that is not part of a CRLF.
+///
+/// That is the one character FTL text cannot represent when a line end
+/// follows it, which is why such a file is left out of the round trip.
 fn hasLoneCarriageReturn(source: []const u8) bool {
     for (source, 0..) |c, i| {
         if (c != '\r') continue;
@@ -147,6 +151,7 @@ fn checkRoundTrip(gpa: std.mem.Allocator, source: []const u8) !void {
     try std.testing.expectEqualStrings(second.written(), third.written());
 }
 
+/// Serialize a resource into a fresh buffer the caller owns.
 fn serializeAlloc(gpa: std.mem.Allocator, resource: fluent.syntax.Resource) !std.Io.Writer.Allocating {
     var out: std.Io.Writer.Allocating = .init(gpa);
     errdefer out.deinit();
@@ -154,6 +159,7 @@ fn serializeAlloc(gpa: std.mem.Allocator, resource: fluent.syntax.Resource) !std
     return out;
 }
 
+/// Parse one fixture and compare its tree against the reference JSON.
 fn checkFixture(
     gpa: std.mem.Allocator,
     name: []const u8,
@@ -233,6 +239,7 @@ fn reportDifference(
     }
 }
 
+/// Print one JSON value, or `<missing>` when an entry has no counterpart.
 fn printValue(gpa: std.mem.Allocator, label: []const u8, value: ?std.json.Value) !void {
     if (value == null) {
         std.debug.print("{s}: <missing>\n", .{label});

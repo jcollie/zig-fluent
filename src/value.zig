@@ -43,6 +43,14 @@ pub const Value = union(enum) {
         return .{ .number = .{ .value = value } };
     }
 
+    test num {
+        const three = Value.num(3);
+        try testing.expectEqual(@as(f64, 3), three.number.value);
+        // No options, so the bundle's locale decides everything about how it
+        // is written.
+        try testing.expectEqual(@as(?u8, null), three.number.options.maximum_fraction_digits);
+    }
+
     /// A number from whatever integer or float type the caller has.
     pub fn of(value: anytype) Value {
         return switch (@typeInfo(@TypeOf(value))) {
@@ -52,9 +60,23 @@ pub const Value = union(enum) {
         };
     }
 
+    test of {
+        // Saves writing `@floatFromInt` at the call site, which is where the
+        // count usually comes from.
+        try testing.expectEqual(@as(f64, 3), Value.of(@as(usize, 3)).number.value);
+        try testing.expectEqual(@as(f64, -7), Value.of(@as(i64, -7)).number.value);
+        try testing.expectEqual(@as(f64, 1.5), Value.of(@as(f32, 1.5)).number.value);
+    }
+
     /// A moment, as milliseconds since the Unix epoch.
     pub fn time(epoch_ms: i64) Value {
         return .{ .datetime = .{ .epoch_ms = epoch_ms } };
+    }
+
+    test time {
+        try testing.expectEqual(@as(i64, 0), Value.time(0).datetime.epoch_ms);
+        // Before 1970 is ordinary, which is more than `std.time.epoch` can say.
+        try testing.expectEqual(@as(i64, -1), Value.time(-1).datetime.epoch_ms);
     }
 };
 
@@ -95,6 +117,10 @@ pub const Argument = struct {
 /// written as a literal at the call site with no allocator involved.
 pub const Args = []const Argument;
 
+/// The argument called `name`, or null if it was not passed.
+///
+/// A linear scan, which is the right shape here: a message takes a handful of
+/// arguments at most, and three comparisons beat hashing them.
 pub fn find(args: Args, name: []const u8) ?Value {
     for (args) |argument| {
         if (std.mem.eql(u8, argument.name, name)) return argument.value;
@@ -102,11 +128,7 @@ pub fn find(args: Args, name: []const u8) ?Value {
     return null;
 }
 
-// -- tests -------------------------------------------------------------------
-
-const testing = std.testing;
-
-test "arguments are found by name" {
+test find {
     const args: Args = &.{
         .{ .name = "count", .value = .num(3) },
         .{ .name = "user", .value = .{ .string = "Ada" } },
@@ -116,12 +138,9 @@ test "arguments are found by name" {
     try testing.expectEqual(@as(?Value, null), find(args, "missing"));
 }
 
-test "a number can be made from any numeric type" {
-    try testing.expectEqual(@as(f64, 3), Value.of(@as(u8, 3)).number.value);
-    try testing.expectEqual(@as(f64, -7), Value.of(@as(i64, -7)).number.value);
-    try testing.expectEqual(@as(f64, 1.5), Value.of(@as(f32, 1.5)).number.value);
-    try testing.expectEqual(@as(f64, 2), Value.of(2).number.value);
-}
+// -- tests -------------------------------------------------------------------
+
+const testing = std.testing;
 
 test "a number keeps the options it was built with" {
     const value: Value = .{ .number = .{

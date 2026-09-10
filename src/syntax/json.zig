@@ -30,6 +30,20 @@ pub fn write(resource: ast.Resource, w: *std.Io.Writer) std.Io.Writer.Error!void
     try writeResource(&s, resource);
 }
 
+test write {
+    var resource = try @import("parser.zig").parse(std.testing.allocator, "hello = Hi\n");
+    defer resource.deinit();
+
+    var buffer: [512]u8 = undefined;
+    var w = std.Io.Writer.fixed(&buffer);
+    try write(resource, &w);
+
+    try std.testing.expectEqualStrings(
+        \\{"type":"Resource","body":[{"type":"Message","id":{"type":"Identifier","name":"hello"},"value":{"type":"Pattern","elements":[{"type":"TextElement","value":"Hi"}]},"attributes":[],"comment":null}]}
+    , w.buffered());
+}
+
+/// The `Resource` node, which is the whole file.
 fn writeResource(s: *std.json.Stringify, resource: ast.Resource) std.Io.Writer.Error!void {
     try s.beginObject();
     try field(s, "type", "Resource");
@@ -40,6 +54,7 @@ fn writeResource(s: *std.json.Stringify, resource: ast.Resource) std.Io.Writer.E
     try s.endObject();
 }
 
+/// One entry: a message, a term, a standalone comment, or junk.
 fn writeEntry(s: *std.json.Stringify, entry: ast.Entry) std.Io.Writer.Error!void {
     switch (entry) {
         .message => |m| {
@@ -81,6 +96,7 @@ fn writeEntry(s: *std.json.Stringify, entry: ast.Entry) std.Io.Writer.Error!void
     }
 }
 
+/// A comment, whose node type says how many `#` it was written with.
 fn writeComment(s: *std.json.Stringify, comment: ast.Comment) std.Io.Writer.Error!void {
     try s.beginObject();
     try field(s, "type", switch (comment.level) {
@@ -92,6 +108,7 @@ fn writeComment(s: *std.json.Stringify, comment: ast.Comment) std.Io.Writer.Erro
     try s.endObject();
 }
 
+/// The `.name = value` attributes of a message or term.
 fn writeAttributes(s: *std.json.Stringify, attributes: []const ast.Attribute) std.Io.Writer.Error!void {
     try s.beginArray();
     for (attributes) |a| {
@@ -106,6 +123,7 @@ fn writeAttributes(s: *std.json.Stringify, attributes: []const ast.Attribute) st
     try s.endArray();
 }
 
+/// An `Identifier` node, which is how every name is written.
 fn writeIdentifier(s: *std.json.Stringify, id: ast.Identifier) std.Io.Writer.Error!void {
     try s.beginObject();
     try field(s, "type", "Identifier");
@@ -113,6 +131,7 @@ fn writeIdentifier(s: *std.json.Stringify, id: ast.Identifier) std.Io.Writer.Err
     try s.endObject();
 }
 
+/// A `Pattern`: the text and placeables that make up a value.
 fn writePattern(s: *std.json.Stringify, pattern: ast.Pattern) std.Io.Writer.Error!void {
     try s.beginObject();
     try field(s, "type", "Pattern");
@@ -131,6 +150,7 @@ fn writePattern(s: *std.json.Stringify, pattern: ast.Pattern) std.Io.Writer.Erro
     try s.endObject();
 }
 
+/// A `Placeable`, the `{ ... }` wrapper around an expression.
 fn writePlaceable(s: *std.json.Stringify, expression: *const ast.Expression) std.Io.Writer.Error!void {
     try s.beginObject();
     try field(s, "type", "Placeable");
@@ -139,6 +159,7 @@ fn writePlaceable(s: *std.json.Stringify, expression: *const ast.Expression) std
     try s.endObject();
 }
 
+/// Whatever sits inside a placeable, by its own node type.
 fn writeExpression(s: *std.json.Stringify, expression: *const ast.Expression) std.Io.Writer.Error!void {
     switch (expression.*) {
         .string_literal => |l| {
@@ -224,6 +245,7 @@ fn writeExpression(s: *std.json.Stringify, expression: *const ast.Expression) st
     }
 }
 
+/// The positional and named arguments of a call.
 fn writeCallArguments(s: *std.json.Stringify, args: ast.CallArguments) std.Io.Writer.Error!void {
     try s.beginObject();
     try field(s, "type", "CallArguments");
@@ -259,6 +281,7 @@ fn writeCallArguments(s: *std.json.Stringify, args: ast.CallArguments) std.Io.Wr
     try s.endObject();
 }
 
+/// A string-valued object member, which is most of what this file writes.
 fn field(s: *std.json.Stringify, name: []const u8, value: []const u8) std.Io.Writer.Error!void {
     try s.objectField(name);
     try s.write(value);
