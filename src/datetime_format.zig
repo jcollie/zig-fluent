@@ -289,6 +289,33 @@ pub const Formatter = struct {
         try testing.expectEqualStrings("00:00", w.buffered());
     }
 
+    test "an abbreviated weekday is a single E in a skeleton key" {
+        // CLDR files both `yMMMEd` and `yMMMEEEEd`, and they are not the same
+        // pattern with a different weekday in it: Japanese parenthesises the
+        // weekday in the first and not the second. Asking for an abbreviated
+        // weekday has to build `E` to match the first, because `EEE` matches
+        // neither and the nearest entry by score is the wide one.
+        const names: Names = .{ .available_formats = &.{
+            .{ .skeleton = "yMMMEd", .pattern = "y-M-d(E)" },
+            .{ .skeleton = "yMMMEEEEd", .pattern = "y-M-d EEEE" },
+        } };
+        var buffer: [64]u8 = undefined;
+        var w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{
+            .names = names,
+            .options = .{ .year = .numeric, .month = .short, .day = .numeric, .weekday = .short },
+        }).format(0, &w);
+        try testing.expectEqualStrings("1970-1-1(Thu)", w.buffered());
+
+        // And a wide one still reaches the other entry.
+        w = std.Io.Writer.fixed(&buffer);
+        try (Formatter{
+            .names = names,
+            .options = .{ .year = .numeric, .month = .short, .day = .numeric, .weekday = .long },
+        }).format(0, &w);
+        try testing.expectEqualStrings("1970-1-1 Thu", w.buffered());
+    }
+
     test "Y is the week's year, not the calendar year" {
         // `ksh` files `Y-MM` under the `yM` skeleton, and Cologne keeps the
         // ISO week rule: a week begins on Monday and week 1 is the one holding
@@ -414,9 +441,17 @@ pub const Formatter = struct {
             .long => 4,
             .narrow => 5,
         }) catch {};
+        // CLDR spells an abbreviated weekday as a *single* `E` in a skeleton
+        // key -- `yMMMEd` -- and the wide one as four. Writing three here
+        // matched neither, so the scorer fell through to the nearest entry it
+        // could find, which for Japanese and Korean is the wide-weekday one:
+        // `yMMMEEEEd` is filed as `y年M月d日EEEE`, where `yMMMEd` is
+        // `y年M月d日(E)`, and the parentheses went missing along with the
+        // exact match. `E`, `EE` and `EEE` are all the abbreviated name, so
+        // the rendered width is unchanged either way; only the key differs.
         if (o.weekday) |width| w.splatByteAll('E', switch (width) {
             .narrow => 5,
-            .short => 3,
+            .short => 1,
             .long => 4,
         }) catch {};
         if (o.day) |width| w.splatByteAll('d', if (width == .@"2-digit") 2 else 1) catch {};
