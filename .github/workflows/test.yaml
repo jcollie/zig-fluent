@@ -47,6 +47,14 @@ jobs:
       - name: Compile everything else
         run: zig build check
 
+      # The C example, built by gcc and a Makefile rather than by Zig, which
+      # is the only thing here that links `libfluent.a` with a linker Zig did
+      # not invoke. Not on Windows, where there is no `make` and the Makefile
+      # is written for a Unix.
+      - name: Build and run the C example
+        if: runner.os != 'Windows'
+        run: make -C examples/c run
+
       # What the runner itself is set to. Not an assertion -- a CI machine's
       # locale is nobody's design -- but it is the only look this project gets
       # at what these platforms actually report, and it is printed so that a

@@ -4,3 +4,4 @@ result
 result-*
 zig-pkg/
 fuzz-findings/
+examples/c/greeting

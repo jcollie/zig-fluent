@@ -211,10 +211,44 @@ application's decision rather than this library's, in C exactly as in Zig.
 callback. `include/fluent.h` says so in the same words, since it is the file a
 C programmer will actually read.
 
+### A worked example, in C
+
+`examples/c/` is `examples/greeting.zig` written again in C, against the same
+`.ftl` files, and the two are worth reading side by side: what changes is the
+spelling, and what does not is the shape. It is built the way a C project is
+built — gcc and a Makefile — with the Zig build system reaching only as far as
+the library:
+
+```console
+$ cd examples/c
+$ make run                       # builds libfluent.a, then gcc, then runs it
+$ LANG=de_DE.UTF-8 ./greeting
+$ ./greeting fi
+$ make PREFIX=/usr/local         # against an installed copy, no Zig at all
+$ make LINKAGE=shared            # libfluent.so rather than libfluent.a
+```
+
+It reads its translations off disk rather than embedding them, which is the
+other ordinary deployment shape and is why resources are passed as a pointer
+and a length. It also writes out the negotiation the library deliberately does
+not do for you — three passes over the catalog, exact tag then language and
+script then language alone — which is about forty lines of ordinary string
+comparison, because a canonical tag is an ordinary string.
+
+That example is worth its keep: linking `libfluent.a` with a linker Zig did not
+invoke is the one thing `zig build test` cannot do, and the first time the
+Makefile ran it failed with `undefined reference to __zig_probe_stack`. Zig
+links its own `compiler_rt` and `cc` does not, so the archive now carries it.
+
+### Two tests, for two different things
+
 `tests/c_api.c` is a consumer rather than a unit test: it is compiled by a C
-compiler against the installed header and linked against the static library, so
-it is what catches the header and the implementation drifting apart. It runs as
-part of `zig build test`.
+compiler against the header and linked against the static library, so it is
+what catches the header and the implementation drifting apart. The tests inside
+`src/c.zig` run with `std.testing.allocator` in place of libc's, which is what
+lets them check the ownership rules rather than merely that nothing crashed.
+Both run as part of `zig build test`; the example is built by CI on Linux and
+macOS.
 
 ## In a POSIX environment
 

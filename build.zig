@@ -283,6 +283,16 @@ pub fn build(b: *std.Build) void {
     });
     c_static.installHeader(b.path("include/fluent.h"), "fluent.h");
 
+    // Zig's own runtime helpers, put inside the archive rather than left for
+    // the linker to find. Zig links `compiler_rt` for you and `cc` does not,
+    // so without this a static library built at anything but `-ODebug` fails
+    // to link from a Makefile with `undefined reference to
+    // __zig_probe_stack` -- and fails there and nowhere else, because
+    // everything in this build links it with Zig. `examples/c` is what caught
+    // it.
+    c_static.bundle_compiler_rt = true;
+    c_shared.bundle_compiler_rt = true;
+
     const install_c = b.step("c", "Build and install the C library and its header");
     install_c.dependOn(&b.addInstallArtifact(c_static, .{}).step);
     install_c.dependOn(&b.addInstallArtifact(c_shared, .{}).step);

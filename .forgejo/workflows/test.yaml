@@ -32,6 +32,14 @@ jobs:
       - name: Compile everything else
         run: nix develop -c zig build check
 
+      # The C example, built the way a C project builds: gcc and a Makefile,
+      # with Zig reaching only as far as the library. `zig build test` links
+      # its C test with Zig, which supplies `compiler_rt`; a foreign linker
+      # does not, and this is the step that noticed. Nothing else compiles it,
+      # so without this it could stop working and no test would say so.
+      - name: Build and run the C example
+        run: nix develop -c make -C examples/c run
+
   # Published only from main, so that a branch build cannot replace the site
   # with a work in progress, and only after `test` has passed, so that it
   # cannot document a tree that does not compile.
