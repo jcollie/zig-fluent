@@ -215,7 +215,9 @@ fn resolveProperty(
     var errors: fluent.Errors = .empty;
     defer errors.deinit(backing);
 
-    try bundle.addResource(input, .{ .allow_overrides = true }, &errors);
+    const add: fluent.AddOptions = .{ .allow_overrides = settings.allow_overrides };
+    try bundle.addResource(input, add, &errors);
+    if (settings.twice) try bundle.addResource(input, add, &errors);
 
     const args: fluent.Args = &.{
         .{ .name = "n", .value = .num(count) },
@@ -338,6 +340,8 @@ fn fuzzResolve(_: void, smith: *Smith) !void {
         .locale = locales[@intCast(knobs % locales.len)],
         .use_isolating = knobs & (1 << 8) != 0,
         .transform = knobs & (1 << 9) != 0,
+        .allow_overrides = knobs & (1 << 10) != 0,
+        .twice = knobs & (1 << 11) != 0,
     });
 }
 
@@ -349,6 +353,13 @@ const ResolveSettings = struct {
     locale: []const u8,
     use_isolating: bool,
     transform: bool,
+    /// Whether a later definition of a name may replace an earlier one, or
+    /// report a duplicate and keep the first.
+    allow_overrides: bool = true,
+    /// Whether to add the resource a second time, which is what an
+    /// application layering an override file over a base one does -- and the
+    /// cheapest way to make every name in it a duplicate.
+    twice: bool = false,
 };
 
 test "formatting terminates whatever the resource says" {
@@ -371,6 +382,17 @@ test "formatting terminates whatever the resource says" {
             .use_isolating = false,
             .transform = true,
         });
+        // Added twice, once where the second definition wins and once where
+        // it is refused and reported.
+        for ([_]bool{ false, true }) |allow| {
+            try resolveProperty(seed, 3, "Ada", .{
+                .locale = "en-US",
+                .use_isolating = true,
+                .transform = false,
+                .allow_overrides = allow,
+                .twice = true,
+            });
+        }
     }
 
     // The shapes the two limits exist for.
