@@ -780,10 +780,16 @@ fn jsonProperty(input: []const u8) !void {
         // And it is a resource, whatever else it is.
         try testing.expectEqualStrings("Resource", parsed.value.object.get("type").?.string);
 
-        if (!options.annotations) continue;
         for (parsed.value.object.get("body").?.array.items) |entry| {
             const object = entry.object;
             if (!std.mem.eql(u8, object.get("type").?.string, "Junk")) continue;
+
+            // A string, whatever the file held. `Stringify` writes a byte
+            // slice that is not valid UTF-8 as an array of numbers instead,
+            // which is a shape no consumer of the interchange format expects.
+            try testing.expect(object.get("content").? == .string);
+
+            if (!options.annotations) continue;
             for (object.get("annotations").?.array.items) |annotation| {
                 // Every one carries the code it was blamed on, the sentence
                 // for it, and a point in the source.

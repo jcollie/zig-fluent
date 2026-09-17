@@ -127,7 +127,7 @@ fn writeAnnotation(s: *std.json.Stringify, annotation: ast.Annotation) std.Io.Wr
     try field(s, "code", annotation.code.name());
     try s.objectField("arguments");
     try s.beginArray();
-    if (annotation.argument) |argument| try s.write(argument);
+    if (annotation.argument) |argument| try text(s, argument);
     try s.endArray();
 
     // The message is printed rather than returned, and an argument taken from
@@ -460,7 +460,47 @@ fn writeCallArguments(s: *std.json.Stringify, args: ast.CallArguments) std.Io.Wr
 /// A string-valued object member, which is most of what this file writes.
 fn field(s: *std.json.Stringify, name: []const u8, value: []const u8) std.Io.Writer.Error!void {
     try s.objectField(name);
-    try s.write(value);
+    try text(s, value);
+}
+
+/// A JSON string, with anything that is not valid UTF-8 written as U+FFFD.
+///
+/// Every string here but the node types comes out of the source: a message
+/// name, a run of text, the content of a junk entry. `Stringify.write` would
+/// write one that is not valid UTF-8 as an **array of numbers** rather than as
+/// a string -- valid JSON, and a shape no consumer of Fluent's interchange
+/// format expects, since `fluent-syntax` reads a file into a string first and
+/// has replaced the bad bytes long before it builds a tree. Doing the same
+/// here keeps the shape the same whatever the file held.
+fn text(s: *std.json.Stringify, bytes: []const u8) std.Io.Writer.Error!void {
+    try s.beginWriteRaw();
+    try s.writer.writeByte('"');
+    var escaping: Escaping = .init(s.writer);
+    try escaping.writer.writeAll(bytes);
+    try escaping.writer.flush();
+    try s.writer.writeByte('"');
+    s.endWriteRaw();
+}
+
+test text {
+    const gpa = std.testing.allocator;
+
+    // A message whose name is fine and whose text is not.
+    var resource = try @import("parser.zig").parse(gpa, "m = a\xffb\n");
+    defer resource.deinit();
+
+    var out: std.Io.Writer.Allocating = .init(gpa);
+    defer out.deinit();
+    try write(resource, &out.writer, .{});
+
+    var parsed = try std.json.parseFromSlice(std.json.Value, gpa, out.written(), .{});
+    defer parsed.deinit();
+
+    const message = parsed.value.object.get("body").?.array.items[0].object;
+    const elements = message.get("value").?.object.get("elements").?.array.items;
+    // A string, rather than the array of numbers `Stringify` would have made
+    // of it.
+    try std.testing.expectEqualStrings("a\u{FFFD}b", elements[0].object.get("value").?.string);
 }
 
 test "a message is written in the reference shape" {
