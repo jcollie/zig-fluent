@@ -199,6 +199,27 @@ pub fn build(b: *std.Build) void {
         test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = structure })).step);
     }
 
+    // `fluent-rs`'s resolver fixtures: 180 assertions about what a bundle
+    // does with a message, in YAML. Same arrangement as the two above.
+    if (b.lazyDependency("fluent_rs", .{})) |fluent_rs| {
+        const bundle_fixtures_options = b.addOptions();
+        bundle_fixtures_options.addOptionPath(
+            "fixtures_dir",
+            fluent_rs.path("fluent-bundle/tests/fixtures"),
+        );
+
+        const bundle_fixtures = b.createModule(.{
+            .root_source_file = b.path("tests/conformance_bundle.zig"),
+            .target = target,
+            .optimize = optimize,
+            .imports = &.{
+                .{ .name = "fluent", .module = mod },
+                .{ .name = "bundle_fixtures_options", .module = bundle_fixtures_options.createModule() },
+            },
+        });
+        test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = bundle_fixtures })).step);
+    }
+
     // -- fuzzing -------------------------------------------------------------
     //
     // What the parser and the formatters must do with input nobody wrote. The

@@ -202,6 +202,15 @@ copyFarm name
       };
     }
     {
+      name = "N-V-__8AADjcJwBHUNPdbcFrgdpIPAEYXMLlRB6MzPX1C11B";
+      path = fetchZigArtifact {
+        name = "fluent_rs";
+        url = "https://github.com/projectfluent/fluent-rs/archive/b822cfe0ac5f35099ee71d3cf6f43b7c01d5fc6d.tar.gz";
+        hash = "sha256-y9p+V/XZUYy7La/Hog5DMuU6dMLieFHjHijgKgpiTlY=";
+        unpack = false;
+      };
+    }
+    {
       name = "N-V-__8AAOPHBwAthlB_ltwF8wIYLtx96Tb9jDWVBZaxfUwl";
       path = fetchZigArtifact {
         name = "fluent_spec";

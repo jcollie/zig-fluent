@@ -724,11 +724,12 @@ $ zig build docs-serve             # read the API documentation at :8000
 $ zig build fuzz-run -- --seconds 60
 ```
 
-`zig build test` also runs the parser against two corpora nobody here wrote:
-101 `.ftl` files, each paired with the syntax tree it must parse to. Neither is
-vendored — they arrive as `build.zig.zon` dependencies, so the exact revision
-compared against is a hash in the manifest rather than a copy in this repository
-that could drift. See below for what a manifest entry costs.
+`zig build test` also runs this against three corpora nobody here wrote: 101
+`.ftl` files each paired with the syntax tree it must parse to, and 180
+assertions about what a bundle does with a message once it is parsed. None of
+them is vendored — they arrive as `build.zig.zon` dependencies, so the exact
+revision compared against is a hash in the manifest rather than a copy in this
+repository that could drift. See below for what a manifest entry costs.
 
 **Fluent's own conformance fixtures**, from `projectfluent/fluent`: 39 files,
 the suite every implementation is expected to agree on. They are generated with
@@ -754,6 +755,33 @@ matching, since that would mean the list has gone stale rather than that nothing
 is wrong.
 
 [fluent.js#237]: https://github.com/projectfluent/fluent.js/issues/237
+
+**`fluent-rs`'s resolver fixtures**: 58 suites, 164 tests and 180 assertions
+about the other half of the library. The two syntax corpora say what tree a
+file builds and which error a broken entry is blamed on; neither says which
+variant a selector picks, what a missing argument falls back to, where the
+isolation marks go, or whether a cyclic reference is caught. This one does, and
+it is the only runtime conformance corpus Fluent has anywhere. It has no
+official standing — `fluent-rs` keeps it and `fluent-rs` alone runs it — but
+its files map one-to-one onto `fluent.js`'s own tests (`macros.yaml` against
+`macros_test.js`, and so on), so what it holds is the reference
+implementation's behaviour written down in a language-neutral form.
+
+The fixtures are YAML, which Zig's standard library does not read.
+`tests/yaml.zig` reads the subset they use and refuses everything else —
+no flow style, no anchor, no folded scalar, no tab — since a reader that
+quietly mis-parses a fixture reports a passing test that checked nothing. It
+was checked against `yq` on all 17 files and agrees with it exactly.
+
+Eight of the 180 are expected not to match, and seven of those eight were
+checked against `fluent.js`'s test for the same case, which asserts what this
+library does: `{???}` for a cyclic reference and for the reference bomb,
+`{key6}` for a reference to an attribute of a message that is not there, and
+isolation marks around string literals and term references — which `fluent-rs`
+skips, and says so in the name of the suite that asserts it. The eighth, a
+function called with arguments it cannot use, is a case `fluent.js` skips
+rather than settles. `tests/conformance_bundle.zig` lists all eight with the
+text this library produces instead.
 
 ### Regenerating the CLDR tables
 
@@ -801,26 +829,28 @@ byte-identical output.
 
 ### What a clean build actually downloads
 
-For a Linux target, three packages, 555 KB compressed and 4.8 MB unpacked:
+For a Linux target, four packages, 907 KB compressed and 8.4 MB unpacked:
 
 | | | |
 |---|---|---|
 | `zig-datetime` | 1.1 MB | the calendar, the timezone database, and CLDR pattern writing |
 | `fluent-spec` | 876 KB | the reference conformance fixtures, used by `zig build test` |
 | `fluent.js` | 2.9 MB | the structure fixtures, likewise — 193 KB of corpus inside a monorepo |
+| `fluent-rs` | 3.6 MB | the resolver fixtures, likewise — 52 KB of corpus inside another |
 
 Building for Windows adds `zigwin32` at 64 MB, for the two Win32 calls in
 `src/windows.zig`. That one is conditional on the target — `if
 (target.result.os.tag == .windows)` around the `lazyDependency` call — so a
 build for anything else neither fetches nor compiles it.
 
-Both corpora are fetched by a plain `zig build`, deliberately: the conformance
-suites are what `zig build test` exists to run, which step was asked for cannot
-be known at configure time, and neither package is worth an option that would
-let a suite be skipped by accident. `fluent.js` is the worst bargain of the
-three — a whole JavaScript monorepo for one directory of fixtures — but the
-corpus has no other home, and copying it in here is the one thing that would
-let what this parser is measured against drift.
+All three corpora are fetched by a plain `zig build`, deliberately: the
+conformance suites are what `zig build test` exists to run, which step was
+asked for cannot be known at configure time, and no one of them is worth an
+option that would let a suite be skipped by accident. `fluent.js` and
+`fluent-rs` are poor bargains by weight — two whole monorepos for two
+directories of fixtures, 6.5 MB for 245 KB — but neither corpus has another
+home, and copying them in here is the one thing that would let what this
+library is measured against drift.
 
 It was 13 MB and about 145 MB unpacked until very recently, and the difference
 is worth recording because none of it was this project's own manifest. The

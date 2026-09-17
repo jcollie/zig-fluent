@@ -13,7 +13,10 @@
         // reference parser builds. `fluent_js` carries a second corpus the
         // spec repository does not, `fluent-syntax/test/fixtures_structure`:
         // 62 more pairs, most of them broken on purpose, whose trees record
-        // which error each junk entry is blamed on and where.
+        // which error each junk entry is blamed on and where. `fluent_rs`
+        // carries the third, `fluent-bundle/tests/fixtures`: 180 assertions
+        // about what a *bundle* does with a message once it is parsed, which
+        // is the only runtime conformance corpus Fluent has anywhere.
         .fluent_spec = .{
             .url = "https://github.com/projectfluent/fluent/archive/3dbb402ed5af6b64f5c09faeb067acff127a0f34.tar.gz",
             .hash = "N-V-__8AAOPHBwAthlB_ltwF8wIYLtx96Tb9jDWVBZaxfUwl",
@@ -22,6 +25,11 @@
         .fluent_js = .{
             .url = "https://github.com/projectfluent/fluent.js/archive/9a925d2a38b893be735ff4429be8ad62132a204d.tar.gz",
             .hash = "N-V-__8AAGTMFQCaxAe0Sm7zireXs1D73Kk-lQnyKhCTC2mA",
+            .lazy = true,
+        },
+        .fluent_rs = .{
+            .url = "https://github.com/projectfluent/fluent-rs/archive/b822cfe0ac5f35099ee71d3cf6f43b7c01d5fc6d.tar.gz",
+            .hash = "N-V-__8AADjcJwBHUNPdbcFrgdpIPAEYXMLlRB6MzPX1C11B",
             .lazy = true,
         },
         .datetime = .{
