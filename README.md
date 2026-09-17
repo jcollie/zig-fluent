@@ -896,6 +896,66 @@ literal can name nothing at all — and this library's own documentation makes
 the point that a `.ftl` file is reached by the same path a user's display name
 is.
 
+## References cited
+
+- Project Fluent. (2019, April 17). *Fluent Syntax 1.0*.
+  <https://github.com/projectfluent/fluent>
+- Project Fluent. *Fluent Syntax Guide*.
+  <https://projectfluent.org/fluent/guide/>
+- Project Fluent. *fluent.js: JavaScript implementation of Project Fluent*.
+  <https://github.com/projectfluent/fluent.js>
+- Carr, S. F., and other CLDR committee members. *Unicode Technical Standard
+  #35: Unicode Locale Data Markup Language (LDML) Part 3: Numbers* (Version
+  48.2). Unicode Consortium.
+  <https://www.unicode.org/reports/tr35/tr35-numbers.html>
+- Edberg, P., and other CLDR committee members. *Unicode Technical Standard
+  #35: Unicode Locale Data Markup Language (LDML) Part 4: Dates* (Version
+  48.2). Unicode Consortium.
+  <https://www.unicode.org/reports/tr35/tr35-dates.html>
+- Unicode Consortium. (2025, August 4). *Unicode Common Locale Data Repository
+  (CLDR)* (Release 48.2). <https://cldr.unicode.org/>
+- Unicode Consortium. *ICU: International Components for Unicode* (Version
+  78.3). <https://icu.unicode.org/>
+- Ecma International. (2026, June). *ECMAScript 2026 Internationalization API
+  Specification* (ECMA-402, 13th ed.).
+  <https://ecma-international.org/publications-and-standards/standards/ecma-402/>
+- Phillips, A., & Davis, M. (2009, September). *Tags for Identifying Languages*
+  (RFC 5646, BCP 47). Internet Engineering Task Force.
+  <https://www.rfc-editor.org/info/rfc5646>
+- The Open Group. (2024). *The Open Group Base Specifications Issue 8* (IEEE
+  Std 1003.1-2024). <https://pubs.opengroup.org/onlinepubs/9799919799/>
+- Apple Inc. *CFPreferencesCopyAppValue(_:_:)*. Apple Developer Documentation.
+  <https://developer.apple.com/documentation/corefoundation/cfpreferencescopyappvalue(_:_:)>
+- Microsoft. *National Language Support*. Win32 API documentation.
+  <https://learn.microsoft.com/en-us/windows/win32/intl/national-language-support>
+
+The first three are Fluent itself. The grammar in `spec/fluent.ebnf` is what
+`src/syntax/` implements, and the repository holding it also holds the
+reference parser and the 39 conformance fixtures. The guide is the prose the
+syntax is explained in, and the example at the top of this file is its
+vocabulary. `fluent.js` is the reference implementation: the source of the 62
+structure fixtures, of the `E00NN` codes and the English sentences beside them
+in `src/syntax/errors.zig`, and of the one behavioural disagreement recorded in
+`tests/conformance_structure.zig`.
+
+The next five are the formatting. Parts 3 and 4 of UTS #35 define the pattern
+vocabulary the CLDR tables are read through — the field letters, the widths,
+the plural operands `n`, `i`, `v`, `w`, `f`, `t` and `e` — and CLDR 48.2
+is the data itself, generated into `src/cldr/` by `zig build gen-cldr`. ICU is
+the oracle: 2312 date cases were compared against `Intl` in node 24, which
+embeds ICU 78.3, and the section above says exactly where the two still
+disagree and why. ECMA-402 is where the option names came from, because they
+are what `NUMBER()` and `DATETIME()` are given in an FTL file.
+
+The last four are how a locale is found. BCP 47 is the tag syntax and the case
+normalization `Locale.parse` applies; the POSIX Base Specifications say what
+`LANG` and the `LC_*` variables mean and which of them wins, though `LANGUAGE`
+is GNU gettext's rather than theirs; and Apple's and Microsoft's documentation
+is for the two platforms that answer the question somewhere other than the
+environment.
+
+All twelve are in the `zig-fluent` Zotero collection.
+
 ## Where this lives
 
 The repository is hosted on Forgejo, which is where the issues and the
