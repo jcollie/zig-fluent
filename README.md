@@ -976,7 +976,22 @@ git clone https://github.com/jcollie/zig-fluent.git
 There is a second mirror on Tangled, at
 <https://tangled.org/jcollie.dev/zig-fluent>.
 
-The mirror also earns its keep: the Forgejo runners are Linux, and
+It is on the Radicle network as well, where the repository's identifier is
+
+```
+rad:z3qRcBG3GmL9UeB8QjNyihjnUcFTB
+```
+
+and
+
+```sh
+rad clone rad:z3qRcBG3GmL9UeB8QjNyihjnUcFTB
+```
+
+fetches it from any node that seeds it. A Radicle repository is findable by its
+identifier and by nothing else, which is why that string is written out here.
+
+The GitHub mirror also earns its keep: the Forgejo runners are Linux, and
 `.github/workflows/test.yaml` runs the same tests on macOS and Windows as well,
 which is the only way the Win32 calls and the macOS locale conventions get
 exercised at all. It paid for itself over four runs, each failing somewhere no
