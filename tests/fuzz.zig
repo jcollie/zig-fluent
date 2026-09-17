@@ -58,6 +58,10 @@ const source_seeds = [_][]const u8{
     "broken = { $x\nafter = fine\n",
     "m = }\n",
     "m = { 1.5 } { -2 } { 0 }\n",
+    // An escape sequence whose body is not text. The parser rejects it and
+    // names it in the annotation, so those bytes end up inside a sentence
+    // that has to survive being written as JSON.
+    "m = { \"a\\\xa8b\" }\n",
     "",
     "\n\n\n",
     "=",
@@ -516,18 +520,41 @@ fn jsonProperty(input: []const u8) !void {
     var resource = try fluent.syntax.parse(backing, input);
     defer resource.deinit();
 
-    var out: std.Io.Writer.Allocating = .init(backing);
-    defer out.deinit();
-    fluent.syntax.writeJson(resource, &out.writer, .{}) catch return error.OutOfMemory;
+    // Both shapes the writer offers. The second is the one worth fuzzing: an
+    // annotation's message is printed through an escaping writer rather than
+    // handed to `Stringify` as a finished slice, and it interpolates text the
+    // input chose -- an escape sequence the parser rejected, say. A quote or a
+    // backslash reaching the output unescaped would be a broken string, and
+    // junk is exactly what a fuzzer produces most of.
+    for ([_]fluent.syntax.JsonOptions{ .{}, .{ .annotations = true } }) |options| {
+        var out: std.Io.Writer.Allocating = .init(backing);
+        defer out.deinit();
+        fluent.syntax.writeJson(resource, &out.writer, options) catch return error.OutOfMemory;
 
-    var parsed = std.json.parseFromSlice(std.json.Value, backing, out.written(), .{}) catch |err| {
-        std.debug.print("not valid JSON ({t}): {s}\n", .{ err, out.written() });
-        return error.InvalidJson;
-    };
-    defer parsed.deinit();
+        var parsed = std.json.parseFromSlice(std.json.Value, backing, out.written(), .{}) catch |err| {
+            std.debug.print("not valid JSON ({t}): {s}\n", .{ err, out.written() });
+            return error.InvalidJson;
+        };
+        defer parsed.deinit();
 
-    // And it is a resource, whatever else it is.
-    try testing.expectEqualStrings("Resource", parsed.value.object.get("type").?.string);
+        // And it is a resource, whatever else it is.
+        try testing.expectEqualStrings("Resource", parsed.value.object.get("type").?.string);
+
+        if (!options.annotations) continue;
+        for (parsed.value.object.get("body").?.array.items) |entry| {
+            const object = entry.object;
+            if (!std.mem.eql(u8, object.get("type").?.string, "Junk")) continue;
+            for (object.get("annotations").?.array.items) |annotation| {
+                // Every one carries the code it was blamed on, the sentence
+                // for it, and a point in the source.
+                const fields = annotation.object;
+                try testing.expect(fields.get("code").?.string.len != 0);
+                try testing.expect(fields.get("message").?.string.len != 0);
+                const span = fields.get("span").?.object;
+                try testing.expect(span.get("start").?.integer <= @as(i64, @intCast(input.len)));
+            }
+        }
+    }
 }
 
 /// Drive `jsonProperty` from a fuzzer's byte stream.
