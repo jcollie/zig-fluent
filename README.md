@@ -920,6 +920,62 @@ same trap as the plural one in a different place; and a year before the common
 era was computed with arithmetic that both said the wrong thing and overflowed
 at the bottom of an `i32`.
 
+A third pass came after the conformance suites, and found the newest code in
+the tree. An annotation's message is *printed* rather than handed over as a
+finished slice, so it goes through an escaping writer, and that writer passed
+every byte to `std.json`'s character escaper — right for text, and an
+annotation quotes whatever followed the backslash of an escape the parser
+rejected. So a lone continuation byte reached the output raw, and what came
+out was a JSON string that no JSON parser would read back. It took about ten
+seconds of the `json` target once that target wrote the annotated shape as
+well as the plain one: twenty saved inputs in the first twelve seconds.
+
+Reading those inputs showed the same defect one step along, in code that had
+been there all along. `Stringify` writes a byte slice that is not valid UTF-8
+as an **array of numbers**, so a junk entry from a file that is not text came
+out as `"content":[109,32,61,…]`. That is valid JSON, which is why the old
+property — parse it, check it is a `Resource` — passed straight over it, and
+it is not the interchange format: `fluent-syntax` reads a file into a string
+before it parses anything, so by the time it builds a tree those bytes are
+already U+FFFD. Both are fixed the same way, and a bad byte now costs the
+character it was part of and nothing else.
+
+The rest of that pass was making four targets ask harder questions, and none
+of them has found anything yet:
+
+- **the formatter**, not just the archival round trip. Serializing with junk
+  dropped is what a tool that reads a file, changes a message and writes it
+  back does, and it has to parse back with no junk and be a fixed point from
+  there — the two properties `tests/conformance.zig` checks over the 101
+  fixtures, now checked over whatever the fuzzer makes up.
+- **isolation marks balance.** They are invisible, so an unclosed one is not
+  something anyone notices by reading the output; it is something a
+  bidirectional renderer notices, by laying out the rest of the paragraph the
+  wrong way round.
+- **a bundle has settings.** `resolve` built every bundle at the root locale
+  with isolation on and errors dropped. It now takes its locale from eight
+  with different plural rules and digits, switches isolation and a transform
+  on and off, formats attributes as well as values, collects the errors rather
+  than passing null, and sometimes adds the resource twice to make every name
+  in it a duplicate.
+- **the environment disagrees with itself.** `locales` gave the same string to
+  `LANGUAGE`, `LC_ALL`, `LC_MESSAGES` and `LANG`, so the precedence between
+  them — most of what that code does — was never exercised. It reads two
+  strings now and spreads them over seven variables.
+
+The settings are read a bit at a time out of a `u64` rather than asked for as
+a `u8`, and that is not a detail: `Smith.value` returns the asked-for range's
+*minimum* for a value outside it, so a generator writing random bytes would
+have chosen the first locale and switched nothing on, every single time, while
+reporting millions of runs.
+
+The state of it: a sweep of all ten targets is **72 million runs**, and found
+nothing beyond the two above; a second sweep, with the broadened targets in
+place, found nothing either. That is worth stating plainly rather than as a claim about the code —
+this loop has no coverage feedback, so what it says is that the shapes it
+reaches are handled, and the shapes it reaches are the corpus in
+`tests/fuzz.zig` and what eight rounds of mutation do to it.
+
 Every one of them carries a test. The `\UFFFFFF` one is worth pausing on:
 being in range is a question about a value, not about syntax, so a well-formed
 literal can name nothing at all — and this library's own documentation makes
