@@ -154,10 +154,30 @@ test "what parsed survives being written back out" {
 ///
 /// This is where the placeable budget and the cycle check are exercised on
 /// input designed to defeat them.
-fn resolveProperty(input: []const u8, count: f64, word: []const u8) !void {
-    var bundle: fluent.Bundle = try .init(backing, .root);
+fn resolveProperty(
+    input: []const u8,
+    count: f64,
+    word: []const u8,
+    settings: ResolveSettings,
+) !void {
+    var bundle: fluent.Bundle = try .init(
+        backing,
+        fluent.Locale.parse(settings.locale) catch .root,
+    );
     defer bundle.deinit();
-    try bundle.addResource(input, .{ .allow_overrides = true }, null);
+
+    bundle.use_isolating = settings.use_isolating;
+    if (settings.transform) bundle.transform = shout;
+
+    // The errors are collected rather than dropped, which is a path of its
+    // own: the list is allocated and grown while a pattern is being written,
+    // and every error in it is a sentence that interpolates a name taken from
+    // the source -- or, for a parse error, the annotation and whatever text
+    // *it* quotes.
+    var errors: fluent.Errors = .empty;
+    defer errors.deinit(backing);
+
+    try bundle.addResource(input, .{ .allow_overrides = true }, &errors);
 
     const args: fluent.Args = &.{
         .{ .name = "n", .value = .num(count) },
@@ -171,9 +191,31 @@ fn resolveProperty(input: []const u8, count: f64, word: []const u8) !void {
 
     var it = bundle.messages.iterator();
     while (it.next()) |entry| {
-        const text = try bundle.format(backing, entry.key_ptr.*, args, null) orelse continue;
-        backing.free(text);
+        if (try bundle.format(backing, entry.key_ptr.*, args, &errors)) |text| {
+            backing.free(text);
+        }
+        // Attributes are patterns too, and nothing else here formats one.
+        for (entry.value_ptr.attributes) |attribute| {
+            const text = try bundle.formatAttribute(
+                backing,
+                entry.key_ptr.*,
+                attribute.id.name,
+                args,
+                &errors,
+            ) orelse continue;
+            backing.free(text);
+        }
     }
+
+    // Every error has to be printable: that is what a caller does with one.
+    var counting: std.Io.Writer.Discarding = .init(&.{});
+    for (errors.items) |e| try counting.writer.print("{f}", .{e});
+}
+
+/// A transform in the shape an application would supply one, upper-casing the
+/// literal text of every pattern it is given.
+fn shout(text: []const u8, w: *std.Io.Writer) std.Io.Writer.Error!void {
+    for (text) |c| try w.writeByte(std.ascii.toUpper(c));
 }
 
 /// Drive `resolveProperty` from a fuzzer's byte stream.
@@ -186,14 +228,57 @@ fn fuzzResolve(_: void, smith: *Smith) !void {
     // operands are asked about the infinities and the numbers past the end of
     // an `i64` as well as about plausible counts.
     const count: f64 = @bitCast(smith.value(u64));
-    try resolveProperty(source_buffer[0..source_len], count, word_buffer[0..word_len]);
+    // The bundle's own settings, taken a bit at a time out of one more `u64`.
+    //
+    // Asking `Smith` for a `u8` would not do: it reads eight bytes as a `u64`
+    // and, for a value outside the range asked for, returns the range's
+    // *minimum* rather than reducing it -- so a generator writing random bytes
+    // would choose the first locale and switch nothing on, every single time.
+    // Reading the whole width and doing the reduction here is what makes these
+    // vary at all.
+    const knobs = smith.value(u64);
+    try resolveProperty(source_buffer[0..source_len], count, word_buffer[0..word_len], .{
+        .locale = locales[@intCast(knobs % locales.len)],
+        .use_isolating = knobs & (1 << 8) != 0,
+        .transform = knobs & (1 << 9) != 0,
+    });
 }
 
+/// Locales with different plural rules, number symbols and digits, so that a
+/// fuzzed selector is asked of more than one table.
+const locales = [_][]const u8{ "und", "en-US", "pl", "ar", "ru", "cy", "fi", "th" };
+
+const ResolveSettings = struct {
+    locale: []const u8,
+    use_isolating: bool,
+    transform: bool,
+};
+
 test "formatting terminates whatever the resource says" {
-    for (source_seeds) |seed| try resolveProperty(seed, 3, "Ada");
+    const plain: ResolveSettings = .{ .locale = "en-US", .use_isolating = true, .transform = false };
+
+    // Every seed against every locale and both of the switches, since a
+    // selector that reaches a plural rule reaches a different one each time.
+    for (source_seeds) |seed| {
+        for (locales) |locale| {
+            for ([_]bool{ false, true }) |isolating| {
+                try resolveProperty(seed, 3, "Ada", .{
+                    .locale = locale,
+                    .use_isolating = isolating,
+                    .transform = false,
+                });
+            }
+        }
+        try resolveProperty(seed, 3, "Ada", .{
+            .locale = "en-US",
+            .use_isolating = false,
+            .transform = true,
+        });
+    }
+
     // The shapes the two limits exist for.
-    try resolveProperty("a = { b }\nb = { a }\n", 1, "x");
-    try resolveProperty("a = { a }\n", 1, "x");
+    try resolveProperty("a = { b }\nb = { a }\n", 1, "x", plain);
+    try resolveProperty("a = { a }\n", 1, "x", plain);
     try resolveProperty(
         \\m0 = { m1 }{ m1 }{ m1 }{ m1 }
         \\m1 = { m2 }{ m2 }{ m2 }{ m2 }
@@ -201,7 +286,7 @@ test "formatting terminates whatever the resource says" {
         \\m3 = { m4 }{ m4 }{ m4 }{ m4 }
         \\m4 = leaf
         \\
-    , 1, "x");
+    , 1, "x", plain);
 }
 
 // -- formatting numbers ------------------------------------------------------
@@ -316,7 +401,7 @@ const tag_seeds = [_][]const u8{
 /// The POSIX reader is checked on the same input, because it takes text from
 /// the environment -- or, on a server, from wherever the caller found a
 /// language preference -- and reassembles a tag out of pieces of it.
-fn localeProperty(text: []const u8) !void {
+fn localeProperty(text: []const u8, other: []const u8) !void {
     var chain: [8]fluent.Locale = undefined;
     for (fluent.posix.fromList(&chain, text)) |locale| {
         try testing.expect(locale.tag().len > 0);
@@ -324,13 +409,39 @@ fn localeProperty(text: []const u8) !void {
         const again = try fluent.Locale.parse(locale.tag());
         try testing.expectEqualStrings(locale.tag(), again.tag());
     }
-    _ = fluent.posix.fromVariables(&chain, .{
+
+    // Two strings over seven variables, so that one category's variable can
+    // disagree with `LC_ALL` and with `LANG`.
+    const variables: fluent.posix.Variables = .{
         .language = text,
-        .lc_all = text,
+        .lc_all = other,
         .lc_messages = text,
+        .lc_numeric = other,
+        .lc_time = text,
+        .lc_monetary = other,
         .lang = text,
-    });
+    };
+    _ = fluent.posix.fromVariables(&chain, variables);
+    _ = fluent.posix.saysUnlocalized(variables);
+
+    // Every locale a category ends up with is a locale, whichever variable it
+    // came from and whatever was in it.
+    const categories = fluent.posix.categoriesFromVariables(variables);
+    for ([_]?fluent.Locale{
+        categories.messages,
+        categories.numeric,
+        categories.time,
+        categories.monetary,
+    }) |category| {
+        const locale = category orelse continue;
+        const again = try fluent.Locale.parse(locale.tag());
+        try testing.expectEqualStrings(locale.tag(), again.tag());
+    }
+
     _ = fluent.posix.isUnlocalized(text);
+    if (fluent.posix.fromName(text)) |named| {
+        try testing.expect(named.tag().len > 0);
+    }
 
     const locale = fluent.Locale.parse(text) catch return;
     try testing.expect(locale.tag().len > 0);
@@ -348,11 +459,21 @@ fn localeProperty(text: []const u8) !void {
 fn fuzzLocale(_: void, smith: *Smith) !void {
     var buffer: [64]u8 = undefined;
     const len = smith.slice(&buffer);
-    try localeProperty(buffer[0..len]);
+    // A second, independent value for the environment: the precedence between
+    // `LC_ALL`, a category's own variable and `LANG` is the whole of what
+    // `fromVariables` and `categoriesFromVariables` do, and handing all of
+    // them the same string never exercises it.
+    var other_buffer: [64]u8 = undefined;
+    const other_len = smith.slice(&other_buffer);
+    try localeProperty(buffer[0..len], other_buffer[0..other_len]);
 }
 
 test "language tags parse or are refused, and nothing else" {
-    for (tag_seeds) |seed| try localeProperty(seed);
+    // Every seed against every other, since the point of the second string is
+    // that it can disagree with the first.
+    for (tag_seeds) |seed| {
+        for (tag_seeds) |other| try localeProperty(seed, other);
+    }
 }
 
 // -- formatting dates --------------------------------------------------------
