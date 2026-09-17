@@ -934,6 +934,8 @@ is.
   <https://projectfluent.org/fluent/guide/>
 - Project Fluent. *fluent.js: JavaScript implementation of Project Fluent*.
   <https://github.com/projectfluent/fluent.js>
+- Project Fluent. *fluent-rs: Rust implementation of Project Fluent*.
+  <https://github.com/projectfluent/fluent-rs>
 - Carr, S. F., and other CLDR committee members. *Unicode Technical Standard
   #35: Unicode Locale Data Markup Language (LDML) Part 3: Numbers* (Version
   48.2). Unicode Consortium.
@@ -959,14 +961,17 @@ is.
 - Microsoft. *National Language Support*. Win32 API documentation.
   <https://learn.microsoft.com/en-us/windows/win32/intl/national-language-support>
 
-The first three are Fluent itself. The grammar in `spec/fluent.ebnf` is what
+The first four are Fluent itself. The grammar in `spec/fluent.ebnf` is what
 `src/syntax/` implements, and the repository holding it also holds the
 reference parser and the 39 conformance fixtures. The guide is the prose the
 syntax is explained in, and the example at the top of this file is its
 vocabulary. `fluent.js` is the reference implementation: the source of the 62
 structure fixtures, of the `E00NN` codes and the English sentences beside them
 in `src/syntax/errors.zig`, and of the one behavioural disagreement recorded in
-`tests/conformance_structure.zig`.
+`tests/conformance_structure.zig` — and, since it is the implementation the
+project treats as definitive, the tie-breaker wherever the other two disagree.
+`fluent-rs` holds the 180 resolver fixtures, which are the only thing anywhere
+that says what a bundle must *do* rather than what a parser must build.
 
 The next five are the formatting. Parts 3 and 4 of UTS #35 define the pattern
 vocabulary the CLDR tables are read through — the field letters, the widths,
@@ -984,7 +989,7 @@ is GNU gettext's rather than theirs; and Apple's and Microsoft's documentation
 is for the two platforms that answer the question somewhere other than the
 environment.
 
-All twelve are in the `zig-fluent` Zotero collection.
+All thirteen are in the `zig-fluent` Zotero collection.
 
 ## Where this lives
 
