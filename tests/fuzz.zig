@@ -134,6 +134,44 @@ fn roundTripProperty(input: []const u8) !void {
     if (std.mem.indexOfScalar(u8, input, '\r') != null) return;
 
     try testing.expectEqualStrings(a.written(), b.written());
+
+    try formatterProperty(first);
+}
+
+/// The other way the serializer is used: as a formatter, which drops the junk.
+///
+/// Two things must hold, and `tests/conformance.zig` checks both over the 101
+/// fixtures. This checks them over whatever the fuzzer made instead.
+///
+/// **Nothing understood becomes unreadable.** What the formatter wrote parses
+/// with no junk in it: everything the parser understood, the serializer can
+/// write in a form the parser understands again.
+///
+/// **Formatting converges.** Formatting the formatted text changes nothing. A
+/// formatter that kept changing a file it had already formatted would be
+/// unusable in a commit hook -- and dropping junk is exactly where that could
+/// go wrong, because a `#` comment binds to whatever sits directly beneath it
+/// and deleting a broken entry moves the entry that a comment belongs to.
+fn formatterProperty(resource: fluent.syntax.Resource) !void {
+    var once: std.Io.Writer.Allocating = .init(backing);
+    defer once.deinit();
+    fluent.syntax.serialize(resource, &once.writer, .{}) catch return error.OutOfMemory;
+
+    var reparsed = try fluent.syntax.parse(backing, once.written());
+    defer reparsed.deinit();
+
+    if (reparsed.hasJunk()) {
+        std.debug.print("the formatter wrote junk: {f}\n", .{std.zig.fmtString(once.written())});
+        return error.FormattedToJunk;
+    }
+
+    var twice: std.Io.Writer.Allocating = .init(backing);
+    defer twice.deinit();
+    fluent.syntax.serialize(reparsed, &twice.writer, .{}) catch return error.OutOfMemory;
+
+    // The first pass is the one that drops the junk, and dropping it can move
+    // a comment, so it is exempt: from there on it is a fixed point.
+    try testing.expectEqualStrings(once.written(), twice.written());
 }
 
 /// Drive `roundTripProperty` from a fuzzer's byte stream.
@@ -189,10 +227,21 @@ fn resolveProperty(
             0) },
     };
 
+    // Isolation marks can only be checked when neither the resource nor the
+    // argument brought any of their own, since a pattern is free to contain
+    // one as literal text and this cannot tell the two apart afterwards.
+    const check_isolates = settings.use_isolating and
+        !std.mem.containsAtLeast(u8, input, 1, fsi) and
+        !std.mem.containsAtLeast(u8, input, 1, pdi) and
+        !std.mem.containsAtLeast(u8, word, 1, fsi) and
+        !std.mem.containsAtLeast(u8, word, 1, pdi);
+
     var it = bundle.messages.iterator();
     while (it.next()) |entry| {
         if (try bundle.format(backing, entry.key_ptr.*, args, &errors)) |text| {
-            backing.free(text);
+            defer backing.free(text);
+            if (check_isolates) try reportUnbalanced(text);
+            continue;
         }
         // Attributes are patterns too, and nothing else here formats one.
         for (entry.value_ptr.attributes) |attribute| {
@@ -203,13 +252,61 @@ fn resolveProperty(
                 args,
                 &errors,
             ) orelse continue;
-            backing.free(text);
+            defer backing.free(text);
+            if (check_isolates) try reportUnbalanced(text);
         }
     }
 
     // Every error has to be printable: that is what a caller does with one.
     var counting: std.Io.Writer.Discarding = .init(&.{});
     for (errors.items) |e| try counting.writer.print("{f}", .{e});
+}
+
+/// The first strong isolate and the pop that must close it.
+const fsi = "\u{2068}";
+const pdi = "\u{2069}";
+
+/// Every isolate the formatter opened, it closed, and in order.
+///
+/// This is worth asserting rather than assuming: the marks are invisible, so
+/// an unbalanced one is not something anybody notices by looking at the
+/// output -- it is something a bidirectional text renderer notices, by
+/// laying out the rest of the paragraph the wrong way round.
+fn isolatesBalance(text: []const u8) !void {
+    var depth: usize = 0;
+    var i: usize = 0;
+    while (i + 3 <= text.len) : (i += 1) {
+        const three = text[i..][0..3];
+        if (std.mem.eql(u8, three, fsi)) {
+            depth += 1;
+            i += 2;
+        } else if (std.mem.eql(u8, three, pdi)) {
+            // Closing one that was never opened.
+            if (depth == 0) return error.UnbalancedIsolate;
+            depth -= 1;
+            i += 2;
+        }
+    }
+    // Leaving one open.
+    if (depth != 0) return error.UnbalancedIsolate;
+}
+
+/// The same check, saying what came out when it fails. Only the fuzz targets
+/// use this: printing from the property itself would put the expected errors
+/// of the test below on the terminal too.
+fn reportUnbalanced(text: []const u8) !void {
+    isolatesBalance(text) catch |err| {
+        std.debug.print("unbalanced isolation marks: {f}\n", .{std.zig.fmtString(text)});
+        return err;
+    };
+}
+
+test isolatesBalance {
+    try isolatesBalance("plain");
+    try isolatesBalance("a " ++ fsi ++ "b" ++ pdi ++ " c");
+    try isolatesBalance(fsi ++ fsi ++ "x" ++ pdi ++ pdi);
+    try testing.expectError(error.UnbalancedIsolate, isolatesBalance(fsi ++ "x"));
+    try testing.expectError(error.UnbalancedIsolate, isolatesBalance("x" ++ pdi));
 }
 
 /// A transform in the shape an application would supply one, upper-casing the
