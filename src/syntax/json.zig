@@ -13,21 +13,39 @@
 //! `fluent-syntax` -- a linter, a translation-platform importer -- reads this
 //! JSON, so anything in this repository can feed one without reimplementing it.
 //!
-//! Two deliberate omissions, both matching the reference fixtures. Spans are
-//! not written: they are optional in the model, and this parser counts bytes
-//! where `fluent-syntax` counts UTF-16 code units, so they would not compare
-//! equal for any file with a non-ASCII character in it. Annotations are
-//! written as an empty array: the fixtures are generated with them stripped,
-//! since their wording is not part of what implementations agree on.
+//! Spans are not written, deliberately. They are optional in the model, and
+//! this parser counts bytes where `fluent-syntax` counts UTF-16 code units, so
+//! a span written here would not compare equal to the reference for any file
+//! with a non-ASCII character in it. The one exception is the point an
+//! annotation reports, which `Options.annotations` writes in bytes and says so.
+//!
+//! Annotations are an empty array by default, because the reference fixtures
+//! are generated with them stripped. `fluent.js` keeps a second corpus that
+//! does record them -- what code each broken entry is blamed on, and where --
+//! and `Options.annotations` is what lets `zig build test` take that one too.
 
 const std = @import("std");
 
 const ast = @import("ast.zig");
 
+/// What to include beyond the tree itself.
+pub const Options = struct {
+    /// Whether to write out the annotations that say why an entry became junk,
+    /// rather than an empty array.
+    ///
+    /// Each one carries its code, the arguments the code interpolates, the
+    /// message `fluent-syntax` words it with, and a zero-width span at the
+    /// byte offset the parser gave up at. That offset is the one place this
+    /// writer emits a position at all, and it is in bytes: a consumer
+    /// comparing it against `fluent-syntax`, which counts UTF-16 code units,
+    /// has to convert.
+    annotations: bool = false,
+};
+
 /// Write `resource` as JSON in Fluent's interchange shape.
-pub fn write(resource: ast.Resource, w: *std.Io.Writer) std.Io.Writer.Error!void {
+pub fn write(resource: ast.Resource, w: *std.Io.Writer, options: Options) std.Io.Writer.Error!void {
     var s: std.json.Stringify = .{ .writer = w, .options = .{} };
-    try writeResource(&s, resource);
+    try writeResource(&s, resource, options);
 }
 
 test write {
@@ -36,7 +54,7 @@ test write {
 
     var buffer: [512]u8 = undefined;
     var w = std.Io.Writer.fixed(&buffer);
-    try write(resource, &w);
+    try write(resource, &w, .{});
 
     try std.testing.expectEqualStrings(
         \\{"type":"Resource","body":[{"type":"Message","id":{"type":"Identifier","name":"hello"},"value":{"type":"Pattern","elements":[{"type":"TextElement","value":"Hi"}]},"attributes":[],"comment":null}]}
@@ -44,18 +62,18 @@ test write {
 }
 
 /// The `Resource` node, which is the whole file.
-fn writeResource(s: *std.json.Stringify, resource: ast.Resource) std.Io.Writer.Error!void {
+fn writeResource(s: *std.json.Stringify, resource: ast.Resource, options: Options) std.Io.Writer.Error!void {
     try s.beginObject();
     try field(s, "type", "Resource");
     try s.objectField("body");
     try s.beginArray();
-    for (resource.body) |entry| try writeEntry(s, entry);
+    for (resource.body) |entry| try writeEntry(s, entry, options);
     try s.endArray();
     try s.endObject();
 }
 
 /// One entry: a message, a term, a standalone comment, or junk.
-fn writeEntry(s: *std.json.Stringify, entry: ast.Entry) std.Io.Writer.Error!void {
+fn writeEntry(s: *std.json.Stringify, entry: ast.Entry, options: Options) std.Io.Writer.Error!void {
     switch (entry) {
         .message => |m| {
             try s.beginObject();
@@ -89,11 +107,91 @@ fn writeEntry(s: *std.json.Stringify, entry: ast.Entry) std.Io.Writer.Error!void
             try field(s, "type", "Junk");
             try s.objectField("annotations");
             try s.beginArray();
+            if (options.annotations) for (j.annotations) |a| try writeAnnotation(s, a);
             try s.endArray();
             try field(s, "content", j.content);
             try s.endObject();
         },
     }
+}
+
+/// One annotation: why an entry became junk, and where the parser gave up.
+///
+/// The shape is `fluent-syntax`'s, down to the `arguments` array that is empty
+/// for most codes and holds one string for the few whose message interpolates
+/// something. The span is zero-width, as `fluent-syntax` writes it, and is a
+/// byte offset rather than a UTF-16 one; see `Options.annotations`.
+fn writeAnnotation(s: *std.json.Stringify, annotation: ast.Annotation) std.Io.Writer.Error!void {
+    try s.beginObject();
+    try field(s, "type", "Annotation");
+    try field(s, "code", annotation.code.name());
+    try s.objectField("arguments");
+    try s.beginArray();
+    if (annotation.argument) |argument| try s.write(argument);
+    try s.endArray();
+
+    // The message is printed rather than returned, and an argument taken from
+    // the source puts no bound on its length, so it goes out through an
+    // escaping writer instead of a slice handed to `Stringify`.
+    try s.objectField("message");
+    try s.beginWriteRaw();
+    try s.writer.writeByte('"');
+    var escaping: Escaping = .init(s.writer);
+    try annotation.writeMessage(&escaping.writer);
+    try escaping.writer.flush();
+    try s.writer.writeByte('"');
+    s.endWriteRaw();
+
+    try s.objectField("span");
+    try s.beginObject();
+    try field(s, "type", "Span");
+    try s.objectField("start");
+    try s.write(annotation.position);
+    try s.objectField("end");
+    try s.write(annotation.position);
+    try s.endObject();
+    try s.endObject();
+}
+
+/// A writer that JSON-escapes everything written through it into another.
+///
+/// It exists for annotation messages, which are the one string here that
+/// arrives as a series of writes rather than as a finished slice. It carries
+/// no buffer of its own, so every write is escaped straight into the target
+/// and there is never anything buffered to lose.
+const Escaping = struct {
+    out: *std.Io.Writer,
+    writer: std.Io.Writer,
+
+    fn init(out: *std.Io.Writer) Escaping {
+        return .{
+            .out = out,
+            .writer = .{ .vtable = &.{ .drain = drain }, .buffer = &.{} },
+        };
+    }
+
+    fn drain(w: *std.Io.Writer, data: []const []const u8, splat: usize) std.Io.Writer.Error!usize {
+        const self: *Escaping = @alignCast(@fieldParentPtr("writer", w));
+        var written: usize = 0;
+        for (data[0 .. data.len - 1]) |bytes| {
+            try std.json.Stringify.encodeJsonStringChars(bytes, .{}, self.out);
+            written += bytes.len;
+        }
+        const pattern = data[data.len - 1];
+        for (0..splat) |_| try std.json.Stringify.encodeJsonStringChars(pattern, .{}, self.out);
+        return written + pattern.len * splat;
+    }
+};
+
+test Escaping {
+    var buffer: [64]u8 = undefined;
+    var out = std.Io.Writer.fixed(&buffer);
+
+    var escaping: Escaping = .init(&out);
+    try escaping.writer.print("a \"quoted\" \\ tab\t", .{});
+    try escaping.writer.flush();
+
+    try std.testing.expectEqualStrings("a \\\"quoted\\\" \\\\ tab\\t", out.buffered());
 }
 
 /// A comment, whose node type says how many `#` it was written with.
@@ -294,7 +392,7 @@ test "a message is written in the reference shape" {
 
     var buf: [512]u8 = undefined;
     var w = std.Io.Writer.fixed(&buf);
-    try write(resource, &w);
+    try write(resource, &w, .{});
 
     try std.testing.expectEqualStrings(
         \\{"type":"Resource","body":[{"type":"Message","id":{"type":"Identifier","name":"hello"},"value":{"type":"Pattern","elements":[{"type":"TextElement","value":"Hi"}]},"attributes":[],"comment":null}]}

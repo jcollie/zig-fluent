@@ -184,12 +184,21 @@ copyFarm name
       };
     }
     {
-      name = "datetime-0.0.1-6-va78KXDgDWPHMK23Vy-PmcH6kjlD1fzW-tPFS5m9JQ";
+      name = "datetime-0.0.1-6-va79gDDwCD7vUCwnd8YeSBQlXh5xq-yjnhzeT7VCYw";
       path = fetchZigArtifact {
         name = "datetime";
-        url = "git+https://github.com/jcollie/zig-datetime#aceb4334cad7ee829c60bdd734e474e73b945049";
-        hash = "sha256-QkQ0CMcm/y74SGGaefamuJPbiOd6dG7axbGAKxvjtNM=";
+        url = "git+https://git.jcollie.dev/jeff/zig-datetime.git#bd76e05460dba019f7749e44a37ea5afe6c49609";
+        hash = "sha256-hVLUAc9Mm5HjLSkUURlb4nW2sn78ZvrWKsaC1cdzCuE=";
         unpack = true;
+      };
+    }
+    {
+      name = "N-V-__8AAGTMFQCaxAe0Sm7zireXs1D73Kk-lQnyKhCTC2mA";
+      path = fetchZigArtifact {
+        name = "fluent_js";
+        url = "https://github.com/projectfluent/fluent.js/archive/9a925d2a38b893be735ff4429be8ad62132a204d.tar.gz";
+        hash = "sha256-KJPttQDwF14XEfayJldTEF4mJNYIfnaJpG54z3Q6lvs=";
+        unpack = false;
       };
     }
     {
@@ -211,20 +220,20 @@ copyFarm name
       };
     }
     {
-      name = "N-V-__8AACd5DwCVzz_8RDRfd3hfmj0Kmt3fUylmfdGyV1Pl";
+      name = "N-V-__8AABybDwDd46ZHFqBjb0twea7p9vwNzdSzUHFwA55f";
       path = fetchZigArtifact {
         name = "tzcode";
-        url = "https://data.iana.org/time-zones/releases/tzcode2026c.tar.gz";
-        hash = "sha256-sc/8Os5MTHzQ77ovet2G7D0LedpIvPA1gmcf08j+rOg=";
+        url = "https://data.iana.org/time-zones/releases/tzcode2026d.tar.gz";
+        hash = "sha256-L1yff+Kea4y4Y1g2Z4hLjOF7CkhTVaBUtZHGvfzYF5E=";
         unpack = false;
       };
     }
     {
-      name = "N-V-__8AANpVFQC_1B4XtOlpRUfO6ZFsDlp3KppGU6Xal5yI";
+      name = "N-V-__8AAFiAFQDNovBNmFwF3hznlSfpY7KwAN3Jy7rhie29";
       path = fetchZigArtifact {
         name = "tzdata";
-        url = "https://data.iana.org/time-zones/releases/tzdata2026c.tar.gz";
-        hash = "sha256-5KF4pEd/PQ6nfMMYKP9yqjj+/41hqhPn6Z4ULp2QK+Q=";
+        url = "https://data.iana.org/time-zones/releases/tzdata2026d.tar.gz";
+        hash = "sha256-DLKqjjM8PcBJutxCoMYfIZh7jNROEH+pALrXZKrMd2c=";
         unpack = false;
       };
     }

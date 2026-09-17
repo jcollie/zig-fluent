@@ -176,6 +176,29 @@ pub fn build(b: *std.Build) void {
         test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = conformance })).step);
     }
 
+    // `fluent.js`'s structure fixtures: 62 more pairs, and the only corpus
+    // anywhere that says which error code a broken entry must be blamed on.
+    // Same arrangement as above -- a lazy dependency, fetched by running the
+    // tests and by nothing else.
+    if (b.lazyDependency("fluent_js", .{})) |fluent_js| {
+        const structure_options = b.addOptions();
+        structure_options.addOptionPath(
+            "fixtures_dir",
+            fluent_js.path("fluent-syntax/test/fixtures_structure"),
+        );
+
+        const structure = b.createModule(.{
+            .root_source_file = b.path("tests/conformance_structure.zig"),
+            .target = target,
+            .optimize = optimize,
+            .imports = &.{
+                .{ .name = "fluent", .module = mod },
+                .{ .name = "structure_options", .module = structure_options.createModule() },
+            },
+        });
+        test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = structure })).step);
+    }
+
     // -- fuzzing -------------------------------------------------------------
     //
     // What the parser and the formatters must do with input nobody wrote. The

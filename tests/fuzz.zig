@@ -122,8 +122,8 @@ fn roundTripProperty(input: []const u8) !void {
     defer a.deinit();
     var b: std.Io.Writer.Allocating = .init(backing);
     defer b.deinit();
-    fluent.syntax.writeJson(first, &a.writer) catch return error.OutOfMemory;
-    fluent.syntax.writeJson(second, &b.writer) catch return error.OutOfMemory;
+    fluent.syntax.writeJson(first, &a.writer, .{}) catch return error.OutOfMemory;
+    fluent.syntax.writeJson(second, &b.writer, .{}) catch return error.OutOfMemory;
 
     // A lone carriage return before a line end is the one thing FTL text
     // cannot represent, and the serializer says so; see its documentation.
@@ -518,7 +518,7 @@ fn jsonProperty(input: []const u8) !void {
 
     var out: std.Io.Writer.Allocating = .init(backing);
     defer out.deinit();
-    fluent.syntax.writeJson(resource, &out.writer) catch return error.OutOfMemory;
+    fluent.syntax.writeJson(resource, &out.writer, .{}) catch return error.OutOfMemory;
 
     var parsed = std.json.parseFromSlice(std.json.Value, backing, out.written(), .{}) catch |err| {
         std.debug.print("not valid JSON ({t}): {s}\n", .{ err, out.written() });

@@ -4,9 +4,24 @@
     .fingerprint = 0x8d467dc1f396f537, // Changing this has security and trust implications.
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
+        // The two corpora `zig build test` parses against. Neither is
+        // vendored, so what is compared against is a revision pinned here
+        // rather than a copy in this repository that could quietly drift.
+        //
+        // `fluent_spec` is the reference suite every implementation is
+        // expected to agree on: 39 `.ftl` files paired with the tree the
+        // reference parser builds. `fluent_js` carries a second corpus the
+        // spec repository does not, `fluent-syntax/test/fixtures_structure`:
+        // 62 more pairs, most of them broken on purpose, whose trees record
+        // which error each junk entry is blamed on and where.
         .fluent_spec = .{
             .url = "https://github.com/projectfluent/fluent/archive/3dbb402ed5af6b64f5c09faeb067acff127a0f34.tar.gz",
             .hash = "N-V-__8AAOPHBwAthlB_ltwF8wIYLtx96Tb9jDWVBZaxfUwl",
+            .lazy = true,
+        },
+        .fluent_js = .{
+            .url = "https://github.com/projectfluent/fluent.js/archive/9a925d2a38b893be735ff4429be8ad62132a204d.tar.gz",
+            .hash = "N-V-__8AAGTMFQCaxAe0Sm7zireXs1D73Kk-lQnyKhCTC2mA",
             .lazy = true,
         },
         .datetime = .{

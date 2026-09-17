@@ -724,12 +724,36 @@ $ zig build docs-serve             # read the API documentation at :8000
 $ zig build fuzz-run -- --seconds 60
 ```
 
-`zig build test` also runs Fluent's cross-implementation conformance suite: 39
-`.ftl` files, each paired with the syntax tree it must parse to. They are not
-vendored — they arrive as a `build.zig.zon` dependency, so the exact revision
+`zig build test` also runs the parser against two corpora nobody here wrote:
+101 `.ftl` files, each paired with the syntax tree it must parse to. Neither is
+vendored — they arrive as `build.zig.zon` dependencies, so the exact revision
 compared against is a hash in the manifest rather than a copy in this repository
-that could drift. At 876 KB they are worth a manifest entry; see below for what
-a manifest entry costs.
+that could drift. See below for what a manifest entry costs.
+
+**Fluent's own conformance fixtures**, from `projectfluent/fluent`: 39 files,
+the suite every implementation is expected to agree on. They are generated with
+the annotations stripped, so they say which entries are junk but not why.
+
+**`fluent.js`'s structure fixtures**: 62 more, most of them broken on purpose,
+whose trees do record why — the error code each junk entry is blamed on, the
+message, and the point the parser gave up at. That corpus is what checks the
+`E00NN` codes in `src/syntax/errors.zig` against the only other place they are
+written down, and what checks how far a broken entry reaches: junk runs to the
+start of the next entry, and a parser that recovers a line early or a line late
+still parses every valid file correctly while losing a message out of a real
+one. 89 annotations over 21 of the codes are compared, wording and offset
+included.
+
+Four of those 62 are expected not to match, all for one reason: a broken
+attribute takes the whole entry down in `fluent.js` and does not here.
+That is [fluent.js#237][], and it is why `fluent.js` skips `leading_dots.ftl`
+when it runs itself against the reference corpus — the reference parser keeps
+the message, and so does this one. `tests/conformance_structure.zig` lists the
+four, says what this parser builds instead, and fails if one of them ever starts
+matching, since that would mean the list has gone stale rather than that nothing
+is wrong.
+
+[fluent.js#237]: https://github.com/projectfluent/fluent.js/issues/237
 
 ### Regenerating the CLDR tables
 
@@ -777,22 +801,26 @@ byte-identical output.
 
 ### What a clean build actually downloads
 
-For a Linux target, two packages, 328 KB compressed and 1.9 MB unpacked:
+For a Linux target, three packages, 555 KB compressed and 4.8 MB unpacked:
 
 | | | |
 |---|---|---|
 | `zig-datetime` | 1.1 MB | the calendar, the timezone database, and CLDR pattern writing |
-| `fluent-spec` | 876 KB | the conformance fixtures, used by `zig build test` |
+| `fluent-spec` | 876 KB | the reference conformance fixtures, used by `zig build test` |
+| `fluent.js` | 2.9 MB | the structure fixtures, likewise — 193 KB of corpus inside a monorepo |
 
 Building for Windows adds `zigwin32` at 64 MB, for the two Win32 calls in
 `src/windows.zig`. That one is conditional on the target — `if
 (target.result.os.tag == .windows)` around the `lazyDependency` call — so a
 build for anything else neither fetches nor compiles it.
 
-`fluent-spec` is fetched by a plain `zig build`, deliberately: the conformance
-suite is what `zig build test` exists to run, which step was asked for cannot
-be known at configure time, and 876 KB is not worth an option that would let
-the suite be skipped by accident.
+Both corpora are fetched by a plain `zig build`, deliberately: the conformance
+suites are what `zig build test` exists to run, which step was asked for cannot
+be known at configure time, and neither package is worth an option that would
+let a suite be skipped by accident. `fluent.js` is the worst bargain of the
+three — a whole JavaScript monorepo for one directory of fixtures — but the
+corpus has no other home, and copying it in here is the one thing that would
+let what this parser is measured against drift.
 
 It was 13 MB and about 145 MB unpacked until very recently, and the difference
 is worth recording because none of it was this project's own manifest. The

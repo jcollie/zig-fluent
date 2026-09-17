@@ -28,6 +28,7 @@ pub const SerializeOptions = @import("syntax/serializer.zig").Options;
 
 /// Write a resource as Fluent's interchange JSON.
 pub const writeJson = @import("syntax/json.zig").write;
+pub const JsonOptions = @import("syntax/json.zig").Options;
 
 test {
     _ = @import("syntax/ast.zig");
