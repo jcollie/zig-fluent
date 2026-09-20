@@ -33,3 +33,15 @@ shared-with-you =
 
 storage =
     Käytössä { NUMBER($used, maximumFractionDigits: 1) } Gt / { $total } Gt
+
+## Ikkuna itse.
+
+language-name = Suomi
+
+window-title = { -app-name }
+
+language-label = Kieli
+count-label = Uusia kuvia
+
+use-system-language = Käytä järjestelmän kieltä
+    .tooltip = Kysy tältä tietokoneelta, mitä kieltä haluat käyttää

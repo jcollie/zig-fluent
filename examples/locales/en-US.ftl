@@ -22,3 +22,24 @@ shared-with-you =
 
 storage =
     { NUMBER($used, maximumFractionDigits: 1) } GB of { $total } GB used
+
+## The window itself.
+##
+## A GUI is translated the same way its sentences are: the menu labels, the
+## button and its tooltip are messages like any other. `.tooltip` is an
+## attribute -- one message carrying several strings that belong together,
+## which is what keeps a control's label and its explanation from drifting
+## apart in a translation.
+
+# The language menu shows every entry under its own name, read from this
+# message inside each translation, so nobody has to recognize their language
+# written in one they cannot read yet.
+language-name = English
+
+window-title = { -app-name }
+
+language-label = Language
+count-label = New photos
+
+use-system-language = Use system language
+    .tooltip = Ask this computer which language you prefer

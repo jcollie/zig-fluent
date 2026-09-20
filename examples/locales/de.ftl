@@ -20,3 +20,15 @@ shared-with-you =
 
 storage =
     { NUMBER($used, maximumFractionDigits: 1) } GB von { $total } GB belegt
+
+## Das Fenster selbst.
+
+language-name = Deutsch
+
+window-title = { -app-name }
+
+language-label = Sprache
+count-label = Neue Fotos
+
+use-system-language = Systemsprache verwenden
+    .tooltip = Das System fragen, welche Sprache du bevorzugst

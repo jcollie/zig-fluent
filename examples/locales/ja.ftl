@@ -17,3 +17,15 @@ shared-with-you =
 
 storage =
     { $total } GB 中 { NUMBER($used, maximumFractionDigits: 1) } GB 使用中
+
+## ウィンドウそのもの。
+
+language-name = 日本語
+
+window-title = { -app-name }
+
+language-label = 言語
+count-label = 新着写真
+
+use-system-language = システムの言語を使う
+    .tooltip = このコンピューターに設定された言語を読み取ります

@@ -46,3 +46,17 @@ shared-with-you =
 
 storage =
     Wykorzystano { NUMBER($used, maximumFractionDigits: 1) } GB z { $total } GB
+
+## Samo okno.
+
+language-name = Polski
+
+# The nominative, which is what a title bar wants -- so the term is called
+# without an argument and its default form answers.
+window-title = { -app-name }
+
+language-label = Język
+count-label = Nowe zdjęcia
+
+use-system-language = Użyj języka systemu
+    .tooltip = Zapytaj ten komputer, jakiego języka używasz
