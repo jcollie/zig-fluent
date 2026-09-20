@@ -93,9 +93,14 @@ run: greeting
 #  3. it warned about nothing. A GTK warning is a finding -- `Trying to measure
 #     GtkApplicationWindow ... but it needs at least` means some widget answers
 #     "how tall are you?" inconsistently, and it says so on a real desktop just
-#     as loudly as under Xvfb. Mesa's two lines about DRI3 are the exception:
-#     they are this display having no GPU, which is what a headless runner is,
-#     and they come from Mesa rather than from anything here.
+#     as loudly as under Xvfb.
+#
+# Two things are allowed through, and both are the machine rather than the
+# program: Mesa's lines about DRI3 are this display having no GPU, and
+# `Unable to acquire session bus` is this container having no D-Bus, which
+# `GtkApplication` asks for on the way up and does without. Every desktop has
+# both and no headless runner has either, which is exactly why they are named
+# here rather than left to fail a build that is working.
 smoke: greeting
 	@rm -f smoke.out smoke.err
 	@xvfb-run -a env GSK_RENDERER=cairo GDK_BACKEND=x11 ./greeting --smoke \
@@ -109,9 +114,11 @@ smoke: greeting
 		echo "smoke: it never reached the end of its own script"; \
 		cat smoke.err; exit 1; \
 	fi; \
-	if grep -vE '^MESA-EGL: ' smoke.err | grep -q .; then \
+	if grep -vE '^MESA-EGL: |Unable to acquire session bus' smoke.err \
+		| grep -q .; then \
 		echo "smoke: it warned about something:"; \
-		grep -vE '^MESA-EGL: ' smoke.err; exit 1; \
+		grep -vE '^MESA-EGL: |Unable to acquire session bus' smoke.err; \
+		exit 1; \
 	fi; \
 	echo "smoke: reached the end of its script and warned about nothing"
 
