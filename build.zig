@@ -54,72 +54,36 @@ pub fn build(b: *std.Build) void {
         mod.linkFramework("CoreFoundation", .{});
     }
 
-    // Regenerate the CLDR tables under src/cldr/. The three packages it reads
-    // are lazy dependencies totalling 135 MB unpacked, so only this step
-    // fetches them -- `zig build`, `zig build test` and anything depending on
-    // this library never see them. What it writes is committed; see the
-    // comment at the top of tools/gen_cldr.zig for why.
-    const gen_cldr = b.addExecutable(.{
-        .name = "gen-cldr",
-        .root_module = b.createModule(.{
-            .root_source_file = b.path("tools/gen_cldr.zig"),
-            // Always the machine running the build: it reads and writes files
-            // in this working tree, so cross-compiling it would be pointless.
-            .target = b.graph.host,
-            .optimize = .Debug,
-        }),
-    });
-
-    // `-Dcldr` is not a preference, it is the guard that keeps 138 MB of CLDR
-    // off everybody else's clean build, and it has to sit exactly here.
-    //
-    // `.lazy = true` in the manifest is not what makes a package optional.
-    // What makes it optional is whether `b.lazyDependency` is *called*: the
-    // call marks the package as needed, and `build()` runs in full during the
-    // configure phase of every `zig build`, whatever step was named on the
-    // command line. These three calls used to sit at the top level of this
-    // function, wanted only by a step that regenerates committed files when
-    // CLDR makes a release -- and so every consumer of this library fetched
-    // them, on every clean build, forever. Behind the option they are not
-    // fetched at all; that alone is the difference between a 211 MB dependency
-    // tree and a 73 MB one.
-    //
-    // Measured rather than assumed, and assumed wrongly once before: a
-    // scratch project with two lazy dependencies, one called unconditionally
-    // and one behind an option defaulting to false, fetches exactly the first.
+    // Passed straight through to `cldr/`, so that `zig build gen-cldr -Dcldr`
+    // still means what it always did from here.
     const with_cldr = b.option(
         bool,
         "cldr",
-        "Fetch the CLDR data packages so that `zig build gen-cldr` can read " ++
-            "them (138 MB; maintainers only, default false)",
+        "With `gen-cldr`: fetch the CLDR data packages (138 MB) rather than being given three directories",
     ) orelse false;
 
-    const gen_cldr_run = b.addRunArtifact(gen_cldr);
-    // It writes into the source tree, which is the point of it, so it must run
-    // every time it is asked for rather than being cached on its inputs.
-    gen_cldr_run.has_side_effects = true;
-    gen_cldr_run.setCwd(b.path("."));
-    gen_cldr_run.stdio = .inherit;
-    if (with_cldr) {
-        if (b.lazyDependency("cldr_core", .{})) |core| {
-            gen_cldr_run.addDirectoryArg(core.path("."));
-        }
-        if (b.lazyDependency("cldr_numbers_full", .{})) |numbers| {
-            gen_cldr_run.addDirectoryArg(numbers.path("."));
-        }
-        if (b.lazyDependency("cldr_dates_full", .{})) |dates| {
-            gen_cldr_run.addDirectoryArg(dates.path("."));
-        }
-    }
-    // Without `-Dcldr` the three directories can still be given by hand, which
-    // is how to regenerate against a CLDR release this manifest does not pin.
-    if (b.args) |args| gen_cldr_run.addArgs(args);
-
+    // Regenerate the CLDR tables under src/cldr/, which is `cldr/`'s errand
+    // rather than this build's: the three data packages it reads unpack to
+    // 138 MB, and a project that mentioned them would hand them to everything
+    // generated from its manifest -- `build.zig.zon.nix`, and so every Nix
+    // build of this library. They live in `cldr/build.zig.zon` instead, and
+    // nothing here knows their names.
+    //
+    // What it writes is committed, so an ordinary build reads the tables and
+    // fetches nothing. See the comment at the top of cldr/src/gen_cldr.zig.
     const gen_cldr_step = b.step(
         "gen-cldr",
-        "Regenerate src/cldr/ -- `-Dcldr` to fetch the data, or name three " ++
-            "directories after `--`",
+        "Regenerate src/cldr/, in cldr/ -- `-Dcldr` to fetch the data, or name three directories after `--`",
     );
+    const gen_cldr_run = b.addSystemCommand(&.{ b.graph.zig_exe, "build", "run" });
+    gen_cldr_run.setCwd(b.path("cldr"));
+    gen_cldr_run.stdio = .inherit;
+    gen_cldr_run.has_side_effects = true;
+    if (with_cldr) gen_cldr_run.addArg("-Dcldr");
+    if (b.args) |args| {
+        gen_cldr_run.addArg("--");
+        gen_cldr_run.addArgs(args);
+    }
     gen_cldr_step.dependOn(&gen_cldr_run.step);
 
     // A worked example: read the user's language out of the environment, pick
@@ -156,69 +120,25 @@ pub fn build(b: *std.Build) void {
     });
     test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = bundle_tests })).step);
 
-    // Fluent's own conformance fixtures: 39 `.ftl` files, each paired with the
-    // tree it must parse to. They come from the upstream repository as a lazy
-    // dependency, so running the tests fetches them and merely depending on
-    // this library does not.
-    if (b.lazyDependency("fluent_spec", .{})) |fluent_spec| {
-        const conformance_options = b.addOptions();
-        conformance_options.addOptionPath("fixtures_dir", fluent_spec.path("test/fixtures"));
-
-        const conformance = b.createModule(.{
-            .root_source_file = b.path("tests/conformance.zig"),
-            .target = target,
-            .optimize = optimize,
-            .imports = &.{
-                .{ .name = "fluent", .module = mod },
-                .{ .name = "conformance_options", .module = conformance_options.createModule() },
-            },
-        });
-        test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = conformance })).step);
-    }
-
-    // `fluent.js`'s structure fixtures: 62 more pairs, and the only corpus
-    // anywhere that says which error code a broken entry must be blamed on.
-    // Same arrangement as above -- a lazy dependency, fetched by running the
-    // tests and by nothing else.
-    if (b.lazyDependency("fluent_js", .{})) |fluent_js| {
-        const structure_options = b.addOptions();
-        structure_options.addOptionPath(
-            "fixtures_dir",
-            fluent_js.path("fluent-syntax/test/fixtures_structure"),
-        );
-
-        const structure = b.createModule(.{
-            .root_source_file = b.path("tests/conformance_structure.zig"),
-            .target = target,
-            .optimize = optimize,
-            .imports = &.{
-                .{ .name = "fluent", .module = mod },
-                .{ .name = "structure_options", .module = structure_options.createModule() },
-            },
-        });
-        test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = structure })).step);
-    }
-
-    // `fluent-rs`'s resolver fixtures: 180 assertions about what a bundle
-    // does with a message, in YAML. Same arrangement as the two above.
-    if (b.lazyDependency("fluent_rs", .{})) |fluent_rs| {
-        const bundle_fixtures_options = b.addOptions();
-        bundle_fixtures_options.addOptionPath(
-            "fixtures_dir",
-            fluent_rs.path("fluent-bundle/tests/fixtures"),
-        );
-
-        const bundle_fixtures = b.createModule(.{
-            .root_source_file = b.path("tests/conformance_bundle.zig"),
-            .target = target,
-            .optimize = optimize,
-            .imports = &.{
-                .{ .name = "fluent", .module = mod },
-                .{ .name = "bundle_fixtures_options", .module = bundle_fixtures_options.createModule() },
-            },
-        });
-        test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = bundle_fixtures })).step);
-    }
+    // The three corpora this library is measured against live in
+    // `conformance/`, which is a project of its own so that two monorepos and
+    // a spec repository stay out of this manifest. They are not part of
+    // `zig build test`: this step is what runs them, and it fetches when it
+    // is asked for and not before.
+    const conformance_step = b.step("conformance", "Run the conformance suites, in conformance/");
+    const conformance_run = b.addSystemCommand(&.{ b.graph.zig_exe, "build", "test" });
+    conformance_run.setCwd(b.path("conformance"));
+    conformance_run.stdio = .inherit;
+    // Its inputs are a corpus fetched into the package cache rather than
+    // anything this build declares, so there is nothing here for the build
+    // runner to decide it is up to date against.
+    conformance_run.has_side_effects = true;
+    // Straight through with no `--` in front of them, unlike `gen-cldr`
+    // below, because what anyone wants to pass here is a build flag for that
+    // project rather than an argument for a program it runs:
+    // `zig build conformance -- --summary all`.
+    if (b.args) |args| conformance_run.addArgs(args);
+    conformance_step.dependOn(&conformance_run.step);
 
     // -- fuzzing -------------------------------------------------------------
     //
@@ -282,7 +202,6 @@ pub fn build(b: *std.Build) void {
     const check_step = b.step("check", "Compile everything without running it");
     check_step.dependOn(&fuzz_run.step);
     check_step.dependOn(&example.step);
-    check_step.dependOn(&gen_cldr.step);
 
     // -- the C library -------------------------------------------------------
     //

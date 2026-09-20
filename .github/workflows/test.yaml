@@ -34,7 +34,7 @@ jobs:
           version: 0.16.0
 
       - name: Check formatting
-        run: zig fmt --check --exclude zig-pkg .
+        run: zig fmt --check --exclude zig-pkg --exclude cldr/zig-pkg --exclude conformance/zig-pkg .
 
       - name: Test
         run: zig build test --summary all
@@ -42,9 +42,22 @@ jobs:
       - name: Build
         run: zig build
 
-      # The tools nothing else compiles: the fuzz driver, the docs server and
-      # the CLDR generator.
+      # The three corpora, in `conformance/`: a project of its own so that two
+      # monorepos and a spec repository stay out of this one's manifest. On
+      # Linux only -- the fixtures say nothing about the platform, and
+      # fetching 7.4 MB three times over to learn that would buy nothing.
+      - name: Conformance suites
+        if: runner.os == 'Linux'
+        run: zig build conformance -- --summary all
+
+      # The tools nothing else compiles: the fuzz driver and the docs server.
       - name: Compile everything else
+        run: zig build check
+
+      # And the CLDR generator, which lives in `cldr/` with the data it reads.
+      # Without `-Dcldr` none of that data is fetched to type-check it.
+      - name: Compile the CLDR generator
+        working-directory: cldr
         run: zig build check
 
       # The C example, built by gcc and a Makefile rather than by Zig, which

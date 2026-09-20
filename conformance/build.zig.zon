@@ -1,0 +1,55 @@
+// SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+// SPDX-License-Identifier: MIT
+
+.{
+    .name = .fluent_conformance,
+    .version = "0.0.0",
+    .fingerprint = 0x4ca1bc6da64def2a, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.16.0",
+    .dependencies = .{
+        // The library these suites check, taken from the checkout this sits
+        // in rather than fetched, so the two are always the same code.
+        .fluent = .{
+            .path = "..",
+        },
+        // The three corpora, and the reason this is a project of its own:
+        // they are two whole monorepos and a spec repository, 7.4 MB of
+        // download for 245 KB of fixtures, and nothing that merely builds the
+        // library should have to fetch them. Keeping them here keeps them out
+        // of the library's manifest, and so out of `build.zig.zon.nix` and
+        // anything else generated from it.
+        //
+        // None is vendored, so what is compared against is a revision pinned
+        // here rather than a copy that could quietly drift.
+        //
+        // `fluent_spec` is the reference suite every implementation is
+        // expected to agree on: 39 `.ftl` files paired with the tree the
+        // reference parser builds. `fluent_js` carries a second corpus the
+        // spec repository does not, `fluent-syntax/test/fixtures_structure`:
+        // 62 more pairs, most of them broken on purpose, whose trees record
+        // which error each junk entry is blamed on and where. `fluent_rs`
+        // carries the third, `fluent-bundle/tests/fixtures`: 180 assertions
+        // about what a *bundle* does with a message once it is parsed, which
+        // is the only runtime conformance corpus Fluent has anywhere.
+        .fluent_spec = .{
+            .url = "https://github.com/projectfluent/fluent/archive/3dbb402ed5af6b64f5c09faeb067acff127a0f34.tar.gz",
+            .hash = "N-V-__8AAOPHBwAthlB_ltwF8wIYLtx96Tb9jDWVBZaxfUwl",
+            .lazy = true,
+        },
+        .fluent_js = .{
+            .url = "https://github.com/projectfluent/fluent.js/archive/9a925d2a38b893be735ff4429be8ad62132a204d.tar.gz",
+            .hash = "N-V-__8AAGTMFQCaxAe0Sm7zireXs1D73Kk-lQnyKhCTC2mA",
+            .lazy = true,
+        },
+        .fluent_rs = .{
+            .url = "https://github.com/projectfluent/fluent-rs/archive/b822cfe0ac5f35099ee71d3cf6f43b7c01d5fc6d.tar.gz",
+            .hash = "N-V-__8AADjcJwBHUNPdbcFrgdpIPAEYXMLlRB6MzPX1C11B",
+            .lazy = true,
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

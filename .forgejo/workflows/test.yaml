@@ -18,19 +18,33 @@ jobs:
         run: nix develop -c reuse lint
 
       - name: Check Zig formatting compliance
-        run: nix develop -c zig fmt --check --exclude zig-pkg .
+        run: nix develop -c zig fmt --check --exclude zig-pkg --exclude cldr/zig-pkg --exclude conformance/zig-pkg .
 
       - name: Test
         run: nix develop -c zig build test --summary all
 
+      # The three corpora this library is measured against, which live in
+      # `conformance/` -- a project of its own, so that two monorepos and a
+      # spec repository stay out of this one's manifest and out of everything
+      # generated from it. They are fetched by this step and by nothing else.
+      - name: Conformance suites
+        run: nix develop -c zig build conformance -- --summary all
+
       - name: Build
         run: nix develop -c zig build
 
-      # The tools nothing else compiles: the fuzz driver, the docs server and
-      # the CLDR generator. Without this they could stop compiling and no test
-      # would notice.
+      # The tools nothing else compiles: the fuzz driver and the docs server.
+      # Without this they could stop compiling and no test would notice.
       - name: Compile everything else
         run: nix develop -c zig build check
+
+      # And the CLDR generator, which is in `cldr/` with the 138 MB of Unicode
+      # data it reads. Type-checked rather than run -- regenerating the tables
+      # is a maintainer's errand -- and without `-Dcldr` it fetches none of
+      # that data to do it.
+      - name: Compile the CLDR generator
+        run: nix develop ..#default -c zig build check
+        working-directory: cldr
 
       # The C example, built the way a C project builds: gcc and a Makefile,
       # with Zig reaching only as far as the library. `zig build test` links

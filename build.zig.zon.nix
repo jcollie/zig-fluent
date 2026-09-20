@@ -168,7 +168,7 @@ copyFarm name
     {
       name = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV";
       path = fetchZigArtifact {
-        name = "cldr_dates_full";
+        name = "cldr_dates";
         url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz";
         hash = "sha256-Albxzv7KFPfVFb5Ict2kj83X51OBQw8lqv0BQ+rltDA=";
         unpack = false;
@@ -177,7 +177,7 @@ copyFarm name
     {
       name = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk";
       path = fetchZigArtifact {
-        name = "cldr_numbers_full";
+        name = "cldr_numbers";
         url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz";
         hash = "sha256-LRehRTxVmmIRLK7tUuC8/jy4U5yZ0jmue37U0IJ2edk=";
         unpack = false;
@@ -190,33 +190,6 @@ copyFarm name
         url = "git+https://git.jcollie.dev/jeff/zig-datetime.git#bd76e05460dba019f7749e44a37ea5afe6c49609";
         hash = "sha256-hVLUAc9Mm5HjLSkUURlb4nW2sn78ZvrWKsaC1cdzCuE=";
         unpack = true;
-      };
-    }
-    {
-      name = "N-V-__8AAGTMFQCaxAe0Sm7zireXs1D73Kk-lQnyKhCTC2mA";
-      path = fetchZigArtifact {
-        name = "fluent_js";
-        url = "https://github.com/projectfluent/fluent.js/archive/9a925d2a38b893be735ff4429be8ad62132a204d.tar.gz";
-        hash = "sha256-KJPttQDwF14XEfayJldTEF4mJNYIfnaJpG54z3Q6lvs=";
-        unpack = false;
-      };
-    }
-    {
-      name = "N-V-__8AADjcJwBHUNPdbcFrgdpIPAEYXMLlRB6MzPX1C11B";
-      path = fetchZigArtifact {
-        name = "fluent_rs";
-        url = "https://github.com/projectfluent/fluent-rs/archive/b822cfe0ac5f35099ee71d3cf6f43b7c01d5fc6d.tar.gz";
-        hash = "sha256-y9p+V/XZUYy7La/Hog5DMuU6dMLieFHjHijgKgpiTlY=";
-        unpack = false;
-      };
-    }
-    {
-      name = "N-V-__8AAOPHBwAthlB_ltwF8wIYLtx96Tb9jDWVBZaxfUwl";
-      path = fetchZigArtifact {
-        name = "fluent_spec";
-        url = "https://github.com/projectfluent/fluent/archive/3dbb402ed5af6b64f5c09faeb067acff127a0f34.tar.gz";
-        hash = "sha256-snFRHeiL3ArxD5gt5Mi6d9lG/mgGnzoYofWsUld17EM=";
-        unpack = false;
       };
     }
     {

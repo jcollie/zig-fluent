@@ -1,0 +1,37 @@
+// SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+// SPDX-License-Identifier: MIT
+
+.{
+    .name = .fluent_cldr,
+    .version = "0.0.0",
+    .fingerprint = 0x1cbfd5438e4a3d0d, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.16.0",
+    .dependencies = .{
+        // The Unicode CLDR, in the Unicode Consortium's JSON distribution,
+        // and the whole reason this is a project of its own: the three of
+        // them unpack to 138 MB, and nothing that merely builds the library
+        // should have to know they exist. Keeping them here keeps them out of
+        // the library's manifest, and so out of `build.zig.zon.nix` and
+        // anything else generated from it.
+        .cldr_core = .{
+            .url = "https://registry.npmjs.org/cldr-core/-/cldr-core-48.2.0.tgz",
+            .hash = "N-V-__8AAJ77GgCr4jV_q5d8vuaUZIWMrHbXUMYV7il4sgLB",
+            .lazy = true,
+        },
+        .cldr_numbers_full = .{
+            .url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz",
+            .hash = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk",
+            .lazy = true,
+        },
+        .cldr_dates_full = .{
+            .url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz",
+            .hash = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV",
+            .lazy = true,
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

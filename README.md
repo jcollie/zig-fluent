@@ -596,10 +596,11 @@ Everything happens inside the devshell:
 ```console
 $ nix develop
 $ zig build example                # the worked example, in your own language
-$ zig build test --summary all     # unit, conformance, round-trip, fuzz seeds
+$ zig build test --summary all     # unit, round-trip, fuzz seeds
+$ zig build conformance            # the three external corpora, in conformance/
 $ zig build c                      # just the C library, header and .pc file
 $ zig build check                  # compile everything without running it
-$ zig fmt --check --exclude zig-pkg .
+$ zig fmt --check --exclude zig-pkg --exclude cldr/zig-pkg --exclude conformance/zig-pkg .
 $ zig build docs-serve             # read the API documentation at :8000
 $ zig build fuzz-run -- --seconds 60
 ```
@@ -614,11 +615,22 @@ The examples are built by CI rather than by `zig build test`, and no two of them
 can run on the same machine: the Linux runners build the plain C and GTK ones,
 and the macOS and Windows runners build the Swift and Win32 ones.
 
+Two things are projects of their own, in `conformance/` and `cldr/`, each with a
+manifest of its own. What they depend on is heavy — two monorepos and a spec
+repository in the first, 138 MB of Unicode data in the second — and none of it
+is anything a consumer of this library reads. Keeping those dependencies in
+their own manifests keeps them out of this one, and so out of anything
+generated from it. `zig build conformance` and `zig build gen-cldr` run them
+from here; each also builds on its own with `zig build` from inside its
+directory.
+
 ### Conformance corpora
 
-`zig build test` runs this library against three corpora it did not write, kept
-by Fluent itself and by two other implementations. None is vendored — they arrive as `build.zig.zon` dependencies, so the exact revision
-compared against is a hash in the manifest rather than a copy that could drift.
+`zig build conformance` runs this library against three corpora it did not
+write, kept by Fluent itself and by two other implementations. None is vendored
+— they arrive as dependencies of `conformance/build.zig.zon`, so the exact
+revision compared against is a hash in a manifest rather than a copy that could
+drift, and fetching them is something only that step does.
 
 **Fluent's own conformance fixtures**, from `projectfluent/fluent`: 39 files, the
 suite every implementation is expected to agree on. They are generated with the
@@ -701,10 +713,11 @@ to that corpus as a test.
 $ zig build gen-cldr -Dcldr
 ```
 
-`-Dcldr` fetches the three CLDR packages the generator reads, and keeps 138 MB
-off everybody else's clean build when it is not asked for. Without it they are
-not fetched at all, and the three directories can be named by hand instead —
-which is how to regenerate against a CLDR release this manifest does not pin:
+The generator and the data it reads are a project of their own, in `cldr/`;
+that step runs it there. `-Dcldr` fetches the three CLDR packages, which unpack
+to 138 MB. Without it they are not fetched at all, and the three directories can
+be named by hand instead — which is how to regenerate against a CLDR release
+that manifest does not pin:
 
 ```console
 $ for p in core numbers-full dates-full; do
@@ -719,32 +732,52 @@ under `src/cldr/` and is committed, so updating to a new CLDR is a deliberate
 act with a reviewable diff.
 
 Note that `.lazy = true` is not what makes a dependency optional. What makes it
-optional is whether `b.lazyDependency` is *called*, since `build()` runs in full
+optional is whether `b.lazyDependency` is *called*, and `build()` runs in full
 during the configure phase of every `zig build`, whatever step was named on the
-command line. That is why those three calls sit behind an option defaulting to
-false.
+command line — so `-Dcldr` is what keeps `cldr/`'s own `zig build check`, which
+type-checks the generator and runs nothing, from fetching all 138 MB to do it.
+
+A declared dependency is heavier still than a called one. Anything reading a
+manifest reads every entry in it, lazy or not, which is why moving these
+packages into `cldr/build.zig.zon` does something an option cannot: the
+library's manifest no longer names them, so neither does anything generated
+from it.
 
 ### What a clean build downloads
 
-For a Linux target, four packages, 907 KB compressed and 8.4 MB unpacked:
+This manifest declares two dependencies. `zig-datetime`, 1.1 MB, is the
+calendar, the IANA timezone database and the writing of CLDR patterns, and is
+always needed. `zigwin32` is 64 MB and is fetched only for a Windows target, so
+a build for anything else neither fetches nor compiles it.
+
+`zig-datetime` declares six of its own — the timezone database and sources, and
+three CLDR packages its tables are generated from — and guards them so that a
+build which merely consumes it calls for none of them. That guard is about what
+gets *fetched*, though, and not about what gets *declared*: anything reading a
+manifest reads every entry in it, so `build.zig.zon.nix` lists all six.
+
+Three of those six are the same `cldr-core`, `cldr-dates-full` and
+`cldr-numbers-full`, at the same versions, that `cldr/` reads. So moving them
+out of this manifest stopped them being named here twice; it did not stop them
+arriving, and it cannot, while the calendar this library depends on declares
+them.
+
+`zig build conformance` adds three more, 7.4 MB for 245 KB of fixtures:
 
 | | | |
 |---|---|---|
-| `zig-datetime` | 1.1 MB | the calendar, the timezone database, and CLDR pattern writing |
 | `fluent-spec` | 876 KB | the reference conformance fixtures |
 | `fluent.js` | 2.9 MB | the structure fixtures — 193 KB of corpus inside a monorepo |
 | `fluent-rs` | 3.6 MB | the resolver fixtures — 52 KB of corpus inside another |
 
-Building for Windows adds `zigwin32` at 64 MB, conditional on the target, so a
-build for anything else neither fetches nor compiles it.
+`fluent.js` and `fluent-rs` are poor bargains by weight — two whole monorepos
+for two directories of fixtures — but neither corpus has another home, and
+copying them in here is the one thing that would let what this library is
+measured against drift. They are in `conformance/`'s manifest rather than this
+one so that the cost falls on whoever runs that step.
 
-All three corpora are fetched by a plain `zig build`, deliberately: the
-conformance suites are what `zig build test` exists to run, which step was asked
-for cannot be known at configure time, and no one of them is worth an option
-that would let a suite be skipped by accident. `fluent.js` and `fluent-rs` are
-poor bargains by weight — two whole monorepos for two directories of fixtures —
-but neither corpus has another home, and copying them in here is the one thing
-that would let what this library is measured against drift.
+`zig build gen-cldr -Dcldr` adds the three CLDR packages, 138 MB unpacked, from
+`cldr/`'s manifest for the same reason.
 
 ## References cited
 

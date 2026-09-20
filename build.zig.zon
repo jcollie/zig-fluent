@@ -4,64 +4,14 @@
     .fingerprint = 0x8d467dc1f396f537, // Changing this has security and trust implications.
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
-        // The two corpora `zig build test` parses against. Neither is
-        // vendored, so what is compared against is a revision pinned here
-        // rather than a copy in this repository that could quietly drift.
-        //
-        // `fluent_spec` is the reference suite every implementation is
-        // expected to agree on: 39 `.ftl` files paired with the tree the
-        // reference parser builds. `fluent_js` carries a second corpus the
-        // spec repository does not, `fluent-syntax/test/fixtures_structure`:
-        // 62 more pairs, most of them broken on purpose, whose trees record
-        // which error each junk entry is blamed on and where. `fluent_rs`
-        // carries the third, `fluent-bundle/tests/fixtures`: 180 assertions
-        // about what a *bundle* does with a message once it is parsed, which
-        // is the only runtime conformance corpus Fluent has anywhere.
-        .fluent_spec = .{
-            .url = "https://github.com/projectfluent/fluent/archive/3dbb402ed5af6b64f5c09faeb067acff127a0f34.tar.gz",
-            .hash = "N-V-__8AAOPHBwAthlB_ltwF8wIYLtx96Tb9jDWVBZaxfUwl",
-            .lazy = true,
-        },
-        .fluent_js = .{
-            .url = "https://github.com/projectfluent/fluent.js/archive/9a925d2a38b893be735ff4429be8ad62132a204d.tar.gz",
-            .hash = "N-V-__8AAGTMFQCaxAe0Sm7zireXs1D73Kk-lQnyKhCTC2mA",
-            .lazy = true,
-        },
-        .fluent_rs = .{
-            .url = "https://github.com/projectfluent/fluent-rs/archive/b822cfe0ac5f35099ee71d3cf6f43b7c01d5fc6d.tar.gz",
-            .hash = "N-V-__8AADjcJwBHUNPdbcFrgdpIPAEYXMLlRB6MzPX1C11B",
-            .lazy = true,
-        },
+        // Two dependencies, and only one of them unconditional. The corpora
+        // this library is measured against and the CLDR data its tables are
+        // generated from are each a project of their own, in `conformance/`
+        // and `cldr/`, so that nothing here -- and nothing generated from
+        // here -- carries 145 MB that a consumer of the library never reads.
         .datetime = .{
             .url = "git+https://git.jcollie.dev/jeff/zig-datetime.git#bd76e05460dba019f7749e44a37ea5afe6c49609",
             .hash = "datetime-0.0.1-6-va79gDDwCD7vUCwnd8YeSBQlXh5xq-yjnhzeT7VCYw",
-        },
-        // The Unicode CLDR, in the Unicode Consortium's JSON distribution.
-        // Read only by `zig build gen-cldr -Dcldr`, which rewrites `src/cldr/`
-        // and is a maintainer's errand run about twice a year, when CLDR makes
-        // a release. The generated files are committed, so an ordinary build
-        // reads them and needs none of this.
-        //
-        // Guarding matters more than `.lazy` does: a lazy dependency is
-        // fetched the moment its `b.lazyDependency` call executes, and
-        // `build()` runs in full on every `zig build` whatever step was named.
-        // These three unpack to 138 MB, and while their calls sat at the top
-        // level of `build()` every consumer of this library was paying for
-        // them. `-Dcldr` is what keeps the call from executing; see build.zig.
-        .cldr_core = .{
-            .url = "https://registry.npmjs.org/cldr-core/-/cldr-core-48.2.0.tgz",
-            .hash = "N-V-__8AAJ77GgCr4jV_q5d8vuaUZIWMrHbXUMYV7il4sgLB",
-            .lazy = true,
-        },
-        .cldr_numbers_full = .{
-            .url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz",
-            .hash = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk",
-            .lazy = true,
-        },
-        .cldr_dates_full = .{
-            .url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz",
-            .hash = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV",
-            .lazy = true,
         },
         .zigwin32 = .{
             .url = "git+https://github.com/marlersoft/zigwin32#9f15c276b4e9d05afd34a10d8662a7dfc34647ea",
@@ -80,6 +30,10 @@
         "src",
         "tests",
         "tools",
+        // The two projects of their own. Their manifests are what hold the
+        // heavy dependencies; see the comment above.
+        "cldr",
+        "conformance",
         "LICENSES",
         "REUSE.toml",
         "README.md",
