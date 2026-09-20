@@ -611,7 +611,16 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR arguments,
 
 	if (self.smoke) attach_console();
 
-	self.cat = catalog_open(LOCALE_DIR);
+	/*
+	 * Isolation off, which is not what a window usually wants and is what
+	 * these controls require. A `STATIC` draws through GDI, which has no
+	 * bidirectional algorithm in it: it hands each character to the font
+	 * and draws what comes back, so U+2068 and U+2069 arrive at a font
+	 * that has no glyph for either and come out as boxes across every
+	 * interpolation on screen. DirectWrite would act on them; the classic
+	 * controls do not use it.
+	 */
+	self.cat = catalog_open(LOCALE_DIR, false);
 	if (self.cat == NULL) {
 		MessageBoxW(NULL, L"The translations could not be loaded.",
 			    L"Greeting", MB_ICONERROR | MB_OK);

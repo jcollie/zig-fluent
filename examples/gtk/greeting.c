@@ -388,7 +388,9 @@ int main(int argc, char **argv)
 	app self = { 0 };
 	self.smoke = smoke;
 
-	self.cat = catalog_open(LOCALE_DIR);
+	/* Isolation on: Pango implements the bidirectional algorithm, so it
+	 * acts on U+2068 and U+2069 and draws neither of them. */
+	self.cat = catalog_open(LOCALE_DIR, true);
 	if (self.cat == NULL) return EXIT_FAILURE;
 
 	/*

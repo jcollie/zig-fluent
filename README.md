@@ -268,9 +268,15 @@ cannot:
 - **Attributes.** A button's tooltip comes from the `.tooltip` attribute of the
   message its label comes from, which keeps the two strings a control needs
   together, so that a translation cannot update one and forget the other.
-- **Isolation marks left on.** Pango, AppKit and DirectWrite all honour U+2068
-  and U+2069, so a window is where the default belongs. A terminal prints them,
-  which is why the terminal examples turn them off.
+- **A decision about isolation marks.** Each of the three makes it, and they
+  do not all make it the same way, which is the interesting part: whether to
+  keep U+2068 and U+2069 is a question about the text renderer rather than
+  about the application. Pango and CoreText implement the bidirectional
+  algorithm and act on them, so the GTK and SwiftUI examples leave them on.
+  Win32's classic controls draw through GDI, which has no bidirectional
+  algorithm and hands each character to the font, so an interpolation comes
+  out wrapped in two boxes — and `examples/win32` turns them off for the same
+  reason a terminal example does.
 
 `examples/common/catalog.c` is the half of such a program that has no toolkit in
 it — reading the files, negotiating, formatting, collecting errors — and the GTK
@@ -500,13 +506,18 @@ bundle.use_isolating = false;
 
 Isolation is on by default and should be. It wraps every interpolation in U+2068
 and U+2069 so that a right-to-left name dropped into a left-to-right sentence
-does not drag the punctuation around it to the wrong end of the line. A browser
-or a GUI toolkit honours those marks; a terminal prints them, and `Ada` comes
-out as `⁨Ada⁩`.
+does not drag the punctuation around it to the wrong end of the line.
 
-Leave it on wherever the text is going into a paragraph a person reads, and turn
-it off for a terminal, for a value about to be compared or stored, and for a
-test asserting on exact text.
+Whether to keep them is a question about whatever will draw the text. Something
+that implements the Unicode bidirectional algorithm acts on them and draws
+nothing — a browser, Pango, CoreText. Something that does not draws them as
+missing glyphs: a terminal, and Win32's classic controls, which put their text
+on screen through GDI rather than DirectWrite. There `Ada` comes out as `⁨Ada⁩`.
+
+So leave it on wherever the text is going into a paragraph something will lay
+out properly, and turn it off for a terminal, for a renderer that will not, for
+a value about to be compared or stored, and for a test asserting on exact
+text.
 
 ## What it implements
 

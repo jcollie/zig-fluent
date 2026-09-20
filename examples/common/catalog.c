@@ -77,7 +77,7 @@ fail:
 
 /* -- loading -------------------------------------------------------------- */
 
-catalog *catalog_open(const char *dir)
+catalog *catalog_open(const char *dir, bool isolating)
 {
 	catalog *cat = calloc(1, sizeof(*cat));
 	if (cat == NULL) {
@@ -98,8 +98,9 @@ catalog *catalog_open(const char *dir)
 			goto fail;
 		}
 
-		/* Left on, unlike the terminal example -- see catalog.h. */
-		fluent_bundle_set_use_isolating(cat->bundles[i], true);
+		/* The caller's choice, and it is a question about what will draw
+		 * the text rather than about what the text is -- see catalog.h. */
+		fluent_bundle_set_use_isolating(cat->bundles[i], isolating);
 
 		size_t len;
 		char *source = read_locale(dir, shipped[i], &len);

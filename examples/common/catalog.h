@@ -40,15 +40,21 @@ typedef struct catalog catalog;
  * not parse is a bug in this repository rather than something to paper over at
  * run time.
  *
- * Isolation marks are left **on**, which is the library's default and the
- * opposite of what `examples/c/greeting.c` chooses. Isolation wraps every
- * interpolation in U+2068 and U+2069 so that a right-to-left name dropped into
- * a left-to-right sentence does not drag the punctuation around it to the
- * wrong end of the line. A terminal prints those characters as boxes, which is
- * why the terminal example turns them off; Pango and DirectWrite honour them,
- * so a window is exactly where they belong.
+ * `isolating` says whether to keep the Unicode isolation marks the library
+ * wraps every interpolation in, U+2068 and U+2069, which stop a right-to-left
+ * name dropped into a left-to-right sentence from dragging the punctuation
+ * around it to the wrong end of the line.
+ *
+ * **Whether to keep them is a question about the text renderer, not about the
+ * application.** Something that implements the Unicode bidirectional
+ * algorithm acts on them and draws nothing: Pango does, and so does CoreText,
+ * so the GTK and SwiftUI examples pass true. Something that does not draws
+ * them as missing glyphs: a terminal does, and so do Win32's classic controls,
+ * which put their text on screen through GDI rather than through DirectWrite
+ * -- so `examples/c` and `examples/win32` pass false and a Win32 window shows
+ * plain text rather than a row of boxes.
  */
-catalog *catalog_open(const char *dir);
+catalog *catalog_open(const char *dir, bool isolating);
 void catalog_close(catalog *cat);
 
 /* How many translations were loaded, and what each one is. */
