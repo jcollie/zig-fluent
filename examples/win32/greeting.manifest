@@ -8,7 +8,7 @@ Two things a Win32 program has to ask for and does not get by default.
 Version 6 of the common controls is the first: without this dependency the
 combo box, the up-down and the button are drawn in the Windows 95 style, and
 `TTS_*` tooltips do not appear at all. Asking for it by assembly name is the
-only way -- there is no API call that turns it on.
+only way, as there is no API call that turns it on.
 
 DPI awareness is the second. `true` is system awareness, which is what this
 program implements: it reads `GetDpiForSystem` once and lays the controls out
@@ -16,6 +16,11 @@ in scaled units. Claiming `PerMonitorV2` would be a lie, since nothing here
 handles `WM_DPICHANGED`, and a window dragged to a second monitor would then
 be left at the wrong size rather than being bitmap-scaled to roughly the right
 one.
+
+Note the absence of the double hyphen this repository otherwise writes for an
+em dash. XML forbids it inside a comment, and a manifest that is not
+well-formed XML is not reported as a bad manifest: the program simply fails to
+start, saying that its side-by-side configuration is incorrect.
 -->
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
   <assemblyIdentity

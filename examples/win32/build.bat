@@ -98,13 +98,12 @@ REM
 REM `/utf-8` because this file's sources contain no non-ASCII but the messages
 REM they format do, and because it is what makes the source and execution
 REM character sets agree rather than depending on the machine's code page.
-REM `/MANIFEST:NO` is the one that is not obvious, and leaving it out is what
-REM made the first CI run of this example say "The application has failed to
-REM start because its side-by-side configuration is incorrect": link.exe
-REM generates a manifest of its own by default, and a program that already
-REM carries one as `RT_MANIFEST` resource 1 -- which `greeting.res` is -- then
-REM ends up with two. Telling the linker not to means the only manifest in the
-REM executable is `greeting.manifest`.
+REM
+REM `/MANIFEST:NO` is the one that is not obvious: link.exe generates an
+REM application manifest of its own by default, and a program that already
+REM carries one as `RT_MANIFEST` resource 1 -- which `greeting.res` is -- would
+REM then have two. Telling the linker not to leaves `greeting.manifest` as the
+REM only manifest in the executable.
 cl /nologo /W4 /WX /std:c11 /utf-8 /O2 /MD ^
    /I "%PREFIX%\include" /I ..\common /DLOCALE_DIR=\"%LOCALE_DIR%\" ^
    greeting.c ..\common\catalog.c ^
