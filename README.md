@@ -750,17 +750,12 @@ calendar, the IANA timezone database and the writing of CLDR patterns, and is
 always needed. `zigwin32` is 64 MB and is fetched only for a Windows target, so
 a build for anything else neither fetches nor compiles it.
 
-`zig-datetime` declares six of its own — the timezone database and sources, and
-three CLDR packages its tables are generated from — and guards them so that a
-build which merely consumes it calls for none of them. That guard is about what
-gets *fetched*, though, and not about what gets *declared*: anything reading a
-manifest reads every entry in it, so `build.zig.zon.nix` lists all six.
+`zig-datetime` declares two of its own, `tzcode` and `tzdata`, which are the
+IANA sources its `-Dembed-tzdata` compiles with zic. They are 1.1 MB each, and
+they are the whole of what it adds.
 
-Three of those six are the same `cldr-core`, `cldr-dates-full` and
-`cldr-numbers-full`, at the same versions, that `cldr/` reads. So moving them
-out of this manifest stopped them being named here twice; it did not stop them
-arriving, and it cannot, while the calendar this library depends on declares
-them.
+So a clean Nix build of this library fetches four packages and 70 MB, of which
+64 MB is `zigwin32` and is only reached for a Windows target.
 
 `zig build conformance` adds three more, 7.4 MB for 245 KB of fixtures:
 
