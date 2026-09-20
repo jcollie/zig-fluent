@@ -46,9 +46,8 @@ jobs:
       # real controls -- the language menu, the count -- rather than calling
       # the formatting directly, so what this covers is the whole program.
       #
-      # The GTK warnings in this step's log are expected: there is no window
-      # manager on that display, so nothing honours the size the window asks
-      # for. See the comment on the `smoke` target.
+      # A clean run prints the six translations and nothing else. A GTK warning
+      # in this log is a finding, not an artifact of running headless.
       #
       # The Swift and Win32 examples cannot run here: these runners are Linux,
       # which is what `.github/workflows/test.yaml` exists for.

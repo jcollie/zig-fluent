@@ -82,12 +82,11 @@ run: greeting
 # is no GL under Xvfb, so the cairo renderer is asked for by name; without it
 # this dies in `gsk` before any of this example's own code runs.
 #
-# It prints a handful of "Trying to measure GtkApplicationWindow ... but it
-# needs at least" warnings, and they are not worth chasing: there is no window
-# manager on this display, so nothing ever honours the size the toplevel asks
-# for, and GTK says so each time it lays out. The same binary on a real
-# desktop is quiet. What matters here is the text below them, which is every
-# message in every one of the six translations.
+# A clean run prints nothing but the six translations. GTK warnings here are a
+# finding rather than noise -- `Trying to measure GtkApplicationWindow ... but
+# it needs at least` means some widget is answering "how tall are you?"
+# inconsistently, and it says so on a real desktop just as loudly as it does
+# under Xvfb.
 smoke: greeting
 	xvfb-run -a env GSK_RENDERER=cairo GDK_BACKEND=x11 ./greeting --smoke
 

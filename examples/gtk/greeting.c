@@ -258,16 +258,22 @@ static gboolean smoke_tick(gpointer data)
 /* -- building the window -------------------------------------------------- */
 
 /*
- * One of the sentences, with room for `lines` of it kept whether it needs
- * them or not.
+ * One of the sentences: a label that wraps, at a fixed width.
  *
- * Reserving the space is what keeps the window from resizing every time the
- * language changes, since the same sentence is a different length in each of
- * the six. A window that jumps about as you go down a language menu is a poor
- * thing to look at -- and where there is no window manager to resize it, as
- * under the Xvfb that `make smoke` runs in, GTK says so once per frame.
+ * **A wrapping label needs its width pinned**, and this is the whole of why
+ * the two calls below are here. A `GtkLabel` with `wrap` set reports the
+ * unwrapped sentence as its natural width and then answers "how tall are you?"
+ * differently at every width it might be given -- so a window sized from one
+ * answer and laid out at another ends up shorter than its own minimum, and GTK
+ * says `Trying to measure GtkApplicationWindow ... but it needs at least` once
+ * per frame for as long as it is on screen.
+ *
+ * Setting `width-chars` and `max-width-chars` to the same number takes the
+ * width out of the negotiation: the label is that wide, the height follows from
+ * the text, and nothing has to be guessed twice. Forty-six characters is what
+ * suits the longest of these six translations.
  */
-static GtkWidget *sentence(GtkWidget *grid, int row, int lines)
+static GtkWidget *sentence(GtkWidget *grid, int row)
 {
 	GtkWidget *label = gtk_label_new(NULL);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
@@ -275,7 +281,8 @@ static GtkWidget *sentence(GtkWidget *grid, int row, int lines)
 	gtk_label_set_wrap(GTK_LABEL(label), TRUE);
 	gtk_label_set_xalign(GTK_LABEL(label), 0.0f);
 	gtk_label_set_yalign(GTK_LABEL(label), 0.0f);
-	gtk_widget_set_size_request(label, -1, lines * 22);
+	gtk_label_set_width_chars(GTK_LABEL(label), 46);
+	gtk_label_set_max_width_chars(GTK_LABEL(label), 46);
 	gtk_grid_attach(GTK_GRID(grid), label, 0, row, 2, 1);
 	return label;
 }
@@ -290,15 +297,13 @@ static void on_activate(GtkApplication *gtk_app, gpointer data)
 	 * Fixed, like the other two examples: the Win32 one lays its controls
 	 * out at fixed coordinates and the SwiftUI one asks for
 	 * `.windowResizability(.contentSize)`. There is nothing here that
-	 * benefits from being dragged larger, and the labels already reserve
-	 * room for the longest of the six translations rather than the first
-	 * one shown -- a window that resizes itself as you go down a language
-	 * menu is a poor thing to look at.
+	 * benefits from being dragged larger, and the labels have a width of
+	 * their own, so the window has only to be as tall as whichever
+	 * translation is showing.
 	 */
 	gtk_window_set_resizable(self->window, FALSE);
 
 	GtkWidget *grid = gtk_grid_new();
-	gtk_widget_set_size_request(grid, 440, -1);
 	gtk_grid_set_row_spacing(GTK_GRID(grid), 8);
 	gtk_grid_set_column_spacing(GTK_GRID(grid), 12);
 	gtk_widget_set_margin_top(grid, 16);
@@ -340,12 +345,12 @@ static void on_activate(GtkApplication *gtk_app, gpointer data)
 			gtk_separator_new(GTK_ORIENTATION_HORIZONTAL),
 			0, 2, 2, 1);
 
-	self->welcome = sentence(grid, 3, 1);
-	self->new_photos = sentence(grid, 4, 1);
+	self->welcome = sentence(grid, 3);
+	self->new_photos = sentence(grid, 4);
 	/* The one that wraps: Polish and German both run to three lines at a
 	 * large count, and Japanese to one. */
-	self->shared = sentence(grid, 5, 3);
-	self->storage = sentence(grid, 6, 1);
+	self->shared = sentence(grid, 5);
+	self->storage = sentence(grid, 6);
 
 	self->system_button = gtk_button_new();
 	gtk_widget_set_halign(self->system_button, GTK_ALIGN_START);
@@ -353,7 +358,7 @@ static void on_activate(GtkApplication *gtk_app, gpointer data)
 
 	/* Always present, empty when there is nothing to say, so that an error
 	 * appearing does not move everything above it. */
-	self->status = sentence(grid, 8, 2);
+	self->status = sentence(grid, 8);
 	gtk_widget_add_css_class(self->status, "dim-label");
 
 	g_signal_connect(self->language_menu, "notify::selected",
