@@ -6,11 +6,14 @@ SPDX-License-Identifier: MIT
 # zig-fluent
 
 An implementation of [Project Fluent](https://projectfluent.org/) for Zig 0.16,
-with no ICU and nothing to link against.
+and a C library built from the same code. It carries its own CLDR tables, so
+there is no ICU to install and nothing to link against.
 
-API documentation: <https://jeff.jcollie.page/zig-fluent/>, published from main
-by `.forgejo/workflows/test.yaml`. It is generated from the doc comments, which
-is where most of the explanation in this project lives.
+- **API documentation**: <https://jeff.jcollie.page/zig-fluent/>, generated from
+  the doc comments, which carry most of the detail this file summarises.
+- **Requires**: Zig 0.16. One dependency,
+  [zig-datetime](https://git.jcollie.dev/jeff/zig-datetime).
+- **Licence**: MIT.
 
 ## What Fluent is
 
@@ -34,12 +37,16 @@ shared-photos =
 ```
 
 The calling code passes `userName`, `photoCount` and `userGender`, and knows
-nothing about English's two plural forms or Russian's four. A translation into a
+nothing about English's two plural forms or Polish's four. A translation into a
 language that inflects the verb for gender can do that; one into a language that
-does not can ignore the argument; and neither of them needs a line of code
-changed.
+does not can ignore the argument; and neither needs a line of code changed.
 
-## Using it
+If the syntax is new to you, the [Fluent Syntax
+Guide](https://projectfluent.org/fluent/guide/) is the place to start. This
+library implements [Fluent Syntax
+1.0](https://github.com/projectfluent/fluent) in full.
+
+## Using it from Zig
 
 ```sh
 zig fetch --save git+https://github.com/jcollie/zig-fluent
@@ -65,81 +72,21 @@ const text = try bundle.format(gpa, "shared-photos", &.{
 defer gpa.free(text);
 ```
 
-`format` returns null rather than failing when the message is not in the bundle,
-so an application holding several bundles can ask each in turn. Pass a
-`*fluent.Errors` in place of the last argument to hear about anything that went
-wrong; pass null and the fallbacks are silent.
+A `Bundle` holds the messages of one locale. An application that ships several
+translations holds one bundle per translation and asks each in turn: `format`
+returns null rather than failing when the message is not there.
 
-Nothing else can fail. A missing variable renders as `{$name}`, an unknown
-message as `{name}`, a select expression whose selector went wrong falls to its
-default — and in every case the rest of the sentence is still built. That is
-deliberate: a localization system sits between an application and everyone using
-it, and a translation with one hole in it is worth far more than a blank screen.
+### Nothing else can fail
 
-### A worked example
+Out of memory aside, no call in this library returns an error for anything a
+translation does. A missing variable renders as `{$name}`, an unknown message as
+`{name}`, and a select expression whose selector went wrong falls to its
+default — and in every case the rest of the sentence is still built.
 
-`examples/greeting.zig` does the whole of it: reads the user's language out of
-the environment, picks the closest of five translations shipped with it, and
-prints in that one.
-
-```console
-$ LANG=de_DE.UTF-8 zig build example
-requested: de-DE
-showing:   de
-
-  Willkommen bei Fototresor!
-  Keine neuen Fotos
-  Ein neues Foto
-  2 neue Fotos
-  Ada hat am 14. Februar 2026 3 Fotos mit dir geteilt.
-  12.345,7 GB von 50.000 GB belegt
-```
-
-```console
-$ zig build example -- fi        # or say so directly, skipping the environment
-  Tervetuloa Kuvakirjastoon!
-  1 uusi kuva
-  2 uutta kuvaa
-  Ada jakoi kanssasi 3 kuvaa 14. helmikuuta 2026.
-```
-
-Those four Finnish lines are the argument for Fluent in one screen. The product
-name is a term, so the translator declines it — `Tervetuloa { -app-name }on!` —
-and the calling code never learns that Finnish has a case system. A counted noun
-goes into the partitive, so one photo and two differ in more than the numeral in
-front of them. And `$gender` is passed to that third message and never read,
-because Finnish has no grammatical gender and no gendered pronoun to choose
-between: a translation may ignore an argument the program thought was essential,
-and nothing has to be changed for it to.
-
-Polish makes the opposite case, which is why both are shipped:
-
-```console
-$ zig build example -- pl
-  Witamy w Skarbcu Zdjęć!
-  1 nowe zdjęcie
-  2 nowe zdjęcia
-  5 nowych zdjęć
-  Ada udostępniła ci 3 zdjęcia 14 lutego 2026.
-```
-
-Four plural categories where English has two, and the noun changes case with
-the category rather than merely taking an `-s`. `few` is 2 to 4 but not 12 to
-14, so 22 agrees with 2 and 12 agrees with 5. The past tense agrees with the
-sharer — `udostępniła` for Ada, `udostępnił` for Adam — which is the argument
-Finnish had no use for, read by a language that does. And the term is called
-with an argument, `{ -app-name(case: "locative") }`, because Polish changes the
-stem and not just the ending: `Skarbiec` becomes `Skarbcu`, which no suffix
-written after a placeable could produce.
-
-All of that lives in the `.ftl` files, where the person who speaks the language
-can reach it — as does Japanese counting photos with 枚.
-
-Reading the environment, and honouring the `LC_*` variables a user expects to
-work, is [its own section below](#in-a-posix-environment). Choosing among the
-bundles you shipped is left to the application, and the example writes that out
-too: each requested locale in turn, and for each, the closest bundle by tag,
-then by language and script, then by language.
+That is deliberate. A localization system sits between an application and
+everyone using it, and a translation with one hole in it is worth far more than
+a blank screen. Pass a `*fluent.Errors` where the examples above pass null to
+hear about what went wrong anyway; pass null and the fallbacks are silent.
 
 ### Just the parser
 
@@ -148,21 +95,19 @@ var resource = try fluent.syntax.parse(gpa, source);
 defer resource.deinit();
 ```
 
-`fluent.syntax` is useful on its own — a linter, an editor plugin, a
+`fluent.syntax` is useful on its own — for a linter, an editor plugin, a
 translation-memory importer — and costs nothing to leave alone: Zig only
 analyses what is referenced, so a program that only parses never compiles the
-resolver. There is a serializer too, which writes Fluent's canonical formatting
-and so doubles as a formatter, and a JSON writer that emits Fluent's interchange
-AST for tools written against `fluent-syntax`.
+resolver. Alongside the parser there is a serializer, which writes Fluent's
+canonical formatting and so doubles as a formatter, and a JSON writer that emits
+Fluent's interchange AST for tools written against `fluent-syntax`.
 
-## From C
+## Using it from C
 
-There is a C library too, so a project that is not written in Zig can use this
-one: `libfluent.a`, `libfluent.so` and a hand-written `include/fluent.h`, plus a
-pkg-config file. `zig build` produces all of it. On Windows the static library
-is `libfluent.lib` and `fluent.lib` is the import library that goes with
-`fluent.dll`, because there the two linkages would otherwise want the same file
-name and one would quietly overwrite the other.
+`zig build` produces `libfluent.a`, `libfluent.so`, a hand-written
+`include/fluent.h` and a pkg-config file. On Windows the static library is
+`libfluent.lib`, and `fluent.lib` is the import library that goes with
+`fluent.dll`.
 
 ```console
 $ zig build --prefix /usr/local
@@ -170,10 +115,10 @@ $ pkg-config --cflags --libs fluent
 -I/usr/local/include -L/usr/local/lib -lfluent
 ```
 
-Ask for `--static` as well if you are linking `libfluent.a`, since an archive
-cannot carry its dependencies with it: on macOS that adds `-framework
-CoreFoundation`, which is where the user's language is read from, and
-elsewhere the `-lm -lpthread` that Zig's standard library wants underneath.
+Ask for `--static` as well when linking the archive, since an archive cannot
+carry its dependencies with it: on macOS that adds `-framework CoreFoundation`,
+where the user's language is read from, and elsewhere the `-lm -lpthread` that
+Zig's standard library wants underneath.
 
 ```c
 #include <fluent.h>
@@ -194,136 +139,185 @@ fluent_args_free(args);
 fluent_bundle_free(bundle);
 ```
 
-The same shape as the Zig API, with the same guarantee that nothing but running
-out of memory can fail: a message that is not in the bundle formats to `NULL`
-rather than to an error, and a hole in a translation still renders the sentence
-around it. Names — message identifiers, attributes, locale tags, argument names
-— are C strings, because that is what a name is; bodies of text are a pointer
-and a length, because they come out of files and may be anything. Neither is
-retained. Text the library returns is freed with `fluent_string_free`.
+The same shape as the Zig API, with the same guarantee: a message that is not in
+the bundle formats to `NULL` rather than to an error.
 
-`fluent_preferred_locales` answers the question the sections below are about,
-on all three platforms, without the caller needing an environment block of its
-own:
+Two conventions run through the header. **Names** — message identifiers,
+attributes, locale tags, argument names — are C strings, because that is what a
+name is. **Bodies of text** — an FTL resource, a string argument — are a pointer
+and a length, because they come out of files and may contain anything, a NUL
+included. Neither is retained: the library copies whatever it keeps, so a buffer
+may be freed as soon as the call returns. Text the library hands back belongs to
+the caller and is freed with `fluent_string_free`.
+
+`fluent_preferred_locales` answers the question the [next
+section](#finding-the-users-language) is about, on all three platforms, without
+the caller needing an environment block of its own:
 
 ```c
 fluent_tag wanted[8];
 size_t count = fluent_preferred_locales(wanted, 8);
 ```
 
-Three things are deliberately Zig-only. **Locale negotiation** — choosing which
-of the translations you shipped best serves what was asked for — is the
-application's decision rather than this library's, in C exactly as in Zig.
-**Time zones** would mean handing C a parsed TZif, which belongs to
-`zig-datetime`; dates are read in UTC. **Custom functions** need a Zig
-callback. `include/fluent.h` says so in the same words, since it is the file a
-C programmer will actually read.
+Three things are Zig-only. **Locale negotiation** — choosing which of the
+translations you shipped best serves what was asked for — is the application's
+decision rather than this library's, in C exactly as in Zig. **Time zones**
+would mean handing C a parsed TZif, which belongs to `zig-datetime`; dates are
+read in UTC. **Custom functions** need a Zig callback. `include/fluent.h` says
+the same, since it is the file a C programmer will actually read.
 
-### A worked example, in C
+## Examples
 
-`examples/c/` is `examples/greeting.zig` written again in C, against the same
-`.ftl` files, and the two are worth reading side by side: what changes is the
-spelling, and what does not is the shape. It is built the way a C project is
-built — gcc and a Makefile — with the Zig build system reaching only as far as
-the library:
+Five programs, all formatting the same five messages from the same six
+translations in `examples/locales/`, so that they can be read against each
+other.
 
-```console
-$ cd examples/c
-$ make run                       # builds libfluent.a, then gcc, then runs it
-$ LANG=de_DE.UTF-8 ./greeting
-$ ./greeting fi
-$ make PREFIX=/usr/local         # against an installed copy, no Zig at all
-$ make LINKAGE=shared            # libfluent.so rather than libfluent.a
-```
+| | language | build | shows |
+|---|---|---|---|
+| `examples/greeting.zig` | Zig | `zig build example` | the whole shape in one file: read the environment, negotiate, format |
+| `examples/c/` | C | `make -C examples/c run` | the same again through the C API, translations read off disk |
+| `examples/gtk/` | C, GTK 4 | `make -C examples/gtk run` | a window whose every label is reformatted when the language changes |
+| `examples/swift/` | Swift, SwiftUI | `make -C examples/swift open` | the C API wrapped in Swift, one `deinit` per `_free` |
+| `examples/win32/` | C, Win32 | `cd examples\win32 && build.bat run` | the same window, and UTF-8 crossing into UTF-16 |
 
-It reads its translations off disk rather than embedding them, which is the
-other ordinary deployment shape and is why resources are passed as a pointer
-and a length. It also writes out the negotiation the library deliberately does
-not do for you — three passes over the catalog, exact tag then language and
-script then language alone — which is about forty lines of ordinary string
-comparison, because a canonical tag is an ordinary string.
-
-That example is worth its keep: linking `libfluent.a` with a linker Zig did not
-invoke is the one thing `zig build test` cannot do, and the first time the
-Makefile ran it failed with `undefined reference to __zig_probe_stack`. Zig
-links its own `compiler_rt` and `cc` does not, so the archive now carries it.
-
-### Three GUI examples
-
-`examples/gtk`, `examples/swift` and `examples/win32` are that same program
-once more, with a window in front of it: GTK 4 in C, SwiftUI in Swift, and
-plain Win32 in C. They exist because a command-line program is the one shape
-that does not exercise what an application does with this library. It formats
-every message once and exits; an application holds a tree of widgets whose text
-has to be regenerated whenever the user changes something, and the thing they
-change here is the language.
-
-So each of the three has a language menu and a count, and all three show the
-same three things the terminal example cannot. **Reformatting in place**:
-choosing another language swaps the bundle every label is formatted from, which
-is what a real translation switch is. **Attributes**: the button's tooltip
-comes from the `.tooltip` attribute of the message its label comes from, which
-is what attributes are for — the several strings a control needs kept together,
-so that a translation cannot update one and forget the other. **Isolation marks
-left on**: the terminal example turns them off because a terminal prints
-U+2068 and U+2069 as boxes, and these leave them on because Pango, AppKit and
-DirectWrite all honour them, which is the default and the usual case.
+Start with `examples/greeting.zig` or `examples/c/greeting.c`; they are the same
+program twice, and what changes is the spelling rather than the shape.
 
 ```console
-$ make -C examples/gtk run             # or `make -C examples/gtk smoke`, headless
-$ make -C examples/swift open          # builds Greeting.app and launches it
-> cd examples\win32 && build.bat run
+$ LANG=de_DE.UTF-8 zig build example
+requested: de-DE
+showing:   de
+
+  Willkommen bei Fototresor!
+  Keine neuen Fotos
+  Ein neues Foto
+  2 neue Fotos
+  5 neue Fotos
+  21 neue Fotos
+  Ada hat am 14. Februar 2026 3 Fotos mit dir geteilt.
+  12.345,7 GB von 50.000 GB belegt
 ```
 
-`examples/common/catalog.c` is the half of the program that has no toolkit in
-it — reading the `.ftl` files, negotiating, formatting, collecting errors — and
-the GTK and Win32 examples share it verbatim, so what differs between those two
-files is only the window system. It is `examples/c/greeting.c` with the
-negotiation lifted out of `main`, which is why that one is still the best of
-the four to read first.
+`zig build example -- de` names the language directly instead. The environment
+still decides how numbers and dates are written, which is the split
+[Finding the user's language](#finding-the-users-language) is about.
 
-Then each platform shows something only it can. The **Swift** one is the only
-place this API is used from a language that manages memory for you, and
-`Sources/FluentKit/Fluent.swift` is the answer to whether the ownership rules
-in `fluent.h` survive that: one `final class` per handle, one `deinit` per
-`_free`, and a `defer` wherever a returned string becomes a `String`. Nothing
-above that file sees a pointer. The **Win32** one is where UTF-8 meets UTF-16:
-every `W` entry point wants wide characters and everything this library returns
-is UTF-8, so a string crosses one `MultiByteToWideChar` helper on its way to a
-control — measured with `fluent_string_len` rather than `strlen`, since a
-translation may contain a NUL and that is the whole reason the header offers
-that function.
+### What the translations demonstrate
 
-None of the three is built by Zig. The GTK one is `gcc` and a Makefile, the
-Swift one is `swift build` with the library named on the command line, and the
-Win32 one is `cl`, `rc` and a batch file that finds Visual C++ through
-`vswhere`. That is the point of them as much as the windows are: three foreign
-toolchains consuming what `zig build c` installs. The Win32 example is the only
-thing anywhere that hands the archive to the MSVC linker, and it is what found
-the file-name collision the paragraph above describes.
+```console
+$ LANG=fi_FI.UTF-8 zig build example
+requested: fi-FI
+showing:   fi
 
-### Two tests, for two different things
+  Tervetuloa Kuvakirjastoon!
+  Ei uusia kuvia
+  1 uusi kuva
+  2 uutta kuvaa
+  5 uutta kuvaa
+  21 uutta kuvaa
+  Ada jakoi kanssasi 3 kuvaa 14. helmikuuta 2026.
+  Käytössä 12 345,7 Gt / 50 000 Gt
+```
 
-`tests/c_api.c` is a consumer rather than a unit test: it is compiled by a C
-compiler against the header and linked against the static library, so it is
-what catches the header and the implementation drifting apart. The tests inside
-`src/c.zig` run with `std.testing.allocator` in place of libc's, which is what
-lets them check the ownership rules rather than merely that nothing crashed.
-Both run as part of `zig build test`. The examples are covered separately,
-because no two of them can run on the same machine: Forgejo's Linux runners
-build the plain C and GTK ones, and the GitHub mirror's matrix builds the
-Swift example on macOS and the Win32 example on Windows. The Swift package
-carries tests of its own, in `Tests/FluentKitTests`, which are what actually
-assert anything about a GUI example — a window cannot be checked by a machine
-without a great deal of machinery, and what would be checked is SwiftUI rather
-than this library.
+Those Finnish lines are the argument for Fluent in one screen. The product name
+is a term, so the translator declines it — `Tervetuloa { -app-name }on!` — and
+the calling code never learns that Finnish has a case system. A counted noun
+goes into the partitive, so one photo and two differ in more than the numeral in
+front of them. And `$gender` is passed to that third message and never read,
+because Finnish has no grammatical gender: a translation may ignore an argument
+the program thought was essential.
 
-## In a POSIX environment
+Polish makes the opposite case.
 
-Somebody running a command-line program on a Unix expects `LANG` and the `LC_*`
-variables to work. They are not decoration: `LC_ALL=C` in a script is a promise
-that the output will not move, and a user who set `LC_TIME=en_GB.UTF-8` did it
-because they want a twenty-four hour clock. `fluent.posix` reads them.
+```console
+$ LANG=pl_PL.UTF-8 zig build example
+requested: pl-PL
+showing:   pl
+
+  Witamy w Skarbcu Zdjęć!
+  Brak nowych zdjęć
+  1 nowe zdjęcie
+  2 nowe zdjęcia
+  5 nowych zdjęć
+  21 nowych zdjęć
+  Ada udostępniła ci 3 zdjęcia 14 lutego 2026.
+  Wykorzystano 12 345,7 GB z 50 000 GB
+```
+
+Four plural categories where English has two, and the noun changes case with the
+category rather than merely taking an `-s`. `few` is 2 to 4 but not 12 to 14, so
+22 takes the same form as 2, while 12 and the 21 above take the same form as 5. The past tense agrees with the sharer —
+`udostępniła` for Ada, `udostępnił` for Adam — which is the argument Finnish had
+no use for, read by a language that does. The term is called with an argument,
+`{ -app-name(case: "locative") }`, because Polish changes the stem and not just
+the ending: `Skarbiec` becomes `Skarbcu`.
+
+All of it lives in the `.ftl` files, where the person who speaks the language can
+reach it — as does Japanese counting photos with 枚.
+
+### The GUI examples
+
+A command-line program formats each message once and exits. An application holds
+a tree of widgets whose text has to be regenerated whenever the user changes
+something, and in these three that something is the language. Each has a
+language menu and a count, and each shows three things the terminal examples
+cannot:
+
+- **Reformatting in place.** Choosing another language swaps the bundle every
+  label is formatted from.
+- **Attributes.** A button's tooltip comes from the `.tooltip` attribute of the
+  message its label comes from, which keeps the two strings a control needs
+  together, so that a translation cannot update one and forget the other.
+- **Isolation marks left on.** Pango, AppKit and DirectWrite all honour U+2068
+  and U+2069, so a window is where the default belongs. A terminal prints them,
+  which is why the terminal examples turn them off.
+
+`examples/common/catalog.c` is the half of such a program that has no toolkit in
+it — reading the files, negotiating, formatting, collecting errors — and the GTK
+and Win32 examples share it verbatim, so what differs between those two is only
+the window system.
+
+None of the three is built by Zig: GTK uses `gcc` and a Makefile, Swift uses
+`swift build` with the library named on the command line, and Win32 uses `cl`,
+`rc` and a batch file that finds Visual C++ through `vswhere`. Each takes a
+`PREFIX`, so each can be built against an installed copy with no Zig present at
+all.
+
+`examples/swift` also carries a test suite, `Tests/FluentKitTests`, which is what
+asserts anything about the Swift wrapper without needing a window.
+
+## Finding the user's language
+
+Every platform answers two questions, and this library keeps them apart
+everywhere: **which language to speak**, and **how to write numbers, dates and
+money**. Somebody who reads English in Germany has answered them differently,
+and that is an ordinary thing to want.
+
+`fluent.system` asks whichever platform is running, so a program that works on
+all three need not branch:
+
+```zig
+var buffer: [8]fluent.Locale = undefined;
+const wanted = fluent.system.preferredLocales(&buffer, init.environ_map);
+const bundle = negotiate(&bundles, wanted);
+
+fluent.system.applyCategories(bundle, fluent.system.categories(init.environ_map));
+```
+
+Choosing among the bundles you shipped is left to the application: how much of a
+mismatch to tolerate is a product decision rather than a fact about locales.
+`examples/greeting.zig` writes out one reasonable answer in about forty lines —
+each requested locale in turn, and for each, the closest bundle by tag, then by
+language and script, then by language alone.
+
+**The environment is asked first on every platform**, Windows and macOS
+included, because a shell that sets `LANG` was set up on purpose — somebody
+running under MSYS2, Cygwin or Git Bash, or in Terminal.app. It is what GNU
+gettext does, and it means `LC_ALL=C` silences translation everywhere.
+
+### In a POSIX environment
+
+`fluent.posix` reads the variables a user expects to work.
 
 | variable | governs | read here |
 |---|---|---|
@@ -333,11 +327,11 @@ because they want a twenty-four hour clock. `fluent.posix` reads them.
 | `LC_NUMERIC` | decimal mark, grouping, digits | yes |
 | `LC_TIME` | month names, field order, the clock | yes |
 | `LC_MONETARY` | where the currency sign goes | yes |
-| `LC_COLLATE` | sort order | no — see below |
-| `LC_CTYPE` | character classification | no — see below |
+| `LC_COLLATE` | sort order | no — this library does not sort |
+| `LC_CTYPE` | character classification | no — nothing here classifies |
 | `LANG` | the default for every category | yes |
 
-The whole of it, in an application that ships several translations:
+Spelled out, rather than through `fluent.system`:
 
 ```zig
 // 1. Which languages will do, best first. Only `LANGUAGE` ranks, so this is
@@ -345,12 +339,10 @@ The whole of it, in an application that ships several translations:
 var wanted: [8]fluent.Locale = undefined;
 const chain = fluent.posix.fromEnviron(&wanted, init.environ_map);
 
-// 2. Pick a bundle. Matching a ranked request against what you shipped is
-//    yours to decide; `examples/greeting.zig` writes out a dozen lines of it.
+// 2. Pick a bundle — yours to decide.
 const bundle = negotiate(&bundles, chain);
 
-// 3. Format the way this user writes numbers and dates, which POSIX lets
-//    them answer separately from the language they read.
+// 3. Format the way this user writes numbers and dates.
 const category = fluent.posix.categoriesFromEnviron(init.environ_map);
 if (category.numeric)  |locale| bundle.setNumberLocale(locale);
 if (category.monetary) |locale| bundle.setCurrencyLocale(locale);
@@ -361,54 +353,37 @@ An application that ships one translation needs only the third step, and one
 that does not care about the `LC_*` split needs none of it — `Bundle.init` sets
 all three categories from the locale it is given.
 
-None of it is tied to the process, either. The rules apply to a
-`fluent.posix.Variables` struct, so a server deciding on behalf of a user who is
-not the one running it can feed in values from a config file or a request header
-and get the same answers; `fromEnviron` and `categoriesFromEnviron` are the
-adapters for a real environment.
+None of it is tied to the process. The rules apply to a `fluent.posix.Variables`
+struct, so a server deciding on behalf of a user who is not the one running it
+can feed in values from a config file or a request header and get the same
+answers; `fromEnviron` and `categoriesFromEnviron` are the adapters for a real
+environment.
 
-### The names are not language tags
+**The names are not language tags.** `de_DE.UTF-8@euro` and `de-DE` are the same
+locale: the codeset says how bytes are encoded and the modifier is usually a
+variant, and neither keys anything here, so `fromName` drops both. The one
+exception is a modifier naming a *script* — `sr_RS@latin` is Serbian written in
+Latin rather than Cyrillic, a different locale that formats differently — which
+becomes the script subtag it means.
 
-`de_DE.UTF-8@euro` and `de-DE` are the same locale. The codeset says how bytes
-are encoded and the modifier is usually a variant, and neither keys anything
-here, so both are dropped. `fromName` handles that, along with the one
-exception worth making: a few modifiers name a *script*, and `sr_RS@latin` is
-Serbian written in Latin rather than Cyrillic — a different locale that formats
-differently — so those become the script subtag they mean.
+Dropping the codeset has one consequence worth stating: **this library emits
+UTF-8 and nothing else.** A user with `LANG=de_DE.ISO-8859-1` gets correct
+German in UTF-8, and converting it is the caller's business.
 
-The codeset being dropped has one consequence worth saying out loud: **this
-library emits UTF-8 and nothing else.** A user with `LANG=de_DE.ISO-8859-1`
-gets correct German in UTF-8, and converting it is the caller's business.
+**`LC_ALL=C` means do not translate.** `C` and `POSIX` are one locale under two
+names, and both mean the user wants the program's own language rather than a
+translation of it. `fromEnviron` returns an empty chain for them and
+`Categories` returns nulls, so nothing downstream needs a special case. This is
+worth honouring exactly: `LC_ALL=C` in a shell script is how somebody guarantees
+that a decimal point stays a point and a month stays `Jan`, so that `awk` or
+`cut` further down the pipe keeps working. For the same reason `LANGUAGE` is
+ignored when `LC_ALL` or `LANG` says `C`, which is gettext's rule.
 
-### `LC_ALL=C` means do not translate
-
-`C` and `POSIX` are one locale under two names, and both mean the user wants
-the program's own language rather than a translation of it. `fromEnviron`
-returns an **empty chain** for them and `Categories` returns nulls, so nothing
-downstream needs a special case: a negotiation that falls back to your source
-locale when it can satisfy nothing already does the right thing, and the three
-`if (category.x) |locale|` lines above already leave the formatting alone.
-
-This is worth honouring carefully rather than approximately. `LC_ALL=C` in a
-shell script is how somebody guarantees that the output of a command will not
-move under them — that a decimal point stays a point and a month stays
-`Jan` — so that `awk` or `cut` further down the pipe keeps working. A program
-that translates anyway has broken their pipeline.
-
-For the same reason `LANGUAGE` is ignored when `LC_ALL` or `LANG` says `C`,
-which is gettext's rule: a ranked list left over in a shell profile must not
-quietly undo it.
-
-### Plural rules follow the message language
-
-They follow `LC_MESSAGES`, never `LC_NUMERIC`, and the distinction matters.
-`[one]` and `[few]` are variant keys the *translator* wrote, in the language
-the text is written in. Choosing among them by the reader's number-formatting
-preference would look for variants that translation does not have, and fall to
-the default every time.
-
-So English plurals with Finnish punctuation is exactly what that combination
-should give, and does:
+**Plural rules follow the message language**, never `LC_NUMERIC`. `[one]` and
+`[few]` are variant keys the *translator* wrote, in the language the text is
+written in; choosing among them by the reader's number-formatting preference
+would look for variants that translation does not have. So English plurals with
+Finnish punctuation is exactly what that combination gives:
 
 ```console
 $ LANG=en_US.UTF-8 LC_NUMERIC=fi_FI.UTF-8 zig build example
@@ -419,151 +394,52 @@ showing:   en-US  (numbers: fi-FI)
   12 345,7 GB of 50 000 GB used
 ```
 
-All three categories at once, which is the setting the whole feature exists
-for:
+`LC_MONETARY` is read but not fully served: CLDR keeps one set of separators per
+locale rather than a separate monetary set, so `setCurrencyLocale` moves the
+currency sign but not the decimal mark. POSIX distinguishes them
+(`mon_decimal_point`), and a pair of locales that disagrees about it will not be
+exact.
 
-```console
-$ LANG=en_US.UTF-8 LC_TIME=en_GB.UTF-8 LC_NUMERIC=de_DE.UTF-8 zig build example
-showing:   en-US  (numbers: de-DE)  (dates: en-GB)
+### On Windows
 
-  One new photo
-  Ada shared 3 photos with you on 14 February 2026.
-  12.345,7 GB of 50.000 GB used
-```
-
-### Writing to a terminal
-
-Turn isolation off:
-
-```zig
-bundle.use_isolating = false;
-```
-
-It is on by default and should be. It wraps every interpolation in U+2068 and
-U+2069 so that a right-to-left name dropped into a left-to-right sentence does
-not drag the punctuation around it to the wrong end of the line. A browser
-honours those marks; a terminal prints them, and `Ada` comes out as `⁨Ada⁩`.
-
-Leave it on wherever the text is going into a paragraph a person reads, and
-turn it off for a terminal, for a value about to be compared or stored, and for
-a test asserting on exact text.
-
-### What is not read, and why
-
-`LC_COLLATE` and `LC_CTYPE` govern sort order and character classification.
-This library does neither, so there is nothing here for them to change; an
-application that sorts a list of translated strings should read `LC_COLLATE`
-itself.
-
-`LC_MONETARY` is read but not fully served. CLDR keeps one set of separators
-per locale rather than a separate monetary set, so `setCurrencyLocale` moves
-the currency sign but not the decimal mark. POSIX distinguishes them
-(`mon_decimal_point`), and a pair of locales that disagrees about it will not
-be exact.
-
-## On Windows
-
-Windows has none of those variables and answers two questions of its own —
-which happen to make the same split:
+Windows has none of those variables and answers the same two questions its own
+way. `fluent.windows` reads both, through
+[zigwin32](https://github.com/marlersoft/zigwin32) — generated from Microsoft's
+own metadata — wired in as a lazy dependency only when the target is Windows.
 
 | | POSIX | Windows |
 |---|---|---|
 | which language to speak | `LANGUAGE`, `LC_MESSAGES` | `GetUserPreferredUILanguages` — a ranked list |
 | how to write numbers, dates, money | `LC_NUMERIC`, `LC_TIME`, `LC_MONETARY` | `GetUserDefaultLocaleName` — one "regional format" for all three |
 
-Somebody in Germany reading an English interface is an ordinary Windows
-setting, and it is the same shape as `LANG=en_US.UTF-8 LC_NUMERIC=de_DE.UTF-8`.
-`fluent.windows` reads both, and answers in the same `Categories` that
-`fluent.posix` does. `examples/win32` is that with a window in front of it, and
-is what makes it a claim about a real program rather than about a function: a
-Win32 application started from Explorer has no environment to fall back on, so
-the language in its menu can only have come from `GetUserPreferredUILanguages`.
-
-### Write it once
-
-`fluent.system` asks whichever system is running, so a program that works on
-both need not branch:
-
-```zig
-var buffer: [8]fluent.Locale = undefined;
-const wanted = fluent.system.preferredLocales(&buffer, init.environ_map);
-const bundle = negotiate(&bundles, wanted);
-
-fluent.system.applyCategories(bundle, fluent.system.categories(init.environ_map));
-```
-
-**The environment is asked first, on Windows too.** Not because Windows uses
-it — it does not — but because somebody running under MSYS2, Cygwin or Git Bash
-has a shell that sets `LANG`, and somebody who exported `LC_ALL` did it on
-purpose. It is what GNU gettext does there, and it means `LC_ALL=C` silences
-translation on Windows as well, which is the setting it would be worst to
-ignore.
-
-### Testing it
-
-The Win32 calls come from [zigwin32](https://github.com/marlersoft/zigwin32),
-which is generated from Microsoft's own metadata, as a lazy dependency wired in
-only when the target is Windows. Two hand-written `extern` declarations would
-have been less machinery and worse: nothing checks them, and a wrong parameter
-width is memory corruption. `GetUserDefaultLocaleName` takes a `[*:0]u16`, not
-the `[*]u16` that is easy to write.
-
-Everything that parses is separated from everything that calls, so the parsing
-is tested anywhere on the byte sequences Windows would have produced — the
-NUL-separated, double-NUL-terminated UTF-16 multi-string, the invariant locale,
-a name that is not ASCII. Cross-compiling the test suite for
-`x86_64-windows-gnu` type-checks the calling half against the real signatures.
-
-Neither of those runs the code, and the difference showed the first time it
-did. The [GitHub mirror](https://github.com/jcollie/zig-fluent) exists so that
-the suite can run on `windows-latest` and `macos-latest` as well as on Linux,
-and the first Windows run failed one assertion out of 199: `LC_ALL=C` reached
-`GetUserPreferredUILanguages` and came back with the runner's UI language.
-Asking not to be translated is the one setting it would be worst to ignore, the
-doc comment beside it said so, and no amount of type-checking was ever going to
-notice — on POSIX an environment that says `LC_ALL=C` and an environment that
-says nothing lead to the same place, and only on Windows do they part company.
-`posix.saysUnlocalized` is what tells them apart now.
+The answers land in the same `Categories` that `fluent.posix` produces, so
+nothing above has to know which platform replied.
 
 Windows' pseudo-locales pass through as ordinary tags — `qps` is in BCP 47's
 private-use range — match no bundle, and so leave the source locale showing,
 which is what somebody who set one should see from a program that ships no
 pseudo-locale.
 
-## On macOS
+### On macOS
 
-macOS is two systems at once, and which one you are in decides everything.
+macOS is two systems at once. **In a terminal it is POSIX**: Terminal.app's *Set
+locale environment variables on startup* is on by default and sets `LANG` from
+the region preference, and iTerm2 does the same, so `fluent.system` works there
+with nothing added.
 
-**In a terminal it is POSIX**, and already served. Terminal.app's *Set locale
-environment variables on startup* is on by default and sets `LANG` from the
-region preference, so `fluent.system` works there with nothing added. iTerm2
-does the same. A command-line program needs to read no further than this.
+**A GUI app gets nothing.** `launchd` passes no `LANG`, so a bundled `.app` sees
+an empty environment however the user has their region set, and must ask the
+preferences system instead. `fluent.darwin` is that, reached by `fluent.system`
+in the same place it reaches Windows. `zig build` links CoreFoundation for a
+Darwin target and nothing anywhere else.
 
-**A GUI app gets nothing.** `launchd` passes no `LANG`, so a bundled `.app`
-sees an empty environment however the user has their region set, and must ask
-the preferences system instead. `fluent.darwin` is that, and `fluent.system`
-reaches it in the same place it reaches Windows: the environment first, then
-the platform. A program that reads its language through `fluent.system` needs
-to know none of this.
-
-`examples/swift` is that case exactly, which is why it is built as a bundle
-rather than left as a terminal binary: `make -C examples/swift open` produces
-`Greeting.app` and launches it from the Finder, where there is no `LANG` and
-the language on screen can only have come from `AppleLanguages`.
-
-### What to ask for
-
-The answers live in `NSGlobalDomain`, and macOS makes the same two-way split
-Windows does — a ranked list of languages, and one locale for formatting — so
-they land in the same `Categories`:
-
-| key | value | analogue |
+| key in `NSGlobalDomain` | value | analogue |
 |---|---|---|
 | `AppleLanguages` | `("en-US", "de-DE")`, in preference order | `LANGUAGE`, `GetUserPreferredUILanguages` |
-| `AppleLocale` | `en_US`, or `en_GB@currency=EUR` | `LC_NUMERIC`+`LC_TIME`+`LC_MONETARY`, the Windows regional format |
+| `AppleLocale` | `en_US`, or `en_GB@currency=EUR` | `LC_NUMERIC`+`LC_TIME`+`LC_MONETARY` |
 
-Both shapes go straight into functions that are already here, which is the
-useful part: having read the two keys, there is nothing left to write.
+Both shapes go straight into functions that already exist, which is the useful
+part: having read the two keys, there is nothing left to write.
 
 ```zig
 // AppleLanguages entries are BCP 47 already.
@@ -574,15 +450,10 @@ const first = try fluent.Locale.parse("zh-Hans-CN");        // zh-Hans-CN
 const format = fluent.posix.fromName("en_GB@currency=EUR"); // en-GB
 ```
 
-Reading them is two CoreFoundation calls, which `fluent.darwin` makes:
-`preferredUiLanguages` for the ranked list and `userDefaultLocale` for the
-format locale, mirroring `fluent.windows` name for name. `zig build` links
-CoreFoundation for a Darwin target and nothing anywhere else.
+#### Format overrides
 
-### Format overrides
-
-macOS lets a user override formats *independently of the locale*, under
-Language & Region → Advanced, and those land in `NSGlobalDomain` as well:
+macOS lets a user override formats *independently of the locale*, under Language
+& Region → Advanced, and those land in `NSGlobalDomain` as well:
 
 | key | what it overrides |
 |---|---|
@@ -591,14 +462,10 @@ Language & Region → Advanced, and those land in `NSGlobalDomain` as well:
 | `AppleICUForce24HourTime`, `AppleICUForce12HourTime` | the clock, whatever the locale prefers |
 | `AppleFirstWeekday`, `AppleMeasurementUnits` | week start, metric or not |
 
-`fluent.darwin.overrides` reads all of them, into a struct whose fields are
-null unless the user has actually overridden that thing. It does **not** apply
-them: a `Bundle` belongs to the application, so the application assigns them,
-and each has somewhere to go — `Bundle.date_names.date_formats` holds the same
-four patterns, `Bundle.number_symbols` the same symbols,
-`datetime_format.Options.hour12` is the same switch, and
-`Bundle.date_names.first_day` is the same week start, which the `Y` field — the
-year a *week* belongs to — is counted against.
+`fluent.darwin.overrides` reads all of them into a struct whose fields are null
+unless the user has actually overridden that thing. It does **not** apply them:
+a `Bundle` belongs to the application, so the application assigns them, and each
+has somewhere to go.
 
 ```zig
 var storage: fluent.darwin.OverrideStorage = .{};
@@ -608,8 +475,8 @@ if (over.decimal) |mark| bundle.number_symbols.decimal = mark;
 if (over.first_weekday) |day| bundle.date_names.first_day = day;
 ```
 
-The slices point into `storage`, which is the caller's and has to outlive
-them; nothing here allocates.
+The slices point into `storage`, which is the caller's and has to outlive them;
+nothing here allocates.
 
 **Mind the order of the date patterns.** macOS keys them `"1"` to `"4"` running
 *short to long* — `"1"` is `ddMMMyy` and `"4"` is `EEEE, d MMMM y`. This library
@@ -621,86 +488,43 @@ and `date_formats[3]` is `short`. They are reversed as well as offset:
 bundle.date_names.date_formats[4 - index] = pattern;
 ```
 
-And note that symbols `10` and `17` are the monetary separators — the
-distinction described above as one CLDR does not keep and this library
-therefore cannot serve. A caller reading those from macOS has better
-information than the tables do.
+Symbols `10` and `17` are the monetary separators — the distinction CLDR does
+not keep and this library therefore cannot serve. A caller reading those from
+macOS has better information than the tables do.
 
-### How far to trust `fluent.darwin`
+### Writing to a terminal
 
-This section used to say there was no such module, and gave the reason: it
-could not be verified from here. `CFPreferencesCopyAppValue` needs
-`-framework CoreFoundation`, which needs the macOS SDK, and a development
-machine running Linux has neither — the linker gets as far as `unable to find
-framework 'CoreFoundation'`. A macOS runner is what changed, and it is worth
-being exact about what it does and does not buy.
+```zig
+bundle.use_isolating = false;
+```
 
-**The declarations are written by hand, and that is a real difference from the
-Windows path.** `src/windows.zig` takes its bindings from
-[zigwin32](https://github.com/marlersoft/zigwin32), generated from Microsoft's
-own metadata, which caught a wrong parameter width the first time it was
-compiled. There is no equivalent for CoreFoundation, so the care has to come
-from somewhere else, and here it is narrowness: six functions and three types,
-every one an opaque `CFTypeRef`-shaped pointer, nothing passed by value,
-no callbacks, and every `CF*Copy*` released at the call site that made it.
-Every value read is type-checked with `CFGetTypeID` before it is used, because
-a preference can hold anything a `defaults write` put there and a wrong guess
-would be a crash rather than a wrong answer.
+Isolation is on by default and should be. It wraps every interpolation in U+2068
+and U+2069 so that a right-to-left name dropped into a left-to-right sentence
+does not drag the punctuation around it to the wrong end of the line. A browser
+or a GUI toolkit honours those marks; a terminal prints them, and `Ada` comes
+out as `⁨Ada⁩`.
 
-**CI sets the preferences and asserts on the result**, which is the part that
-makes this more than code that compiles. The macOS job writes
-`AppleLanguages` and `AppleLocale`, takes every `LC_*` and `LANG` out of the
-environment so the POSIX path cannot answer, and requires the Finnish welcome
-and a Finnish decimal comma back; then it puts `LC_ALL=en_US.UTF-8` back and
-requires English, because the environment still wins where it is set. A wrong
-answer fails the run rather than looking plausible in a log.
+Leave it on wherever the text is going into a paragraph a person reads, and turn
+it off for a terminal, for a value about to be compared or stored, and for a
+test asserting on exact text.
 
-**What is not verified anywhere:** the format overrides. `overrides` reads six
-more preferences, and CI exercises the two locale keys only — setting
-`AppleICUDateFormatStrings` from a shell script to prove a round trip is a
-larger fixture than it is worth, and until someone does it those six are
-typechecked and reviewed rather than run.
-
-## Pure Zig
+## What it implements
 
 Every other mature implementation delegates the locale-sensitive part to ICU:
 `fluent.js` calls `Intl`, `fluent-rs` leaves number formatting to the host. This
-one carries its own tables, generated from CLDR into `src/cldr/` by
-`zig build gen-cldr` and committed. There is nothing to install and nothing to
-link.
-
-The one dependency is [zig-datetime](https://git.jcollie.dev/jeff/zig-datetime),
-which supplies the proleptic Gregorian calendar, the IANA timezone database, and
-the writing of CLDR date patterns.
-
-That last one used to live here and does not any more. Both libraries had an
-implementation of UTS #35's pattern vocabulary — the field letters, the widths,
-the quoting — and only one of them was diffed against ICU field by field, by
-zig-datetime's `tools/oracle_cldr.cpp`. Three bugs found in the copy here, two
-of which zig-datetime already had right, made the argument: `cldr.formatSkeleton`
-does the writing now, and what is left in `datetime_format.zig` is the part that
-is Fluent's rather than a calendar's — turning `DATETIME()`'s ECMA-402 options
-into a CLDR skeleton.
-
-**The tables did not move with it.** zig-datetime holds its name tables
-width-major, one `[3][12]` of months where `Names` holds three `[12]`s, and
-regenerating `src/cldr/` into that shape was measured at +876 KB across all 766
-locales. Instead the transposition happens on the stack of whatever call is
-formatting, so `Names` keeps the shape documented above for a consumer to
-override, and none of that is paid. The result is 4 KB *smaller* than the
-implementation it replaced, because the deleted code outweighed it.
+one carries its own tables, generated from CLDR 48.2 into `src/cldr/` and
+committed, so there is nothing to install and nothing to link.
 
 Each table is a separate declaration in a separate file, so you pay for what you
-reference and nothing else: a program that only parses `.ftl` links none of it.
-Measured, `-OReleaseSmall`, on x86-64 Linux — a program that parses a resource
-and reads the tree is **164 KB**; one that also formats a number and a date for
-a locale is **2.7 MB**, which is the CLDR data for all 766 of them.
+reference and nothing else. Measured at `-OReleaseSmall` on x86-64 Linux: a
+program that parses a resource and reads the tree is **164 KB**; one that also
+formats a number and a date is **2.7 MB**, which is the CLDR data for all 766
+locales.
 
 **Plural rules** are CLDR's, cardinal and ordinal, for the 224 and 108 locales
-CLDR covers. They are compiled from CLDR's own rule language into tables at
+CLDR covers. They are compiled from CLDR's rule language into tables at
 generation time, so nothing parses anything at run time, and they are verified
-against the 15,041 sample values CLDR publishes — every one of which CLDR itself
-labels with the category it belongs to.
+against the 15,041 sample values CLDR publishes.
 
 **Numbers** follow ECMA-402: digit and grouping options, significant figures,
 per-locale symbols, patterns and numbering systems. German swaps the separators,
@@ -710,21 +534,20 @@ at all, Egyptian Arabic writes its own digits.
 **Dates** follow ECMA-402 too — `dateStyle` and `timeStyle`, or individual
 fields matched against CLDR's skeletons, so that `month: "long", day: "numeric"`
 comes out as "September 9" in English and "9. September" in German without the
-application knowing which is which.
+application knowing which is which. The calendar, the IANA timezone database and
+the writing of CLDR patterns come from `zig-datetime`; what is here is the part
+that is Fluent's rather than a calendar's, turning `DATETIME()`'s ECMA-402
+options into a CLDR skeleton.
 
 **Flexible day periods** are CLDR's, for the 422 locales it gives rules for.
 Where the meridiem knows only morning and afternoon, these divide the day as the
 language does: Traditional Chinese writes 凌晨 before dawn, 中午 around noon and
-晚上 in the evening, and its own short time pattern asks for them. ECMA-402 uses
-them for a `timeStyle` and substitutes the meridiem on the field path unless
-`dayPeriod` was asked for, which is what `Intl` does, and the 344 locales with no
-rules carry no table.
+晚上 in the evening, and its own short time pattern asks for them.
 
 ### How closely it agrees with ICU
 
 ICU is the reference implementation of the specifications this follows, so
-agreeing with it is the strongest claim available and the way to find out where
-this is wrong.
+agreeing with it is the strongest claim available.
 
 **Dates.** A matrix of 30 locales against 17 option sets and 4 instants — 2312
 in all, including two either side of an ISO week-year boundary and one before
@@ -733,20 +556,8 @@ are identical byte for byte, another 80 differ only by the narrow no-break space
 below, and the remaining 104 are all the one divergence after it. **No case
 differs on formatting.**
 
-**Numbers.** Not re-run: the earlier comparison found all 400 number cases
-identical, and nothing since has touched that path.
-
-The date matrix is worth running rather than trusting: an earlier and smaller
-one reported no divergences beyond these, and widening it turned up three real
-bugs — the week-numbering year written as nothing, an abbreviated weekday
-spelled in a way no CLDR key matches, and the era ignoring the width it was
-asked for. All three are fixed, and each is pinned by a test in zig-datetime so
-that the shared implementation cannot lose them again. It also found the
-flexible day period, which used to be listed here as a divergence and is now
-closed. The other one closed since — the wrapper a locale puts around a zone
-offset — the matrix did *not* find, because none of its option sets asks for a
-zone; that one came out of reading the CLDR data beside the code, which is the
-other way to find these and the reason the list below says what is untested.
+**Numbers.** All 400 number cases identical, and all 280 percent cases across
+forty locales.
 
 - **The narrow no-break space** — 80 cases. CLDR 48 writes English's time as
   `h:mm:ss` U+202F `a`, and Russian's year as `y` U+202F `г.`. V8 substitutes an
@@ -755,24 +566,21 @@ other way to find these and the reason the list below says what is untested.
   here.
 - **Non-Gregorian calendars** — 104 cases, and the whole remainder. Thai
   defaults to the Buddhist calendar and Persian to its own, so `Intl` writes
-  2568 where this writes 2025. Only the Gregorian calendar is implemented. That
-  this is the calendar and not the formatting is checkable: forced to
-  `-u-ca-gregory`, those two locales agree on 132 of 136 cases, Persian digits
-  and all. The four left over are Thai's `HH:mm น.`, where V8 ships CLDR 48.0
-  and this pins 48.2.
+  2568 where this writes 2025. Only the Gregorian calendar is implemented.
+  Forced to `-u-ca-gregory`, those two locales agree on 132 of 136 cases,
+  Persian digits and all; the four left over are Thai's `HH:mm น.`, where V8
+  ships CLDR 48.0 and this pins 48.2.
 
 ### What is deliberately not implemented
 
-- **Measurement units.** `cldr-units-full` is a further ~100 MB, and `NUMBER()`'s
-  option list cannot select a unit style from FTL anyway.
+- **Measurement units.** `cldr-units-full` is a further ~100 MB, and
+  `NUMBER()`'s option list cannot select a unit style from FTL anyway.
 - **Time zone display names.** `timeZoneNames.json` is 45 KB per locale, nearly
   all of it names. A zone is written as its offset, or as the designation the
   IANA database gives it — never wrong, only less friendly than "Central
-  European Summer Time". The *wrapper* around that offset is localized, since
-  it is four strings rather than a table: French writes `UTC−05:00` with a real
-  minus sign and Persian `(‎−۰۵:۰۰ گرینویچ)`, both of which agree with `Intl`
-  asked for a `longOffset`. That is checked by hand rather than by the matrix
-  above, which asks for no zone.
+  European Summer Time". The *wrapper* around that offset is localized, since it
+  is four strings rather than a table: French writes `UTC−05:00` with a real
+  minus sign and Persian `(‎−۰۵:۰۰ گرینویچ)`.
 - **Compact notation** ("1.2M"). The plural rules read it, because CLDR's own
   sample data is written in it, but nothing here produces it.
 - **Currency spacing.** CLDR says to insert a non-breaking space between the
@@ -781,7 +589,7 @@ other way to find these and the reason the list below says what is untested.
   — `€1,234.50` is right either way — and since currency display names are not
   shipped, an alphabetic currency text is one the application passed in itself.
 
-## Building
+## Building and testing
 
 Everything happens inside the devshell:
 
@@ -790,69 +598,102 @@ $ nix develop
 $ zig build example                # the worked example, in your own language
 $ zig build test --summary all     # unit, conformance, round-trip, fuzz seeds
 $ zig build c                      # just the C library, header and .pc file
+$ zig build check                  # compile everything without running it
 $ zig fmt --check --exclude zig-pkg .
 $ zig build docs-serve             # read the API documentation at :8000
 $ zig build fuzz-run -- --seconds 60
 ```
 
-`zig build test` also runs this against three corpora nobody here wrote: 101
-`.ftl` files each paired with the syntax tree it must parse to, and 180
-assertions about what a bundle does with a message once it is parsed. None of
-them is vendored — they arrive as `build.zig.zon` dependencies, so the exact
-revision compared against is a hash in the manifest rather than a copy in this
-repository that could drift. See below for what a manifest entry costs.
+`zig build test` also compiles `tests/c_api.c` with a C compiler against the
+installed header and links it against the static library, which is what catches
+the header and the implementation drifting apart. The tests inside `src/c.zig`
+run with `std.testing.allocator` in place of libc's, which is what lets them
+check the ownership rules rather than merely that nothing crashed.
 
-**Fluent's own conformance fixtures**, from `projectfluent/fluent`: 39 files,
-the suite every implementation is expected to agree on. They are generated with
-the annotations stripped, so they say which entries are junk but not why.
+The examples are built by CI rather than by `zig build test`, and no two of them
+can run on the same machine: the Linux runners build the plain C and GTK ones,
+and the macOS and Windows runners build the Swift and Win32 ones.
+
+### Conformance corpora
+
+`zig build test` runs this library against three corpora it did not write, kept
+by Fluent itself and by two other implementations. None is vendored — they arrive as `build.zig.zon` dependencies, so the exact revision
+compared against is a hash in the manifest rather than a copy that could drift.
+
+**Fluent's own conformance fixtures**, from `projectfluent/fluent`: 39 files, the
+suite every implementation is expected to agree on. They are generated with the
+annotations stripped, so they say which entries are junk but not why.
 
 **`fluent.js`'s structure fixtures**: 62 more, most of them broken on purpose,
 whose trees do record why — the error code each junk entry is blamed on, the
 message, and the point the parser gave up at. That corpus is what checks the
 `E00NN` codes in `src/syntax/errors.zig` against the only other place they are
-written down, and what checks how far a broken entry reaches: junk runs to the
-start of the next entry, and a parser that recovers a line early or a line late
-still parses every valid file correctly while losing a message out of a real
-one. 89 annotations over 21 of the codes are compared, wording and offset
-included.
+written down, and what checks how far a broken entry reaches. 89 annotations over
+21 of the codes are compared, wording and offset included.
 
 Four of those 62 are expected not to match, all for one reason: a broken
-attribute takes the whole entry down in `fluent.js` and does not here.
-That is [fluent.js#237][], and it is why `fluent.js` skips `leading_dots.ftl`
-when it runs itself against the reference corpus — the reference parser keeps
-the message, and so does this one. `tests/conformance_structure.zig` lists the
-four, says what this parser builds instead, and fails if one of them ever starts
-matching, since that would mean the list has gone stale rather than that nothing
-is wrong.
+attribute takes the whole entry down in `fluent.js` and does not here. That is
+[fluent.js#237][], and it is why `fluent.js` skips `leading_dots.ftl` when it
+runs itself against the reference corpus — the reference parser keeps the
+message, and so does this one. `tests/conformance_structure.zig` lists the four
+and fails if one of them ever starts matching.
 
 [fluent.js#237]: https://github.com/projectfluent/fluent.js/issues/237
 
 **`fluent-rs`'s resolver fixtures**: 58 suites, 164 tests and 180 assertions
-about the other half of the library. The two syntax corpora say what tree a
-file builds and which error a broken entry is blamed on; neither says which
-variant a selector picks, what a missing argument falls back to, where the
-isolation marks go, or whether a cyclic reference is caught. This one does, and
-it is the only runtime conformance corpus Fluent has anywhere. It has no
-official standing — `fluent-rs` keeps it and `fluent-rs` alone runs it — but
-its files map one-to-one onto `fluent.js`'s own tests (`macros.yaml` against
-`macros_test.js`, and so on), so what it holds is the reference
-implementation's behaviour written down in a language-neutral form.
+about the other half of the library. The two syntax corpora say what tree a file
+builds and which error a broken entry is blamed on; neither says which variant a
+selector picks, what a missing argument falls back to, where the isolation marks
+go, or whether a cyclic reference is caught. This one does, and it is the only
+runtime conformance corpus Fluent has anywhere. Its files map one-to-one onto
+`fluent.js`'s own tests (`macros.yaml` against `macros_test.js`, and so on), so
+what it holds is the reference implementation's behaviour in a language-neutral
+form.
+
+Eight of the 180 are expected not to match, and `tests/conformance_bundle.zig`
+lists all eight with the text this library produces instead. Seven were checked
+against `fluent.js`'s test for the same case, which asserts what this library
+does. The eighth, a function called with arguments it cannot use, is a case
+`fluent.js` skips rather than settles.
 
 The fixtures are YAML, which Zig's standard library does not read.
-`tests/yaml.zig` reads the subset they use and refuses everything else —
-no flow style, no anchor, no folded scalar, no tab — since a reader that
-quietly mis-parses a fixture reports a passing test that checked nothing. It
-was checked against `yq` on all 17 files and agrees with it exactly.
+`tests/yaml.zig` reads the subset they use and refuses everything else — no flow
+style, no anchor, no folded scalar, no tab — since a reader that quietly
+mis-parses a fixture reports a passing test that checked nothing.
 
-Eight of the 180 are expected not to match, and seven of those eight were
-checked against `fluent.js`'s test for the same case, which asserts what this
-library does: `{???}` for a cyclic reference and for the reference bomb,
-`{key6}` for a reference to an attribute of a message that is not there, and
-isolation marks around string literals and term references — which `fluent-rs`
-skips, and says so in the name of the suite that asserts it. The eighth, a
-function called with arguments it cannot use, is a case `fluent.js` skips
-rather than settles. `tests/conformance_bundle.zig` lists all eight with the
-text this library produces instead.
+### Fuzzing
+
+Zig 0.16.0 cannot build a test executable in fuzz mode without a patched
+standard library, and leaves the fuzzer's coverage table empty even then;
+`flake.nix` explains both and carries the patch. `zig build fuzz-run` is a loop
+of this project's own in the meantime, mutating a corpus of real inputs through
+`std.testing.Smith`.
+
+```console
+$ zig build fuzz-run -- --seconds 60                  # every target in turn
+$ zig build fuzz-run -- --target json --seconds 60    # one of them
+$ zig build fuzz-run -- --input fuzz-findings/x.bin --target parse
+```
+
+There are ten targets:
+
+| | |
+|---|---|
+| `parse` | the parser, over whole resources |
+| `roundtrip` | the serializer, as both an archival round trip and a formatter |
+| `resolve` | a bundle formatting messages, over eight locales, with isolation and a transform switched on and off, errors collected, and the isolation marks checked for balance |
+| `numbers`, `dates` | `NUMBER()` and `DATETIME()`, options and all |
+| `operands` | the plural operands derived from arbitrary text |
+| `patterns` | CLDR patterns supplied by a consumer rather than by CLDR |
+| `locales` | the POSIX variables, given values that disagree with each other |
+| `json` | the interchange AST, plain and annotated |
+| `affixes` | the prefix and suffix a number pattern wraps around its digits |
+
+Having no coverage feedback, what a clean sweep says is that the shapes the loop
+reaches are handled — and the shapes it reaches are the corpus in
+`tests/fuzz.zig` and what mutation does to it. A failing input is saved under
+`fuzz-findings/`; `--input` replays one, and the way to act on it is to add it
+to that corpus as a test.
 
 ### Regenerating the CLDR tables
 
@@ -860,9 +701,10 @@ text this library produces instead.
 $ zig build gen-cldr -Dcldr
 ```
 
-`-Dcldr` fetches the three CLDR packages the generator reads. Without it they
-are not fetched at all, and the three directories can be named by hand instead
-— which is how to regenerate against a CLDR release this manifest does not pin:
+`-Dcldr` fetches the three CLDR packages the generator reads, and keeps 138 MB
+off everybody else's clean build when it is not asked for. Without it they are
+not fetched at all, and the three directories can be named by hand instead —
+which is how to regenerate against a CLDR release this manifest does not pin:
 
 ```console
 $ for p in core numbers-full dates-full; do
@@ -872,186 +714,37 @@ $ for p in core numbers-full dates-full; do
 $ zig build gen-cldr -- cldr-core cldr-numbers-full cldr-dates-full
 ```
 
-That option is not a convenience. It is the guard that keeps 138 MB off
-everybody else's clean build, and where it sits is the whole of it.
+Either invocation produces byte-identical output. What the generator writes goes
+under `src/cldr/` and is committed, so updating to a new CLDR is a deliberate
+act with a reviewable diff.
 
-**`.lazy = true` is not what makes a dependency optional.** What makes it
-optional is whether `b.lazyDependency` is *called*: the call marks the package
-as needed, and `build()` runs in full during the configure phase of every `zig
-build`, whatever step was named on the command line. A call sitting at the top
-level of `build()` therefore fetches on every build, even when the only step
-that consumes its result is one nobody asked for — which is what these three
-calls used to do, and why every consumer of this library was fetching CLDR in
-order to regenerate files that change when the Unicode Consortium makes a
-release. Behind an option that defaults to false, the call does not execute and
-nothing is fetched.
+Note that `.lazy = true` is not what makes a dependency optional. What makes it
+optional is whether `b.lazyDependency` is *called*, since `build()` runs in full
+during the configure phase of every `zig build`, whatever step was named on the
+command line. That is why those three calls sit behind an option defaulting to
+false.
 
-An earlier version of this file said something stronger and wrong: that a `-D`
-guard did not help, and that the only remedy was to take the packages out of
-the manifest entirely. The measurement behind that claim was of calls that were
-never guarded in the first place. A scratch project with two lazy dependencies,
-one called unconditionally and one behind an option defaulting to false,
-fetches exactly the first.
-
-What the generator writes goes under `src/cldr/` and is committed, so updating
-to a new CLDR is a deliberate act with a reviewable diff: fetch the new
-packages, run the generator, look at what moved. Either invocation produces
-byte-identical output.
-
-### What a clean build actually downloads
+### What a clean build downloads
 
 For a Linux target, four packages, 907 KB compressed and 8.4 MB unpacked:
 
 | | | |
 |---|---|---|
 | `zig-datetime` | 1.1 MB | the calendar, the timezone database, and CLDR pattern writing |
-| `fluent-spec` | 876 KB | the reference conformance fixtures, used by `zig build test` |
-| `fluent.js` | 2.9 MB | the structure fixtures, likewise — 193 KB of corpus inside a monorepo |
-| `fluent-rs` | 3.6 MB | the resolver fixtures, likewise — 52 KB of corpus inside another |
+| `fluent-spec` | 876 KB | the reference conformance fixtures |
+| `fluent.js` | 2.9 MB | the structure fixtures — 193 KB of corpus inside a monorepo |
+| `fluent-rs` | 3.6 MB | the resolver fixtures — 52 KB of corpus inside another |
 
-Building for Windows adds `zigwin32` at 64 MB, for the two Win32 calls in
-`src/windows.zig`. That one is conditional on the target — `if
-(target.result.os.tag == .windows)` around the `lazyDependency` call — so a
+Building for Windows adds `zigwin32` at 64 MB, conditional on the target, so a
 build for anything else neither fetches nor compiles it.
 
 All three corpora are fetched by a plain `zig build`, deliberately: the
-conformance suites are what `zig build test` exists to run, which step was
-asked for cannot be known at configure time, and no one of them is worth an
-option that would let a suite be skipped by accident. `fluent.js` and
-`fluent-rs` are poor bargains by weight — two whole monorepos for two
-directories of fixtures, 6.5 MB for 245 KB — but neither corpus has another
-home, and copying them in here is the one thing that would let what this
-library is measured against drift.
-
-It was 13 MB and about 145 MB unpacked until very recently, and the difference
-is worth recording because none of it was this project's own manifest. The
-three CLDR packages and moment arrived through `zig-datetime`, whose `build.zig`
-called `b.lazyDependency` for them at the top level of `build()` to wire up
-oracle steps that check its tables against their sources — the same mistake in
-the same shape, one dependency down. It is fixed there now with
-`if (b.pkg_hash.len != 0) return` in front of the oracle section: `pkg_hash` is
-empty for the package a build was invoked on and set for anything reached as a
-dependency, so the steps exist for whoever is developing that library and for
-nobody else. That is the general shape of the fix, and it needs no option.
-
-### Fuzzing
-
-Zig 0.16.0 cannot build a test executable in fuzz mode without a patched
-standard library, and leaves the fuzzer's coverage table empty even then;
-`flake.nix` explains both and carries the patch. `zig build fuzz-run` is a loop
-of our own in the meantime, mutating a corpus of real inputs.
-
-It earned its keep immediately and kept earning it: **six crashes** and three
-ways the serializer could write a file that did not read back as itself. The
-instructive ones:
-
-- a float-to-integer conversion in the plural evaluator that panicked on
-  exactly 2⁶⁴ — the value the largest `i64` rounds *up* to when it goes through
-  an `f64`, so clamping against that largest `i64` did not save it;
-- **a panic reachable straight from a translation file**: `\UFFFFFF` is six
-  valid hex digits, so the parser accepts the literal, and the value it names
-  overflowed the 21-bit integer the resolver parsed it into;
-- `minimumSignificantDigits: 0`, which is not a legal request but is one a
-  translator can type, asking the renderer for a precision of minus one;
-- deriving plural operands from arbitrary text, where `carried * 10` overflows
-  on a long enough run of digits and `byte - '0'` wraps below zero for any byte
-  under `'0'`.
-
-The serializer's three were all blank lines around comments and junk. A `#`
-comment binds to whatever sits directly beneath it, so a blank line is not
-cosmetic there: put one in the wrong place and an entry adopts a comment that
-was never about it.
-
-A later pass added targets for date formatting, for CLDR patterns supplied by a
-consumer rather than by CLDR, for the interchange JSON and for pattern affixes,
-and those found four more: a pattern asking for more than nine fractional
-second digits divided by zero looking for a tenth; a date-and-time connector
-ending in `{` read past the end of itself; and the affix walker searched for the
-currency placeholder with a byte-wise `indexOfAny`, so it also matched the first
-byte of every character in U+0080..U+00BF — a non-breaking space among them,
-which German, French, Russian and Czech all put before their percent sign. That
-last one was not a crash at all. It was **wrong output in shipped code**, in
-every one of those languages, and the reason it survived a 1,560-case comparison
-against `Intl` is that `NUMBER()` cannot ask for a percentage from FTL, so the
-matrix never exercised the path. The comparison now covers percent and currency
-across forty locales too; all 280 percent cases agree.
-
-A fifth came from the fuzzer directly, and is the subtlest of the lot: the
-serializer tracks its output by the last two bytes written, and used a zero
-byte to mean "nothing written yet". No byte can mean that — a NUL inside a
-comment is a NUL inside a comment — so a comment containing one was read as the
-start of the file, the blank line after it was suppressed, and reparsing handed
-that comment to the message below. Nobody was going to write that input by
-hand.
-
-Two more crashes came out of reading the code afterwards, once the shape had
-become recognisable: `DATETIME()` given a large number clamped its timestamp
-against the ends of `i64` and handed the result to `@intFromFloat`, which is the
-same trap as the plural one in a different place; and a year before the common
-era was computed with arithmetic that both said the wrong thing and overflowed
-at the bottom of an `i32`.
-
-A third pass came after the conformance suites, and found the newest code in
-the tree. An annotation's message is *printed* rather than handed over as a
-finished slice, so it goes through an escaping writer, and that writer passed
-every byte to `std.json`'s character escaper — right for text, and an
-annotation quotes whatever followed the backslash of an escape the parser
-rejected. So a lone continuation byte reached the output raw, and what came
-out was a JSON string that no JSON parser would read back. It took about ten
-seconds of the `json` target once that target wrote the annotated shape as
-well as the plain one: twenty saved inputs in the first twelve seconds.
-
-Reading those inputs showed the same defect one step along, in code that had
-been there all along. `Stringify` writes a byte slice that is not valid UTF-8
-as an **array of numbers**, so a junk entry from a file that is not text came
-out as `"content":[109,32,61,…]`. That is valid JSON, which is why the old
-property — parse it, check it is a `Resource` — passed straight over it, and
-it is not the interchange format: `fluent-syntax` reads a file into a string
-before it parses anything, so by the time it builds a tree those bytes are
-already U+FFFD. Both are fixed the same way, and a bad byte now costs the
-character it was part of and nothing else.
-
-The rest of that pass was making four targets ask harder questions, and none
-of them has found anything yet:
-
-- **the formatter**, not just the archival round trip. Serializing with junk
-  dropped is what a tool that reads a file, changes a message and writes it
-  back does, and it has to parse back with no junk and be a fixed point from
-  there — the two properties `tests/conformance.zig` checks over the 101
-  fixtures, now checked over whatever the fuzzer makes up.
-- **isolation marks balance.** They are invisible, so an unclosed one is not
-  something anyone notices by reading the output; it is something a
-  bidirectional renderer notices, by laying out the rest of the paragraph the
-  wrong way round.
-- **a bundle has settings.** `resolve` built every bundle at the root locale
-  with isolation on and errors dropped. It now takes its locale from eight
-  with different plural rules and digits, switches isolation and a transform
-  on and off, formats attributes as well as values, collects the errors rather
-  than passing null, and sometimes adds the resource twice to make every name
-  in it a duplicate.
-- **the environment disagrees with itself.** `locales` gave the same string to
-  `LANGUAGE`, `LC_ALL`, `LC_MESSAGES` and `LANG`, so the precedence between
-  them — most of what that code does — was never exercised. It reads two
-  strings now and spreads them over seven variables.
-
-The settings are read a bit at a time out of a `u64` rather than asked for as
-a `u8`, and that is not a detail: `Smith.value` returns the asked-for range's
-*minimum* for a value outside it, so a generator writing random bytes would
-have chosen the first locale and switched nothing on, every single time, while
-reporting millions of runs.
-
-The state of it: a sweep of all ten targets is **72 million runs**, and found
-nothing beyond the two above; a second sweep, with the broadened targets in
-place, found nothing either. That is worth stating plainly rather than as a claim about the code —
-this loop has no coverage feedback, so what it says is that the shapes it
-reaches are handled, and the shapes it reaches are the corpus in
-`tests/fuzz.zig` and what eight rounds of mutation do to it.
-
-Every one of them carries a test. The `\UFFFFFF` one is worth pausing on:
-being in range is a question about a value, not about syntax, so a well-formed
-literal can name nothing at all — and this library's own documentation makes
-the point that a `.ftl` file is reached by the same path a user's display name
-is.
+conformance suites are what `zig build test` exists to run, which step was asked
+for cannot be known at configure time, and no one of them is worth an option
+that would let a suite be skipped by accident. `fluent.js` and `fluent-rs` are
+poor bargains by weight — two whole monorepos for two directories of fixtures —
+but neither corpus has another home, and copying them in here is the one thing
+that would let what this library is measured against drift.
 
 ## References cited
 
@@ -1092,8 +785,7 @@ is.
   <https://developer.apple.com/documentation/swiftui>
 - Swift Project. *Swift Package Manager*.
   <https://www.swift.org/documentation/package-manager/>
-- LLVM Project. *Clang Modules*.
-  <https://clang.llvm.org/docs/Modules.html>
+- LLVM Project. *Clang Modules*. <https://clang.llvm.org/docs/Modules.html>
 - Microsoft. *Windows Controls*. Win32 API documentation.
   <https://learn.microsoft.com/en-us/windows/win32/controls/window-controls>
 - Microsoft. *MultiByteToWideChar function*. Win32 API documentation.
@@ -1102,57 +794,44 @@ is.
   <https://learn.microsoft.com/en-us/windows/win32/sbscs/application-manifests>
 
 The first four are Fluent itself. The grammar in `spec/fluent.ebnf` is what
-`src/syntax/` implements, and the repository holding it also holds the
-reference parser and the 39 conformance fixtures. The guide is the prose the
-syntax is explained in, and the example at the top of this file is its
-vocabulary. `fluent.js` is the reference implementation: the source of the 62
-structure fixtures, of the `E00NN` codes and the English sentences beside them
-in `src/syntax/errors.zig`, and of the one behavioural disagreement recorded in
-`tests/conformance_structure.zig` — and, since it is the implementation the
-project treats as definitive, the tie-breaker wherever the other two disagree.
+`src/syntax/` implements, and the repository holding it also holds the reference
+parser and the 39 conformance fixtures. The guide is the prose the syntax is
+explained in. `fluent.js` is the reference implementation, and the source of the
+62 structure fixtures and of the `E00NN` codes in `src/syntax/errors.zig`;
 `fluent-rs` holds the 180 resolver fixtures, which are the only thing anywhere
 that says what a bundle must *do* rather than what a parser must build.
 
 The next five are the formatting. Parts 3 and 4 of UTS #35 define the pattern
-vocabulary the CLDR tables are read through — the field letters, the widths,
-the plural operands `n`, `i`, `v`, `w`, `f`, `t` and `e` — and CLDR 48.2
-is the data itself, generated into `src/cldr/` by `zig build gen-cldr`. ICU is
-the oracle: 2312 date cases were compared against `Intl` in node 24, which
-embeds ICU 78.3, and the section above says exactly where the two still
-disagree and why. ECMA-402 is where the option names came from, because they
-are what `NUMBER()` and `DATETIME()` are given in an FTL file.
+vocabulary the CLDR tables are read through — the field letters, the widths, the
+plural operands `n`, `i`, `v`, `w`, `f`, `t` and `e` — and CLDR 48.2 is the data
+itself. ICU is the oracle the date and number matrices are compared against.
+ECMA-402 is where the option names came from, because they are what `NUMBER()`
+and `DATETIME()` are given in an FTL file.
 
-The last four are how a locale is found. BCP 47 is the tag syntax and the case
-normalization `Locale.parse` applies; the POSIX Base Specifications say what
-`LANG` and the `LC_*` variables mean and which of them wins, though `LANGUAGE`
-is GNU gettext's rather than theirs; and Apple's and Microsoft's documentation
-is for the two platforms that answer the question somewhere other than the
+The next four are how a locale is found: BCP 47 for the tag syntax and the case
+normalization `Locale.parse` applies, the POSIX Base Specifications for what the
+`LC_*` variables mean and which of them wins, and Apple's and Microsoft's
+documentation for the two platforms that answer somewhere other than the
 environment.
 
-The last seven are the three GUI examples, and none of them is about Fluent at
-all — they are what those examples had to be written against. GTK 4's reference
-is the toolkit `examples/gtk` uses. Apple's SwiftUI documentation and the Swift
-Package Manager's are what `examples/swift` is shaped by, and Clang's module
-documentation is the specification for the `module.modulemap` that makes
-`fluent.h` importable from Swift at all. The three Microsoft pages are the
-Win32 example: the controls it creates, the conversion every string makes on
-its way from this library's UTF-8 into a `W` entry point, and the manifest
-without which the controls are drawn in the Windows 95 style.
+The last seven are what the GUI examples are written against: GTK 4's reference,
+Apple's SwiftUI and Swift Package Manager documentation, Clang's module
+documentation for the `module.modulemap` that makes `fluent.h` importable from
+Swift, and three Win32 pages for the controls, the UTF-8 to UTF-16 conversion
+and the application manifest.
 
 All twenty are in the `zig-fluent` Zotero collection.
 
 ## Where this lives
 
-The repository is hosted on Forgejo, which is where the issues and the
-published documentation are:
+The repository is hosted on Forgejo, which is where the issues and the published
+documentation are:
 
 ```sh
 git clone https://git.jcollie.dev/jeff/zig-fluent.git
 ```
 
-It is mirrored to GitHub, and that is the copy Zig fetches from, since a
-`zig fetch` URL is read by whoever depends on this and GitHub is the more
-reachable of the two:
+It is mirrored to GitHub, and that is the copy `zig fetch` reads:
 
 ```sh
 git clone https://github.com/jcollie/zig-fluent.git
@@ -1176,33 +855,11 @@ rad clone rad:z3qRcBG3GmL9UeB8QjNyihjnUcFTB
 fetches it from any node that seeds it. A Radicle repository is findable by its
 identifier and by nothing else, which is why that string is written out here.
 
-The GitHub mirror also earns its keep: the Forgejo runners are Linux, and
-`.github/workflows/test.yaml` runs the same tests on macOS and Windows as well,
-which is the only way the Win32 calls and the macOS locale conventions get
-exercised at all. It is also where two of the three GUI examples are built:
-`examples/swift` needs a Mac and `examples/win32` needs Visual C++, and neither
-exists on the machine this library is written on. It paid for itself over four runs, each failing somewhere no
-Linux machine could have looked:
-
-1. Every Zig file failed `zig fmt --check` on Windows, because GitHub's runners
-   check out with CRLF. `.gitattributes` now pins LF.
-2. `zig-datetime` would not *unpack* on either Windows or macOS: it held both
-   `src/datetime.zig` and `src/DateTime.zig`, which are one file on a
-   case-insensitive filesystem. Fixed upstream by renaming the module root.
-3. `LC_ALL=C` did not silence translation on Windows. See above.
-4. `tools/fuzz.zig` would not compile for Windows, because
-   `std.process.Args.Iterator.init` is a compile error there.
-
-The workflow also prints what each machine says its locale is, and runs the
-worked example twice — once as the runner's own user, once with a locale named
-— because the output is the clearest statement of what the library does with
-what it was told. It is worth reading side by side: asked for Finnish, all
-three print Finnish text, but only the Ubuntu runner prints Finnish *numbers
-and dates*. The other two have `LC_ALL=en_US.UTF-8` set, or Windows regional
-settings saying en-US, and `fluent.system.applyCategories` honours them — which
-is the design working, not failing. A translation is a language; a decimal
-comma is a preference; POSIX and Windows both let you hold them separately, and
-so does this.
+Tests run in two places, because the platforms divide. The Forgejo runners are
+Linux and gate the canonical repository; the GitHub mirror's matrix runs the
+same suite on `ubuntu-latest`, `macos-latest` and `windows-latest`, which is
+where the Win32 calls, the macOS preferences, and the Swift and Win32 examples
+are exercised.
 
 ## Licence
 
