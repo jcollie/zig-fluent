@@ -55,6 +55,36 @@ jobs:
         if: runner.os != 'Windows'
         run: make -C examples/c run
 
+      # The GUI examples, one per platform, each of them the same program as
+      # `examples/c` with a window in front of it. The GTK one is missing from
+      # this list on purpose: these runners have no GTK 4, and the Forgejo
+      # workflow already builds and drives it through Nix.
+
+      # `swift build` compiles the SwiftUI application; `swift test` is what
+      # actually asserts anything, against the wrapper in `FluentKit` -- that
+      # the ownership rules in `fluent.h` survive ARC, and that the
+      # translations still say what the grammar of their languages requires.
+      - name: Build the SwiftUI example
+        if: runner.os == 'macOS'
+        run: make -C examples/swift
+
+      - name: Test the Swift wrapper
+        if: runner.os == 'macOS'
+        run: make -C examples/swift test
+
+      # The Win32 example, built by `cl` and `rc` rather than by Zig, which
+      # makes it the only thing here that hands `libfluent.lib` to the MSVC
+      # linker. `build.bat` finds the Visual C++ tools itself through
+      # `vswhere`, so there is nothing to set up first, and `smoke` creates a
+      # real window and drives it -- a runner has a window station and a
+      # desktop, so this is not a headless approximation of the program.
+      - name: Build and run the Win32 example
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          cd examples\win32
+          call build.bat smoke
+
       # What the runner itself is set to. Not an assertion -- a CI machine's
       # locale is nobody's design -- but it is the only look this project gets
       # at what these platforms actually report, and it is printed so that a

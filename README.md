@@ -159,7 +159,10 @@ AST for tools written against `fluent-syntax`.
 
 There is a C library too, so a project that is not written in Zig can use this
 one: `libfluent.a`, `libfluent.so` and a hand-written `include/fluent.h`, plus a
-pkg-config file. `zig build` produces all of it.
+pkg-config file. `zig build` produces all of it. On Windows the static library
+is `libfluent.lib` and `fluent.lib` is the import library that goes with
+`fluent.dll`, because there the two linkages would otherwise want the same file
+name and one would quietly overwrite the other.
 
 ```console
 $ zig build --prefix /usr/local
@@ -245,6 +248,60 @@ invoke is the one thing `zig build test` cannot do, and the first time the
 Makefile ran it failed with `undefined reference to __zig_probe_stack`. Zig
 links its own `compiler_rt` and `cc` does not, so the archive now carries it.
 
+### Three GUI examples
+
+`examples/gtk`, `examples/swift` and `examples/win32` are that same program
+once more, with a window in front of it: GTK 4 in C, SwiftUI in Swift, and
+plain Win32 in C. They exist because a command-line program is the one shape
+that does not exercise what an application does with this library. It formats
+every message once and exits; an application holds a tree of widgets whose text
+has to be regenerated whenever the user changes something, and the thing they
+change here is the language.
+
+So each of the three has a language menu and a count, and all three show the
+same three things the terminal example cannot. **Reformatting in place**:
+choosing another language swaps the bundle every label is formatted from, which
+is what a real translation switch is. **Attributes**: the button's tooltip
+comes from the `.tooltip` attribute of the message its label comes from, which
+is what attributes are for — the several strings a control needs kept together,
+so that a translation cannot update one and forget the other. **Isolation marks
+left on**: the terminal example turns them off because a terminal prints
+U+2068 and U+2069 as boxes, and these leave them on because Pango, AppKit and
+DirectWrite all honour them, which is the default and the usual case.
+
+```console
+$ make -C examples/gtk run             # or `make -C examples/gtk smoke`, headless
+$ make -C examples/swift open          # builds Greeting.app and launches it
+> cd examples\win32 && build.bat run
+```
+
+`examples/common/catalog.c` is the half of the program that has no toolkit in
+it — reading the `.ftl` files, negotiating, formatting, collecting errors — and
+the GTK and Win32 examples share it verbatim, so what differs between those two
+files is only the window system. It is `examples/c/greeting.c` with the
+negotiation lifted out of `main`, which is why that one is still the best of
+the four to read first.
+
+Then each platform shows something only it can. The **Swift** one is the only
+place this API is used from a language that manages memory for you, and
+`Sources/FluentKit/Fluent.swift` is the answer to whether the ownership rules
+in `fluent.h` survive that: one `final class` per handle, one `deinit` per
+`_free`, and a `defer` wherever a returned string becomes a `String`. Nothing
+above that file sees a pointer. The **Win32** one is where UTF-8 meets UTF-16:
+every `W` entry point wants wide characters and everything this library returns
+is UTF-8, so a string crosses one `MultiByteToWideChar` helper on its way to a
+control — measured with `fluent_string_len` rather than `strlen`, since a
+translation may contain a NUL and that is the whole reason the header offers
+that function.
+
+None of the three is built by Zig. The GTK one is `gcc` and a Makefile, the
+Swift one is `swift build` with the library named on the command line, and the
+Win32 one is `cl`, `rc` and a batch file that finds Visual C++ through
+`vswhere`. That is the point of them as much as the windows are: three foreign
+toolchains consuming what `zig build c` installs. The Win32 example is the only
+thing anywhere that hands the archive to the MSVC linker, and it is what found
+the file-name collision the paragraph above describes.
+
 ### Two tests, for two different things
 
 `tests/c_api.c` is a consumer rather than a unit test: it is compiled by a C
@@ -252,8 +309,14 @@ compiler against the header and linked against the static library, so it is
 what catches the header and the implementation drifting apart. The tests inside
 `src/c.zig` run with `std.testing.allocator` in place of libc's, which is what
 lets them check the ownership rules rather than merely that nothing crashed.
-Both run as part of `zig build test`; the example is built by CI on Linux and
-macOS.
+Both run as part of `zig build test`. The examples are covered separately,
+because no two of them can run on the same machine: Forgejo's Linux runners
+build the plain C and GTK ones, and the GitHub mirror's matrix builds the
+Swift example on macOS and the Win32 example on Windows. The Swift package
+carries tests of its own, in `Tests/FluentKitTests`, which are what actually
+assert anything about a GUI example — a window cannot be checked by a machine
+without a great deal of machinery, and what would be checked is SwiftUI rather
+than this library.
 
 ## In a POSIX environment
 
@@ -411,7 +474,10 @@ which happen to make the same split:
 Somebody in Germany reading an English interface is an ordinary Windows
 setting, and it is the same shape as `LANG=en_US.UTF-8 LC_NUMERIC=de_DE.UTF-8`.
 `fluent.windows` reads both, and answers in the same `Categories` that
-`fluent.posix` does.
+`fluent.posix` does. `examples/win32` is that with a window in front of it, and
+is what makes it a claim about a real program rather than about a function: a
+Win32 application started from Explorer has no environment to fall back on, so
+the language in its menu can only have come from `GetUserPreferredUILanguages`.
 
 ### Write it once
 
@@ -479,6 +545,11 @@ the preferences system instead. `fluent.darwin` is that, and `fluent.system`
 reaches it in the same place it reaches Windows: the environment first, then
 the platform. A program that reads its language through `fluent.system` needs
 to know none of this.
+
+`examples/swift` is that case exactly, which is why it is built as a bundle
+rather than left as a terminal binary: `make -C examples/swift open` produces
+`Greeting.app` and launches it from the Finder, where there is no `LANG` and
+the language on screen can only have come from `AppleLanguages`.
 
 ### What to ask for
 
@@ -1016,6 +1087,19 @@ is.
   <https://developer.apple.com/documentation/corefoundation/cfpreferencescopyappvalue(_:_:)>
 - Microsoft. *National Language Support*. Win32 API documentation.
   <https://learn.microsoft.com/en-us/windows/win32/intl/national-language-support>
+- GNOME Project. *GTK 4 API Reference*. <https://docs.gtk.org/gtk4/>
+- Apple Inc. *SwiftUI*. Apple Developer Documentation.
+  <https://developer.apple.com/documentation/swiftui>
+- Swift Project. *Swift Package Manager*.
+  <https://www.swift.org/documentation/package-manager/>
+- LLVM Project. *Clang Modules*.
+  <https://clang.llvm.org/docs/Modules.html>
+- Microsoft. *Windows Controls*. Win32 API documentation.
+  <https://learn.microsoft.com/en-us/windows/win32/controls/window-controls>
+- Microsoft. *MultiByteToWideChar function*. Win32 API documentation.
+  <https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar>
+- Microsoft. *Application Manifests*. Win32 API documentation.
+  <https://learn.microsoft.com/en-us/windows/win32/sbscs/application-manifests>
 
 The first four are Fluent itself. The grammar in `spec/fluent.ebnf` is what
 `src/syntax/` implements, and the repository holding it also holds the
@@ -1045,7 +1129,17 @@ is GNU gettext's rather than theirs; and Apple's and Microsoft's documentation
 is for the two platforms that answer the question somewhere other than the
 environment.
 
-All thirteen are in the `zig-fluent` Zotero collection.
+The last seven are the three GUI examples, and none of them is about Fluent at
+all — they are what those examples had to be written against. GTK 4's reference
+is the toolkit `examples/gtk` uses. Apple's SwiftUI documentation and the Swift
+Package Manager's are what `examples/swift` is shaped by, and Clang's module
+documentation is the specification for the `module.modulemap` that makes
+`fluent.h` importable from Swift at all. The three Microsoft pages are the
+Win32 example: the controls it creates, the conversion every string makes on
+its way from this library's UTF-8 into a `W` entry point, and the manifest
+without which the controls are drawn in the Windows 95 style.
+
+All twenty are in the `zig-fluent` Zotero collection.
 
 ## Where this lives
 
@@ -1085,7 +1179,9 @@ identifier and by nothing else, which is why that string is written out here.
 The GitHub mirror also earns its keep: the Forgejo runners are Linux, and
 `.github/workflows/test.yaml` runs the same tests on macOS and Windows as well,
 which is the only way the Win32 calls and the macOS locale conventions get
-exercised at all. It paid for itself over four runs, each failing somewhere no
+exercised at all. It is also where two of the three GUI examples are built:
+`examples/swift` needs a Mac and `examples/win32` needs Visual C++, and neither
+exists on the machine this library is written on. It paid for itself over four runs, each failing somewhere no
 Linux machine could have looked:
 
 1. Every Zig file failed `zig fmt --check` on Windows, because GitHub's runners

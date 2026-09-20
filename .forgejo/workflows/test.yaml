@@ -40,6 +40,21 @@ jobs:
       - name: Build and run the C example
         run: nix develop -c make -C examples/c run
 
+      # The GTK example, which is the same program with a window in front of
+      # it. Headless, under Xvfb and the cairo renderer, because GTK 4 draws
+      # through GL by default and there is no GL here. `--smoke` drives the
+      # real controls -- the language menu, the count -- rather than calling
+      # the formatting directly, so what this covers is the whole program.
+      #
+      # The GTK warnings in this step's log are expected: there is no window
+      # manager on that display, so nothing honours the size the window asks
+      # for. See the comment on the `smoke` target.
+      #
+      # The Swift and Win32 examples cannot run here: these runners are Linux,
+      # which is what `.github/workflows/test.yaml` exists for.
+      - name: Build and run the GTK example
+        run: nix develop -c make -C examples/gtk smoke
+
   # Published only from main, so that a branch build cannot replace the site
   # with a work in progress, and only after `test` has passed, so that it
   # cannot document a tree that does not compile.
