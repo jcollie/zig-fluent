@@ -98,11 +98,18 @@ REM
 REM `/utf-8` because this file's sources contain no non-ASCII but the messages
 REM they format do, and because it is what makes the source and execution
 REM character sets agree rather than depending on the machine's code page.
+REM `/MANIFEST:NO` is the one that is not obvious, and leaving it out is what
+REM made the first CI run of this example say "The application has failed to
+REM start because its side-by-side configuration is incorrect": link.exe
+REM generates a manifest of its own by default, and a program that already
+REM carries one as `RT_MANIFEST` resource 1 -- which `greeting.res` is -- then
+REM ends up with two. Telling the linker not to means the only manifest in the
+REM executable is `greeting.manifest`.
 cl /nologo /W4 /WX /std:c11 /utf-8 /O2 /MD ^
    /I "%PREFIX%\include" /I ..\common /DLOCALE_DIR=\"%LOCALE_DIR%\" ^
    greeting.c ..\common\catalog.c ^
    /Fe:greeting.exe ^
-   /link /SUBSYSTEM:WINDOWS greeting.res "%FLUENT_LIB%" ^
+   /link /SUBSYSTEM:WINDOWS /MANIFEST:NO greeting.res "%FLUENT_LIB%" ^
    kernel32.lib user32.lib gdi32.lib comctl32.lib advapi32.lib ntdll.lib
 if errorlevel 1 exit /b 1
 
@@ -112,13 +119,34 @@ REM `start /wait /b` because this is a windowed program: cmd does not wait for
 REM one, so a plain `greeting.exe` here would return before it had done
 REM anything and its exit status would be nobody's. `/b` keeps it attached to
 REM this console, which is what lets `--smoke` print into it.
+REM
+REM `if errorlevel 1` rather than `exit /b %errorlevel%`, because a `%VAR%`
+REM inside a parenthesised block is substituted when the block is *parsed* --
+REM so the second of those reports the status from before `start` ran, which
+REM is always zero, which is how the first CI run of this example passed while
+REM the program was failing to start.
 if /i "%~1"=="run" (
     start /wait /b "" greeting.exe %2 %3
-    exit /b %errorlevel%
+    if errorlevel 1 exit /b 1
+    exit /b 0
 )
+
+REM The smoke run is checked on what it printed rather than on how it exited,
+REM for the same reason: a program stopped by the loader never reaches its own
+REM exit status, and "said nothing" must not be mistaken for "said the right
+REM thing". Output goes to a file so that it can be both shown and searched;
+REM `greeting --smoke` writes to a stream it was given in preference to the
+REM console precisely so that this works.
 if /i "%~1"=="smoke" (
-    start /wait /b "" greeting.exe --smoke
-    exit /b %errorlevel%
+    start /wait /b "" greeting.exe --smoke > smoke.out 2>&1
+    type smoke.out
+    findstr /c:"smoke complete" smoke.out >nul
+    if errorlevel 1 (
+        echo.
+        echo The smoke run did not finish. Nothing above says "smoke complete".
+        exit /b 1
+    )
+    exit /b 0
 )
 
 exit /b 0

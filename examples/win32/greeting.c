@@ -332,6 +332,18 @@ static void smoke_tick(app *self)
 	}
 
 	KillTimer(self->window, ID_SMOKE_TIMER);
+
+	/*
+	 * The line whoever ran this looks for. An exit status is not enough on
+	 * its own: a window program that fails to start -- a manifest the
+	 * loader will not have, a DLL that is not there -- is reported by the
+	 * loader rather than by us, and `start /wait` does not always carry
+	 * that back. Something only the script itself can print, printed only
+	 * at the end of it, is the thing that cannot be faked by not running.
+	 */
+	printf("smoke complete: %zu translations\n", catalog_len(self->cat));
+	fflush(stdout);
+
 	PostMessageW(self->window, WM_CLOSE, 0, 0);
 }
 
@@ -563,9 +575,18 @@ static LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam,
  * A window program has no console, so in smoke mode it borrows the one it was
  * started from. Without this the run says nothing at all and CI has only an
  * exit status to go on.
+ *
+ * Unless it was handed a stream of its own, which a redirect to a file does,
+ * and which has to win: writing to `CONOUT$` regardless would put the output
+ * on the console and leave the file empty -- and a run that said nothing
+ * looks exactly like a run that passed, which is a thing this example exists
+ * to stop happening.
  */
 static void attach_console(void)
 {
+	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (out != NULL && out != INVALID_HANDLE_VALUE) return;
+
 	if (!AttachConsole(ATTACH_PARENT_PROCESS)) return;
 	FILE *unused;
 	freopen_s(&unused, "CONOUT$", "w", stdout);

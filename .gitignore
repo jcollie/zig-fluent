@@ -14,3 +14,4 @@ examples/win32/*.res
 examples/win32/*.pdb
 examples/win32/*.ilk
 examples/win32/fluent.dll
+examples/win32/smoke.out
