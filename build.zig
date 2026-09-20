@@ -347,7 +347,25 @@ pub fn build(b: *std.Build) void {
     c_static.bundle_compiler_rt = !target.result.os.tag.isDarwin();
 
     const install_c = b.step("c", "Build and install the C library and its header");
-    install_c.dependOn(&b.addInstallArtifact(c_static, .{}).step);
+
+    // On every Unix the two linkages have different file names and can sit in
+    // one directory without noticing each other: `libfluent.a` beside
+    // `libfluent.so`. On Windows they do not. Zig names a static library
+    // `fluent.lib` there whatever the ABI, and names the import library that
+    // goes with `fluent.dll` the same thing -- so installing both wrote one
+    // path twice, the archive won, and `fluent.dll` was shipped with no way
+    // to link against it at all. Nothing noticed because every Windows
+    // consumer this repository has links the static one.
+    //
+    // `libfluent.lib` for the static library is what zlib and libpng settled
+    // on for exactly this collision, and it reads as the name the Unixes
+    // already use. `examples/win32/build.bat` asks for it by that name.
+    install_c.dependOn(&b.addInstallArtifact(c_static, .{
+        .dest_sub_path = if (target.result.os.tag == .windows)
+            "libfluent.lib"
+        else
+            null,
+    }).step);
     install_c.dependOn(&b.addInstallArtifact(c_shared, .{}).step);
     install_c.dependOn(&b.addInstallFileWithDir(
         b.addWriteFiles().add("fluent.pc", pkgConfig(b, target)),

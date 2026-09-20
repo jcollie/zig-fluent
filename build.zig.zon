@@ -73,6 +73,10 @@
         "build.zig",
         "build.zig.zon",
         "examples",
+        // `build.zig` installs `include/fluent.h` on every build, so a
+        // package that fetches this one needs the directory to be in the
+        // tarball as much as `src` is.
+        "include",
         "src",
         "tests",
         "tools",
