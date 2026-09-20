@@ -5,3 +5,12 @@ result-*
 zig-pkg/
 fuzz-findings/
 examples/c/greeting
+examples/gtk/greeting
+examples/swift/.build/
+examples/swift/Greeting.app/
+examples/win32/greeting.exe
+examples/win32/*.obj
+examples/win32/*.res
+examples/win32/*.pdb
+examples/win32/*.ilk
+examples/win32/fluent.dll

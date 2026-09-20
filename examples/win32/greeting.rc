@@ -1,0 +1,8 @@
+// SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+// SPDX-License-Identifier: MIT
+
+// The manifest, embedded in the executable. `1` is
+// CREATEPROCESS_MANIFEST_RESOURCE_ID and `24` is RT_MANIFEST; both are
+// written out rather than included from <winuser.h>, because that is the only
+// thing this file would need the header for.
+1 24 "greeting.manifest"

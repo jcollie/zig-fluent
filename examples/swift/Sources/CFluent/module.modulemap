@@ -1,0 +1,13 @@
+// SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+// SPDX-License-Identifier: MIT
+
+// What makes `import CFluent` work.
+//
+// The header named here is resolved relative to this file rather than through
+// the include path, which is why it is a one-line shim that includes the real
+// one: the real one's directory is given on the command line, so that nothing
+// checked in has to know where the library was installed.
+module CFluent {
+	header "shim.h"
+	export *
+}

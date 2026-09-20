@@ -130,6 +130,17 @@
             ]
             ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
               pkgs.kcov
+
+              # The GTK example, which is built the way a C project builds --
+              # a compiler, a linker and a Makefile -- and finds GTK the way
+              # one does, through pkg-config.
+              pkgs.pkg-config
+              pkgs.gtk4
+
+              # And run headless in CI. GTK 4 draws through GL by default and
+              # there is no GL under Xvfb, so the Makefile's `smoke` target
+              # asks for the cairo renderer as well as for a display.
+              pkgs.xvfb-run
             ];
           };
         }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+SPDX-License-Identifier: MIT
+
+Two things a Win32 program has to ask for and does not get by default.
+
+Version 6 of the common controls is the first: without this dependency the
+combo box, the up-down and the button are drawn in the Windows 95 style, and
+`TTS_*` tooltips do not appear at all. Asking for it by assembly name is the
+only way -- there is no API call that turns it on.
+
+DPI awareness is the second. `true` is system awareness, which is what this
+program implements: it reads `GetDpiForSystem` once and lays the controls out
+in scaled units. Claiming `PerMonitorV2` would be a lie, since nothing here
+handles `WM_DPICHANGED`, and a window dragged to a second monitor would then
+be left at the wrong size rather than being bitmap-scaled to roughly the right
+one.
+-->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity
+      type="win32"
+      name="dev.jcollie.fluent.Greeting"
+      version="1.0.0.0"
+      processorArchitecture="*"/>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity
+          type="win32"
+          name="Microsoft.Windows.Common-Controls"
+          version="6.0.0.0"
+          processorArchitecture="*"
+          publicKeyToken="6595b64144ccf1df"
+          language="*"/>
+    </dependentAssembly>
+  </dependency>
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
+    </windowsSettings>
+  </application>
+</assembly>

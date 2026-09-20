@@ -12,3 +12,9 @@
 # parser's tests build their CRLF input from escapes in the Zig source
 # rather than from a file, precisely so that no checkout can alter it.
 * text=auto eol=lf
+
+# Except a batch file, which cmd.exe parses line by line and which can behave
+# strangely with LF endings -- a `goto` label or a trailing caret is the usual
+# way it goes wrong. It is a Windows-only file and there is no reason for it
+# to be checked out any other way.
+*.bat text eol=crlf
