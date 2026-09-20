@@ -251,6 +251,16 @@ static gboolean smoke_tick(gpointer data)
 		return G_SOURCE_CONTINUE;
 	}
 
+	/*
+	 * The line whoever ran this looks for. An exit status is not enough on
+	 * its own: a program that drew nothing, or drew boxes, or stopped
+	 * after the first language, exits zero just as happily as one that
+	 * worked. Something only the end of the script can print, printed only
+	 * once it is reached, is what cannot be faked by not running.
+	 */
+	printf("smoke complete: %zu translations\n", catalog_len(self->cat));
+	fflush(stdout);
+
 	gtk_window_close(self->window);
 	return G_SOURCE_REMOVE;
 }

@@ -6,6 +6,8 @@ zig-pkg/
 fuzz-findings/
 examples/c/greeting
 examples/gtk/greeting
+examples/gtk/smoke.out
+examples/gtk/smoke.err
 examples/swift/.build/
 examples/swift/Greeting.app/
 examples/win32/greeting.exe

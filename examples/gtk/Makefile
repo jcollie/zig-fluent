@@ -82,13 +82,38 @@ run: greeting
 # is no GL under Xvfb, so the cairo renderer is asked for by name; without it
 # this dies in `gsk` before any of this example's own code runs.
 #
-# A clean run prints nothing but the six translations. GTK warnings here are a
-# finding rather than noise -- `Trying to measure GtkApplicationWindow ... but
-# it needs at least` means some widget is answering "how tall are you?"
-# inconsistently, and it says so on a real desktop just as loudly as it does
-# under Xvfb.
+# Three things have to be true, and this checks all three rather than trusting
+# an exit status, because a program that drew nothing exits zero as happily as
+# one that worked:
+#
+#  1. it exited zero;
+#  2. it printed `smoke complete`, which is the last thing its script does, so
+#     a run that stopped early or never started fails here rather than passing
+#     quietly;
+#  3. it warned about nothing. A GTK warning is a finding -- `Trying to measure
+#     GtkApplicationWindow ... but it needs at least` means some widget answers
+#     "how tall are you?" inconsistently, and it says so on a real desktop just
+#     as loudly as under Xvfb. Mesa's two lines about DRI3 are the exception:
+#     they are this display having no GPU, which is what a headless runner is,
+#     and they come from Mesa rather than from anything here.
 smoke: greeting
-	xvfb-run -a env GSK_RENDERER=cairo GDK_BACKEND=x11 ./greeting --smoke
+	@rm -f smoke.out smoke.err
+	@xvfb-run -a env GSK_RENDERER=cairo GDK_BACKEND=x11 ./greeting --smoke \
+		>smoke.out 2>smoke.err; \
+	status=$$?; \
+	cat smoke.out; \
+	if [ $$status -ne 0 ]; then \
+		echo "smoke: the program exited $$status"; cat smoke.err; exit 1; \
+	fi; \
+	if ! grep -q '^smoke complete:' smoke.out; then \
+		echo "smoke: it never reached the end of its own script"; \
+		cat smoke.err; exit 1; \
+	fi; \
+	if grep -vE '^MESA-EGL: ' smoke.err | grep -q .; then \
+		echo "smoke: it warned about something:"; \
+		grep -vE '^MESA-EGL: ' smoke.err; exit 1; \
+	fi; \
+	echo "smoke: reached the end of its script and warned about nothing"
 
 # The one Zig rule, and the only thing in this file that knows Zig exists:
 # build the library this example links against.
@@ -105,4 +130,4 @@ $(LIBRARY): library
 endif
 
 clean:
-	rm -f greeting
+	rm -f greeting smoke.out smoke.err

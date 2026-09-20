@@ -60,8 +60,11 @@ jobs:
       # real controls -- the language menu, the count -- rather than calling
       # the formatting directly, so what this covers is the whole program.
       #
-      # A clean run prints the six translations and nothing else. A GTK warning
-      # in this log is a finding, not an artifact of running headless.
+      # The step checks what the run printed rather than only how it exited:
+      # it must reach `smoke complete` and it must warn about nothing. A
+      # program that drew nothing exits zero as happily as one that worked,
+      # and a GTK warning here is a finding rather than an artifact of running
+      # headless. See the comment on the `smoke` target.
       #
       # The Swift and Win32 examples cannot run here: these runners are Linux,
       # which is what `.github/workflows/test.yaml` exists for.
