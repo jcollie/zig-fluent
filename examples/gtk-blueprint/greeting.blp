@@ -1,0 +1,217 @@
+// SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+// SPDX-License-Identifier: MIT
+
+// The same window as `examples/gtk`, declared rather than built.
+//
+// Everything in this file is structure: which widgets exist, what they are
+// called, where they sit, how wide they are and which function each signal
+// reaches. There is **not one string of user-visible text in it**, and that
+// absence is the point of the example. A GtkBuilder file usually carries its
+// labels and marks them for translation -- `label: _("Welcome");` -- which
+// commits the application to gettext, to one string per control, and to a
+// translation that cannot say anything a `printf` format could not. Here the
+// labels start empty and `greeting.c` fills every one of them from a Fluent
+// bundle, so what a translator is given is a `.ftl` file with plurals, terms
+// and attributes in it.
+//
+// The `notify::selected`, `value-changed` and `clicked` lines name handlers in
+// `greeting.c`; `gtk_widget_class_bind_template_callback` is what resolves
+// each name, and a misspelling is a warning when the window is built rather
+// than a signal that silently never fires.
+
+using Gtk 4.0;
+
+template $GreetingWindow: Gtk.ApplicationWindow {
+  // Fixed, like the other GUI examples: nothing here benefits from being
+  // dragged larger, and the labels below carry a width of their own, so the
+  // window has only to be as tall as whichever translation is showing.
+  resizable: false;
+
+  Gtk.Grid {
+    row-spacing: 8;
+    column-spacing: 12;
+    margin-top: 16;
+    margin-bottom: 16;
+    margin-start: 16;
+    margin-end: 16;
+
+    Gtk.Label language_label {
+      halign: start;
+
+      layout {
+        column: 0;
+        row: 0;
+      }
+    }
+
+    // No model here. The entries are the endonyms -- each translation's name
+    // for its own language, read out of the translation itself -- so the list
+    // is not known until the `.ftl` files have been loaded, and `greeting.c`
+    // sets it.
+    Gtk.DropDown language_menu {
+      hexpand: true;
+      notify::selected => $on_language_changed();
+
+      layout {
+        column: 1;
+        row: 0;
+      }
+    }
+
+    Gtk.Label count_label {
+      halign: start;
+
+      layout {
+        column: 0;
+        row: 1;
+      }
+    }
+
+    Gtk.SpinButton count_spin {
+      digits: 0;
+      value-changed => $on_count_changed();
+
+      adjustment: Gtk.Adjustment {
+        lower: 0;
+        upper: 999;
+        step-increment: 1;
+        value: 1;
+      };
+
+      layout {
+        column: 1;
+        row: 1;
+      }
+    }
+
+    Gtk.Separator {
+      orientation: horizontal;
+
+      layout {
+        column: 0;
+        row: 2;
+        column-span: 2;
+      }
+    }
+
+    // The four sentences, and the status line under them.
+    //
+    // **A wrapping label needs its width pinned.** A `GtkLabel` with `wrap`
+    // set reports the unwrapped sentence as its natural width and then answers
+    // "how tall are you?" differently at every width it might be given, so a
+    // window sized from one answer and laid out at another ends up shorter
+    // than its own minimum -- and GTK says `Trying to measure
+    // GtkApplicationWindow ... but it needs at least` once per frame for as
+    // long as it is on screen. Setting `width-chars` and `max-width-chars` to
+    // the same number takes the width out of the negotiation: the label is
+    // that wide, the height follows from the text, and nothing is guessed
+    // twice. Forty-six characters suits the longest of these six
+    // translations.
+    //
+    // `examples/gtk` does this in a C helper called once per label. Here it is
+    // six properties on each of five widgets, which is longer to read and
+    // easier to change: the width that has to match across all of them is
+    // visible in one place rather than buried in a function.
+
+    Gtk.Label welcome {
+      halign: start;
+      valign: start;
+      wrap: true;
+      xalign: 0;
+      yalign: 0;
+      width-chars: 46;
+      max-width-chars: 46;
+
+      layout {
+        column: 0;
+        row: 3;
+        column-span: 2;
+      }
+    }
+
+    Gtk.Label new_photos {
+      halign: start;
+      valign: start;
+      wrap: true;
+      xalign: 0;
+      yalign: 0;
+      width-chars: 46;
+      max-width-chars: 46;
+
+      layout {
+        column: 0;
+        row: 4;
+        column-span: 2;
+      }
+    }
+
+    // The one that wraps: Polish and German both run to three lines at a large
+    // count, and Japanese to one.
+    Gtk.Label shared {
+      halign: start;
+      valign: start;
+      wrap: true;
+      xalign: 0;
+      yalign: 0;
+      width-chars: 46;
+      max-width-chars: 46;
+
+      layout {
+        column: 0;
+        row: 5;
+        column-span: 2;
+      }
+    }
+
+    Gtk.Label storage {
+      halign: start;
+      valign: start;
+      wrap: true;
+      xalign: 0;
+      yalign: 0;
+      width-chars: 46;
+      max-width-chars: 46;
+
+      layout {
+        column: 0;
+        row: 6;
+        column-span: 2;
+      }
+    }
+
+    // Its label and its tooltip both come from one Fluent message: the label
+    // from the message, the tooltip from that message's `.tooltip` attribute.
+    Gtk.Button system_button {
+      halign: start;
+      clicked => $on_use_system_language();
+
+      layout {
+        column: 0;
+        row: 7;
+        column-span: 2;
+      }
+    }
+
+    // Always present, empty when there is nothing to say, so that an error
+    // appearing does not move everything above it.
+    Gtk.Label status {
+      halign: start;
+      valign: start;
+      wrap: true;
+      xalign: 0;
+      yalign: 0;
+      width-chars: 46;
+      max-width-chars: 46;
+
+      styles [
+        "dim-label",
+      ]
+
+      layout {
+        column: 0;
+        row: 8;
+        column-span: 2;
+      }
+    }
+  }
+}

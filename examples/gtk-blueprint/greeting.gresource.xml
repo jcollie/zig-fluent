@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+SPDX-License-Identifier: MIT
+
+What the program carries inside itself. `glib-compile-resources` turns this
+and the `greeting.ui` that blueprint-compiler produced into a C file of bytes,
+which is compiled and linked in like any other -- so the finished binary has
+no markup to find at run time and no directory it has to be started from.
+
+The prefix is the application ID written as a path, which is the convention,
+and it is the first half of the resource path `greeting.c` hands to
+`gtk_widget_class_set_template_from_resource`.
+-->
+<gresources>
+  <gresource prefix="/dev/jcollie/fluent/Greeting">
+    <file>greeting.ui</file>
+  </gresource>
+</gresources>

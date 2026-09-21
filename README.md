@@ -168,7 +168,7 @@ the same, since it is the file a C programmer will actually read.
 
 ## Examples
 
-Five programs, all formatting the same five messages from the same six
+Six programs, all formatting the same five messages from the same six
 translations in `examples/locales/`, so that they can be read against each
 other.
 
@@ -177,6 +177,7 @@ other.
 | `examples/greeting.zig` | Zig | `zig build example` | the whole shape in one file: read the environment, negotiate, format |
 | `examples/c/` | C | `make -C examples/c run` | the same again through the C API, translations read off disk |
 | `examples/gtk/` | C, GTK 4 | `make -C examples/gtk run` | a window whose every label is reformatted when the language changes |
+| `examples/gtk-blueprint/` | C, GTK 4, Blueprint | `make -C examples/gtk-blueprint run` | that window declared as markup instead, with no text in the markup |
 | `examples/swift/` | Swift, SwiftUI | `make -C examples/swift open` | the C API wrapped in Swift, one `deinit` per `_free` |
 | `examples/win32/` | C, Win32 | `cd examples\win32 && build.bat run` | the same window, and UTF-8 crossing into UTF-16 |
 
@@ -259,7 +260,7 @@ reach it — as does Japanese counting photos with 枚.
 
 A command-line program formats each message once and exits. An application holds
 a tree of widgets whose text has to be regenerated whenever the user changes
-something, and in these three that something is the language. Each has a
+something, and in these four that something is the language. Each has a
 language menu and a count, and each shows three things the terminal examples
 cannot:
 
@@ -268,26 +269,44 @@ cannot:
 - **Attributes.** A button's tooltip comes from the `.tooltip` attribute of the
   message its label comes from, which keeps the two strings a control needs
   together, so that a translation cannot update one and forget the other.
-- **A decision about isolation marks.** Each of the three makes it, and they
-  do not all make it the same way, which is the interesting part: whether to
-  keep U+2068 and U+2069 is a question about the text renderer rather than
-  about the application. Pango and CoreText implement the bidirectional
-  algorithm and act on them, so the GTK and SwiftUI examples leave them on.
-  Win32's classic controls draw through GDI, which has no bidirectional
-  algorithm and hands each character to the font, so an interpolation comes
-  out wrapped in two boxes — and `examples/win32` turns them off for the same
-  reason a terminal example does.
+- **A decision about isolation marks.** Each of them makes it, and they do not
+  all make it the same way, which is the interesting part: whether to keep
+  U+2068 and U+2069 is a question about the text renderer rather than about
+  the application. Pango and CoreText implement the bidirectional algorithm
+  and act on them, so the GTK and SwiftUI examples leave them on. Win32's
+  classic controls draw through GDI, which has no bidirectional algorithm and
+  hands each character to the font, so an interpolation comes out wrapped in
+  two boxes — and `examples/win32` turns them off for the same reason a
+  terminal example does.
 
 `examples/common/catalog.c` is the half of such a program that has no toolkit in
-it — reading the files, negotiating, formatting, collecting errors — and the GTK
-and Win32 examples share it verbatim, so what differs between those two is only
-the window system.
+it — reading the files, negotiating, formatting, collecting errors — and the two
+GTK examples and the Win32 one share it verbatim, so what differs between them
+is only the window system.
 
-None of the three is built by Zig: GTK uses `gcc` and a Makefile, Swift uses
-`swift build` with the library named on the command line, and Win32 uses `cl`,
-`rc` and a batch file that finds Visual C++ through `vswhere`. Each takes a
-`PREFIX`, so each can be built against an installed copy with no Zig present at
-all.
+The two GTK examples are the same window built two ways, and reading them
+against each other is the point of there being two. `examples/gtk` calls GTK to
+construct its widget tree. `examples/gtk-blueprint` declares the tree in
+[Blueprint](https://gnome.pages.gitlab.gnome.org/blueprint-compiler/), which
+compiles to GtkBuilder XML and is embedded in the binary as a `GResource`; its
+C is a `GtkApplicationWindow` subclass whose fields and signal handlers are
+bound to the markup by name, and what is left of it is the formatting.
+
+That second one is where Fluent and a declarative toolkit have to be introduced
+to each other, because they both want to own the same thing. A GtkBuilder file
+normally carries the application's text, marked `translatable="yes"` for
+gettext — which fixes the translation at one string per control.
+`examples/gtk-blueprint/greeting.blp` declares every label with no text in it
+at all, and the text arrives at run time from a Fluent bundle instead. The
+markup owns structure, the bundle owns words, and the two meet at the widget
+names.
+
+None of them is built by Zig: both GTK examples use `gcc` and a Makefile, Swift
+uses `swift build` with the library named on the command line, and Win32 uses
+`cl`, `rc` and a batch file that finds Visual C++ through `vswhere`. Each takes
+a `PREFIX`, so each can be built against an installed copy with no Zig present
+at all. `examples/gtk-blueprint` additionally wants `blueprint-compiler` and
+the `glib-compile-resources` that comes with GLib; the devshell has both.
 
 `examples/swift` also carries a test suite, `Tests/FluentKitTests`, which is what
 asserts anything about the Swift wrapper without needing a window.
@@ -623,8 +642,8 @@ run with `std.testing.allocator` in place of libc's, which is what lets them
 check the ownership rules rather than merely that nothing crashed.
 
 The examples are built by CI rather than by `zig build test`, and no two of them
-can run on the same machine: the Linux runners build the plain C and GTK ones,
-and the macOS and Windows runners build the Swift and Win32 ones.
+can run on the same machine: the Linux runners build the plain C and the two GTK
+ones, and the macOS and Windows runners build the Swift and Win32 ones.
 
 Two things are projects of their own, in `conformance/` and `cldr/`, each with a
 manifest of its own. What they depend on is heavy — two monorepos and a spec
@@ -820,6 +839,12 @@ one so that the cost falls on whoever runs that step.
 - Microsoft. *National Language Support*. Win32 API documentation.
   <https://learn.microsoft.com/en-us/windows/win32/intl/national-language-support>
 - GNOME Project. *GTK 4 API Reference*. <https://docs.gtk.org/gtk4/>
+- GNOME Project. *Blueprint Documentation*.
+  <https://gnome.pages.gitlab.gnome.org/blueprint-compiler/>
+- GNOME Project. *GtkBuilder*. GTK 4 API Reference.
+  <https://docs.gtk.org/gtk4/class.Builder.html>
+- GNOME Project. *GResource*. GIO API Reference.
+  <https://docs.gtk.org/gio/struct.Resource.html>
 - Apple Inc. *SwiftUI*. Apple Developer Documentation.
   <https://developer.apple.com/documentation/swiftui>
 - Swift Project. *Swift Package Manager*.
@@ -853,13 +878,14 @@ normalization `Locale.parse` applies, the POSIX Base Specifications for what the
 documentation for the two platforms that answer somewhere other than the
 environment.
 
-The last seven are what the GUI examples are written against: GTK 4's reference,
-Apple's SwiftUI and Swift Package Manager documentation, Clang's module
-documentation for the `module.modulemap` that makes `fluent.h` importable from
-Swift, and three Win32 pages for the controls, the UTF-8 to UTF-16 conversion
-and the application manifest.
+The last ten are what the GUI examples are written against: GTK 4's reference,
+the Blueprint language and the GtkBuilder and GResource pages that say what its
+output becomes, Apple's SwiftUI and Swift Package Manager documentation,
+Clang's module documentation for the `module.modulemap` that makes `fluent.h`
+importable from Swift, and three Win32 pages for the controls, the UTF-8 to
+UTF-16 conversion and the application manifest.
 
-All twenty are in the `zig-fluent` Zotero collection.
+All twenty-three are in the `zig-fluent` Zotero collection.
 
 ## Where this lives
 

@@ -131,11 +131,20 @@
             ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
               pkgs.kcov
 
-              # The GTK example, which is built the way a C project builds --
-              # a compiler, a linker and a Makefile -- and finds GTK the way
-              # one does, through pkg-config.
+              # The GTK examples, which are built the way a C project builds
+              # -- a compiler, a linker and a Makefile -- and find GTK the way
+              # one does, through pkg-config. `gtk4` brings
+              # `glib-compile-resources` and `gtk4-builder-tool` along with
+              # it, which is how the second of the two turns its markup into
+              # something the program can carry.
               pkgs.pkg-config
               pkgs.gtk4
+
+              # And the compiler for that markup: `examples/gtk-blueprint`
+              # writes its window in Blueprint and compiles it to GtkBuilder
+              # XML. Nothing else in this repository needs it, and the
+              # example's Makefile says so if it is missing.
+              pkgs.blueprint-compiler
 
               # And run headless in CI. GTK 4 draws through GL by default and
               # there is no GL under Xvfb, so the Makefile's `smoke` target

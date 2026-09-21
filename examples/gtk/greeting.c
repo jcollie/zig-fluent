@@ -30,6 +30,11 @@
  * shared verbatim with `examples/win32`, which is this program written against
  * a different window system.
  *
+ * `examples/gtk-blueprint` is this program again with the window declared in
+ * Blueprint rather than built by the calls below, which is worth reading
+ * beside this file: what changes is everything under `on_activate` and
+ * nothing under `refresh`.
+ *
  *     $ make run
  *     $ make run LOCALE=fi
  *     $ LANG=de_DE.UTF-8 ./greeting

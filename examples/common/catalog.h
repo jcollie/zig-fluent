@@ -4,16 +4,16 @@
 /*
  * The half of a Fluent application that has nothing to do with the toolkit.
  *
- * `examples/gtk` and `examples/win32` are the same program written against two
- * window systems, and everything they share is here: reading the shipped `.ftl`
- * files off disk, deciding which translation serves the user, formatting a
- * message, and collecting what went wrong. Neither GTK nor Win32 appears below
- * this line, and neither file above it calls `fluent_*` for anything but
- * freeing a string.
+ * `examples/gtk`, `examples/gtk-blueprint` and `examples/win32` are the same
+ * program written against two window systems, and everything they share is
+ * here: reading the shipped `.ftl` files off disk, deciding which translation
+ * serves the user, formatting a message, and collecting what went wrong.
+ * Neither GTK nor Win32 appears below this line, and none of the three files
+ * above it calls `fluent_*` for anything but freeing a string.
  *
  * It is lifted from `examples/c/greeting.c`, which does the same work inline
- * and reads better for being one file. This exists because two GUI examples
- * needed it and a third copy of the negotiation loop would have been a third
+ * and reads better for being one file. This exists because the GUI examples
+ * needed it and another copy of the negotiation loop would have been another
  * thing to keep in step.
  */
 

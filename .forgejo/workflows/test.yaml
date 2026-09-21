@@ -71,6 +71,18 @@ jobs:
       - name: Build and run the GTK example
         run: nix develop -c make -C examples/gtk smoke
 
+      # The same window declared in Blueprint instead of built by calling GTK,
+      # which puts two more tools on the path from source to binary:
+      # blueprint-compiler and glib-compile-resources. Both run here and
+      # nowhere else, so this is the step that notices when a property this
+      # markup sets stops existing.
+      #
+      # It prints what the example next door prints, line for line, which is
+      # the claim the two examples make together: the same program, written
+      # two ways.
+      - name: Build and run the GTK Blueprint example
+        run: nix develop -c make -C examples/gtk-blueprint smoke
+
   # Published only from main, so that a branch build cannot replace the site
   # with a work in progress, and only after `test` has passed, so that it
   # cannot document a tree that does not compile.

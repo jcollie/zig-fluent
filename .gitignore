@@ -8,6 +8,12 @@ examples/c/greeting
 examples/gtk/greeting
 examples/gtk/smoke.out
 examples/gtk/smoke.err
+examples/gtk-blueprint/greeting
+examples/gtk-blueprint/greeting.ui
+examples/gtk-blueprint/greeting-resources.c
+examples/gtk-blueprint/greeting-resources.h
+examples/gtk-blueprint/smoke.out
+examples/gtk-blueprint/smoke.err
 examples/swift/.build/
 examples/swift/Greeting.app/
 examples/win32/greeting.exe

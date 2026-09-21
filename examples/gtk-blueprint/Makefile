@@ -1,11 +1,11 @@
 # SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
 # SPDX-License-Identifier: MIT
 
-# The GTK example, built the way a C project would build it: a compiler, a
-# linker and a Makefile, with GTK found through pkg-config. Nothing here knows
-# about the Zig build system except the one rule that produces the library,
-# and that rule is only a convenience -- point PREFIX at an installed copy and
-# it is never used.
+# The GTK example again, with the window declared in Blueprint rather than
+# built by calling GTK. Two tools stand between the markup and the binary --
+# blueprint-compiler, which turns `greeting.blp` into GtkBuilder XML, and
+# glib-compile-resources, which turns that XML into a C file of bytes -- and
+# the rest of this file is `examples/gtk/Makefile`.
 #
 #     make                     # build against ../../zig-out, building it if needed
 #     make run                 # and run it in whatever language this machine says
@@ -23,6 +23,12 @@ CFLAGS ?= -std=c11 -Wall -Wextra -Werror -O2
 
 PKG_CONFIG ?= pkg-config
 
+# The two that turn markup into something the compiler can read.
+# blueprint-compiler is its own project; glib-compile-resources comes with
+# GLib, so anything that has GTK 4 to build against has it already.
+BLUEPRINT_COMPILER ?= blueprint-compiler
+GLIB_COMPILE_RESOURCES ?= glib-compile-resources
+
 # Where the library and its header are. `zig build --prefix DIR` puts them
 # there; the default is what a plain `zig build` in this repository produces.
 PREFIX ?= ../../zig-out
@@ -32,18 +38,27 @@ PREFIX ?= ../../zig-out
 LINKAGE ?= static
 
 # The translations, read at run time rather than embedded, so the same `.ftl`
-# files serve this example, the Blueprint one beside it, the Win32 one, the
-# plain C one and the Zig one.
+# files serve this example, the other GTK one, the Win32 one, the plain C one
+# and the Zig one.
+#
+# The *markup* is embedded, which is the difference: a `.ui` file is part of
+# the program and changes when the program does, where a translation is
+# somebody else's work and arrives on its own schedule.
 LOCALE_DIR ?= ../locales
 
 # `../common` is the half of this program that has no GTK in it, shared
-# verbatim with `examples/win32`.
-CPPFLAGS += -I$(PREFIX)/include -I../common -DLOCALE_DIR='"$(LOCALE_DIR)"'
+# verbatim with `examples/gtk` and `examples/win32`. `.` is for the generated
+# `greeting-resources.h`, which is written beside the sources.
+CPPFLAGS += -I$(PREFIX)/include -I../common -I. -DLOCALE_DIR='"$(LOCALE_DIR)"'
 
 GTK_CFLAGS := $(shell $(PKG_CONFIG) --cflags gtk4)
 GTK_LIBS := $(shell $(PKG_CONFIG) --libs gtk4)
 
-SOURCES := greeting.c ../common/catalog.c
+# `greeting-resources.c` is generated, and is a source all the same: it is the
+# compiled `.ui` as an array of bytes.
+SOURCES := greeting.c greeting-resources.c ../common/catalog.c
+GENERATED := greeting.ui greeting-resources.c greeting-resources.h
+
 STATIC_LIB := $(PREFIX)/lib/libfluent.a
 
 ifeq ($(LINKAGE),shared)
@@ -72,7 +87,28 @@ LDFLAGS += -Wl,-z,noexecstack
 
 all: greeting
 
-greeting: $(SOURCES) ../common/catalog.h $(LIBRARY)
+# The markup, compiled. blueprint-compiler checks every property and every
+# signal against GTK's own introspection data as it goes, so a misspelled
+# property name is an error here rather than a warning printed once the
+# window is on screen.
+greeting.ui: greeting.blp
+	$(BLUEPRINT_COMPILER) compile --output $@ $<
+
+# And embedded. `--manual-register` leaves out the constructor that would
+# register the resource before `main` runs, so that `greeting.c` can do it in
+# a line somebody reading that file can see. `--c-name` is the prefix on the
+# two functions that leaves it: without it the prefix is guessed from the file
+# name, which here would make it `greeting_`, and a reader of `greeting.c`
+# would have no way to tell that function from one of this program's own.
+greeting-resources.c greeting-resources.h: greeting.gresource.xml greeting.ui
+	$(GLIB_COMPILE_RESOURCES) --target=greeting-resources.c \
+		--sourcedir=. --c-name greeting_resources \
+		--generate-source --manual-register greeting.gresource.xml
+	$(GLIB_COMPILE_RESOURCES) --target=greeting-resources.h \
+		--sourcedir=. --c-name greeting_resources \
+		--generate-header --manual-register greeting.gresource.xml
+
+greeting: $(SOURCES) ../common/catalog.h greeting-resources.h $(LIBRARY)
 	$(CC) $(CFLAGS) $(GTK_CFLAGS) $(CPPFLAGS) -o $@ $(SOURCES) \
 		$(LDFLAGS) $(GTK_LIBS) $(LDLIBS)
 
@@ -91,10 +127,11 @@ run: greeting
 #  2. it printed `smoke complete`, which is the last thing its script does, so
 #     a run that stopped early or never started fails here rather than passing
 #     quietly;
-#  3. it warned about nothing. A GTK warning is a finding -- `Trying to measure
-#     GtkApplicationWindow ... but it needs at least` means some widget answers
-#     "how tall are you?" inconsistently, and it says so on a real desktop just
-#     as loudly as under Xvfb.
+#  3. it warned about nothing. A GTK warning is a finding, and in this example
+#     more so than in the one next door: a template child bound to a name the
+#     markup does not use, or a handler the markup names and this program does
+#     not define, is reported as a warning while the window is being built and
+#     as nothing at all afterwards.
 #
 # Two things are allowed through, and both are the machine rather than the
 # program: Mesa's lines about DRI3 are this display having no GPU, and
@@ -138,4 +175,4 @@ $(LIBRARY): library
 endif
 
 clean:
-	rm -f greeting smoke.out smoke.err
+	rm -f greeting smoke.out smoke.err $(GENERATED)
