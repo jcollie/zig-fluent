@@ -156,7 +156,7 @@ pub const Call = struct {
     /// Lives until the current `format` call returns. A function that builds a
     /// string puts it here.
     arena: Allocator,
-    /// The caller's allocator, which owns the error list. Nothing else.
+    /// The bundle's allocator, which owns the error list. Nothing else.
     gpa: Allocator,
     bundle: *const Bundle,
     errors: ?*Errors,
@@ -702,7 +702,8 @@ pub const Bundle = struct {
     ) Allocator.Error!?[]u8 {
         const message = self.getMessage(name) orelse return null;
         const pattern = message.value orelse {
-            if (errors) |list| try list.append(gpa, .{ .kind = .missing_value, .name = name });
+            // The bundle's allocator, not `gpa`, which is only the text's.
+            if (errors) |list| try list.append(self.gpa, .{ .kind = .missing_value, .name = name });
             return null;
         };
         return try self.formatPattern(gpa, pattern, args, errors);
@@ -741,6 +742,30 @@ pub const Bundle = struct {
             @as(?[]u8, null),
             try bundle.format(std.testing.allocator, "absent", &.{}, null),
         );
+    }
+
+    test "format's errors are the bundle's, whatever the text is allocated with" {
+        var bundle = try testBundle(
+            \\labelled =
+            \\    .label = Only a label
+            \\
+        );
+        defer bundle.deinit();
+
+        // The text goes in an arena that is gone before the list is freed,
+        // as a caller formatting into a per-frame arena would have it.
+        var errors: Errors = .empty;
+        defer errors.deinit(std.testing.allocator);
+        {
+            var arena: std.heap.ArenaAllocator = .init(std.testing.allocator);
+            defer arena.deinit();
+            try std.testing.expectEqual(
+                @as(?[]u8, null),
+                try bundle.format(arena.allocator(), "labelled", &.{}, &errors),
+            );
+        }
+        try std.testing.expectEqual(@as(usize, 1), errors.items.len);
+        try std.testing.expectEqual(Error.Kind.missing_value, errors.items[0].kind);
     }
 
     /// Format one attribute of a message, such as a `.label`.
