@@ -514,9 +514,9 @@ fn writeFormatted(
     sub_path: []const u8,
     source: []const u8,
 ) !void {
-    const sentinel = try arena.dupeZ(u8, source);
+    const sentinel = try arena.dupeSentinel(u8, source, 0);
 
-    var tree = try std.zig.Ast.parse(arena, sentinel, .zig);
+    var tree = try std.zig.Ast.parse(arena, sentinel, .{});
     if (tree.errors.len != 0) {
         var stderr_buffer: [4096]u8 = undefined;
         var stderr = std.Io.File.stderr().writer(io, &stderr_buffer);

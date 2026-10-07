@@ -5,14 +5,15 @@ SPDX-License-Identifier: MIT
 
 # zig-fluent
 
-An implementation of [Project Fluent](https://projectfluent.org/) for Zig 0.16,
+An implementation of [Project Fluent](https://projectfluent.org/) for Zig 0.17,
 and a C library built from the same code. It carries its own CLDR tables, so
 there is no ICU to install and nothing to link against.
 
 - **API documentation**: <https://jeff.jcollie.page/zig-fluent/>, generated from
   the doc comments, which carry most of the detail this file summarises.
-- **Requires**: Zig 0.16. One dependency,
-  [zig-datetime](https://git.jcollie.dev/jeff/zig-datetime).
+- **Requires**: Zig 0.17. One dependency,
+  [zig-datetime](https://git.jcollie.dev/jeff/zig-datetime). For Zig 0.16 there
+  is release 0.1.0 and the `zig-0.16` branch, which takes critical fixes only.
 - **Licence**: MIT.
 
 ## What Fluent is
@@ -632,6 +633,7 @@ $ zig build c                      # just the C library, header and .pc file
 $ zig build check                  # compile everything without running it
 $ zig fmt --check --exclude zig-pkg --exclude cldr/zig-pkg --exclude conformance/zig-pkg .
 $ zig build docs-serve             # read the API documentation at :8000
+$ zig build fuzz --fuzz            # Zig's fuzzer, with a web interface
 $ zig build fuzz-run -- --seconds 60
 ```
 
@@ -705,16 +707,30 @@ mis-parses a fixture reports a passing test that checked nothing.
 
 ### Fuzzing
 
-Zig 0.16.0 cannot build a test executable in fuzz mode without a patched
-standard library, and leaves the fuzzer's coverage table empty even then;
-`flake.nix` explains both and carries the patch. `zig build fuzz-run` is a loop
-of this project's own in the meantime, mutating a corpus of real inputs through
-`std.testing.Smith`.
+Every target is reachable two ways. Each is a test that hands it to
+`std.testing.fuzz`, so Zig's own fuzzer drives it with coverage to steer by:
+
+```console
+$ zig build fuzz --fuzz                         # until interrupted, with a web interface
+$ zig build fuzz --fuzz=1M                      # a bounded run, then a report
+$ zig build fuzz --fuzz -Dfuzz-filter=json      # one target
+```
+
+The test binary is compiled by LLVM even in Debug, because the self-hosted
+backend emits no coverage instrumentation and the fuzzer would have nothing to
+steer by. The report has one entry per test binary, labelled with its first
+fuzz test, though every target in it ran. A finding prints
+`input saved to '.zig-cache/f/crash'` above the report.
+
+And `zig build fuzz-run` is a loop of this project's own, mutating a corpus of
+real inputs through `std.testing.Smith` with no coverage feedback, which makes
+runs reproducible from a seed and replays any input, including the fuzzer's:
 
 ```console
 $ zig build fuzz-run -- --seconds 60                  # every target in turn
 $ zig build fuzz-run -- --target json --seconds 60    # one of them
 $ zig build fuzz-run -- --input fuzz-findings/x.bin --target parse
+$ zig build fuzz-run -- --input .zig-cache/f/crash --target roundtrip
 ```
 
 There are ten targets:
@@ -731,9 +747,10 @@ There are ten targets:
 | `json` | the interchange AST, plain and annotated |
 | `affixes` | the prefix and suffix a number pattern wraps around its digits |
 
-Having no coverage feedback, what a clean sweep says is that the shapes the loop
-reaches are handled — and the shapes it reaches are the corpus in
-`tests/fuzz.zig` and what mutation does to it. A failing input is saved under
+Having no coverage feedback, what a clean sweep of the loop says is that the
+shapes it reaches are handled — and the shapes it reaches are the corpus in
+`tests/fuzz.zig` and what mutation does to it. That corpus seeds Zig's fuzzer
+as well. A failing input is saved under
 `fuzz-findings/`; `--input` replays one, and the way to act on it is to add it
 to that corpus as a test.
 

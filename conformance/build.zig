@@ -74,7 +74,7 @@ pub fn build(b: *std.Build) void {
     for (suites) |suite| {
         if (b.lazyDependency(suite.dependency, .{})) |corpus| {
             const options = b.addOptions();
-            options.addOptionPath("fixtures_dir", corpus.path(suite.fixtures));
+            options.addOptionPathDirectory("fixtures_dir", corpus.path(suite.fixtures));
 
             const mod = b.createModule(.{
                 .root_source_file = b.path(suite.source),

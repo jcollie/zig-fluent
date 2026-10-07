@@ -448,5 +448,5 @@ fn firstWeekday() ?@import("datetime_format.zig").DayOfWeek {
     var day: i64 = 0;
     if (cf.CFNumberGetValue(entry, number_sint64, &day) == 0) return null;
     if (day < 1 or day > 7) return null;
-    return @enumFromInt(@as(u3, @intCast(day - 1)));
+    return @fromBackingInt(@intCast(day - 1));
 }

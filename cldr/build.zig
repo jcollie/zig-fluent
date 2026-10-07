@@ -63,7 +63,7 @@ pub fn build(b: *std.Build) void {
     }
     // Without `-Dcldr` the three directories can still be given by hand, which
     // is how to regenerate against a CLDR release this manifest does not pin.
-    if (b.args) |args| run.addArgs(args);
+    run.addPassthruArgs();
 
     const run_step = b.step(
         "run",

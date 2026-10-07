@@ -128,9 +128,10 @@ pub const Options = struct {
     /// Layer `other`'s options over these, keeping every one it did not set.
     pub fn override(self: Options, other: Options) Options {
         var merged = self;
-        inline for (@typeInfo(Options).@"struct".fields) |field| {
-            if (@typeInfo(field.type) == .optional) {
-                if (@field(other, field.name)) |v| @field(merged, field.name) = v;
+        const info = @typeInfo(Options).@"struct";
+        inline for (info.field_names, info.field_types) |name, T| {
+            if (@typeInfo(T) == .optional) {
+                if (@field(other, name)) |v| @field(merged, name) = v;
             }
         }
         return merged;
@@ -381,7 +382,7 @@ pub const Formatter = struct {
     /// same order, named by two specifications that do not know about each
     /// other.
     fn style(value: Options.Style) datetime.cldr.Length {
-        return @enumFromInt(@intFromEnum(value));
+        return @fromBackingInt(@backingInt(value));
     }
 
     test format {

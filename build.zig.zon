@@ -2,7 +2,7 @@
     .name = .fluent,
     .version = "0.2.0",
     .fingerprint = 0x8d467dc1f396f537, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.16.0",
+    .minimum_zig_version = "0.17.0",
     .dependencies = .{
         // Two dependencies, and only one of them unconditional. The corpora
         // this library is measured against and the CLDR data its tables are
@@ -10,8 +10,8 @@
         // and `cldr/`, so that nothing here -- and nothing generated from
         // here -- carries 145 MB that a consumer of the library never reads.
         .datetime = .{
-            .url = "git+https://git.jcollie.dev/jeff/zig-datetime.git#b1d225e0548572c88c41a8b551b8397e5e168412",
-            .hash = "datetime-0.0.1-6-va78-AQgA0_OvOrxeem7LnZqCmkjL3AkD9XeT81C4l",
+            .url = "git+https://git.jcollie.dev/jeff/zig-datetime.git#f20a2aec6d8631f39a11d2e5453fa6400321de44",
+            .hash = "datetime-0.0.1-6-va74jLRwBCQk8yIxYTiF2IK-Fq7540sW_vdm0OISwD",
         },
         .zigwin32 = .{
             .url = "git+https://github.com/marlersoft/zigwin32#9f15c276b4e9d05afd34a10d8662a7dfc34647ea",

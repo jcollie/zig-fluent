@@ -956,8 +956,8 @@ test "a value C got wrong is refused rather than trapping" {
     try testing.expectEqual(@as(?u8, null), digits(9999));
     try testing.expectEqual(@as(?u8, 0), digits(0));
 
-    try testing.expectEqual(fluent.number_format.Style.decimal, numberStyle(@enumFromInt(77)));
-    try testing.expectEqual(@as(?fluent.datetime_format.Options.Style, null), dateStyle(@enumFromInt(-3)));
+    try testing.expectEqual(fluent.number_format.Style.decimal, numberStyle(@fromBackingInt(77)));
+    try testing.expectEqual(@as(?fluent.datetime_format.Options.Style, null), dateStyle(@fromBackingInt(-3)));
 
     try testing.expect(fluent_bundle_new("this is not a language tag") == null);
     try testing.expect(!fluent_tag_parse("nor is this", null));

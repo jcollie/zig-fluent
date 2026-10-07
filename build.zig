@@ -80,10 +80,10 @@ pub fn build(b: *std.Build) void {
     gen_cldr_run.stdio = .inherit;
     gen_cldr_run.has_side_effects = true;
     if (with_cldr) gen_cldr_run.addArg("-Dcldr");
-    if (b.args) |args| {
-        gen_cldr_run.addArg("--");
-        gen_cldr_run.addArgs(args);
-    }
+    // Always the `--`, since whether anything follows it is not known until
+    // the step runs; with nothing after it that project sees no arguments.
+    gen_cldr_run.addArg("--");
+    gen_cldr_run.addPassthruArgs();
     gen_cldr_step.dependOn(&gen_cldr_run.step);
 
     // A worked example: read the user's language out of the environment, pick
@@ -101,7 +101,7 @@ pub fn build(b: *std.Build) void {
 
     const run_example = b.addRunArtifact(example);
     run_example.stdio = .inherit;
-    if (b.args) |args| run_example.addArgs(args);
+    run_example.addPassthruArgs();
     const example_step = b.step("example", "Run the worked example; pass a locale to override the environment");
     example_step.dependOn(&run_example.step);
 
@@ -137,7 +137,7 @@ pub fn build(b: *std.Build) void {
     // below, because what anyone wants to pass here is a build flag for that
     // project rather than an argument for a program it runs:
     // `zig build conformance -- --summary all`.
-    if (b.args) |args| conformance_run.addArgs(args);
+    conformance_run.addPassthruArgs();
     conformance_step.dependOn(&conformance_run.step);
 
     // -- fuzzing -------------------------------------------------------------
@@ -152,9 +152,9 @@ pub fn build(b: *std.Build) void {
         .imports = &.{.{ .name = "fluent", .module = mod }},
     });
 
-    // Zig's fuzzer takes one test at a time and keeps a coverage file per
-    // test, so naming a target is what you want when a finding is being
-    // chased: `zig build fuzz --fuzz -Dfuzz-filter=parse`.
+    // Every target shares one binary and so one run, so naming a target is
+    // what you want when a finding is being chased:
+    // `zig build fuzz --fuzz -Dfuzz-filter=parse`.
     const fuzz_filter = b.option(
         []const u8,
         "fuzz-filter",
@@ -163,6 +163,12 @@ pub fn build(b: *std.Build) void {
     const fuzz_tests = b.addTest(.{
         .root_module = fuzz_mod,
         .filters = if (fuzz_filter) |f| &.{f} else &.{},
+        // The self-hosted backend, which is what Debug uses otherwise, emits
+        // no coverage instrumentation, and without it the fuzzer has nothing
+        // to steer by: a run ends with "corrupted coverage file: pcs_len was
+        // zero". `build.zig` cannot see whether `--fuzz` was passed, so this
+        // is always on, at a few seconds' extra compile.
+        .use_llvm = true,
     });
     test_step.dependOn(&b.addRunArtifact(fuzz_tests).step);
 
@@ -172,10 +178,10 @@ pub fn build(b: *std.Build) void {
     const fuzz_step = b.step("fuzz", "The fuzz targets: add --fuzz to fuzz them");
     fuzz_step.dependOn(&b.addRunArtifact(fuzz_tests).step);
 
-    // The loop that drives those same targets without Zig's fuzzer, which this
-    // toolchain cannot usefully run: `tools/fuzz.zig` says why, and the short
-    // version is that the coverage table comes back empty. Optimised, because
-    // a fuzzer's whole job is how many inputs it gets through, and ReleaseSafe
+    // The loop that drives those same targets without Zig's fuzzer: no
+    // coverage, but a run that a seed reproduces exactly, and a way to replay
+    // any one input, the fuzzer's findings included. Optimised, because a
+    // fuzzer's whole job is how many inputs it gets through, and ReleaseSafe
     // keeps every check that makes a failure a failure.
     const fuzz_run = b.addExecutable(.{
         .name = "zig-fluent-fuzz",
@@ -188,7 +194,7 @@ pub fn build(b: *std.Build) void {
     });
     const run_fuzz = b.addRunArtifact(fuzz_run);
     run_fuzz.stdio = .inherit;
-    if (b.args) |a| run_fuzz.addArgs(a);
+    run_fuzz.addPassthruArgs();
     const fuzz_run_step = b.step("fuzz-run", "Fuzz the targets with a loop of our own");
     fuzz_run_step.dependOn(&run_fuzz.step);
 
@@ -286,8 +292,26 @@ pub fn build(b: *std.Build) void {
             null,
     }).step);
     install_c.dependOn(&b.addInstallArtifact(c_shared, .{}).step);
+
+    // The pkg-config file names the install prefix, which this script cannot
+    // see: it is decided when the build runs rather than when it is
+    // configured. So everything but that line is formatted here and a small
+    // program writes the file, handed the prefix as a path the build runner
+    // resolves at that point.
+    const pkg_config_writer = b.addExecutable(.{
+        .name = "pkg-config-writer",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("tools/pkg_config.zig"),
+            .target = b.graph.host,
+            .optimize = .Debug,
+        }),
+    });
+    const write_pkg_config = b.addRunArtifact(pkg_config_writer);
+    const pkg_config_file = write_pkg_config.addOutputFileArg("fluent.pc");
+    write_pkg_config.addDirectoryArg(b.graph.path(.install_prefix, ""));
+    write_pkg_config.addArg(pkgConfigBody(b, target));
     install_c.dependOn(&b.addInstallFileWithDir(
-        b.addWriteFiles().add("fluent.pc", pkgConfig(b, target)),
+        pkg_config_file,
         .{ .custom = "share/pkgconfig" },
         "fluent.pc",
     ).step);
@@ -297,6 +321,9 @@ pub fn build(b: *std.Build) void {
     // check its own for leaks. These can, because in a test build that file's
     // allocator is `std.testing.allocator` rather than libc's.
     test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = c_mod })).step);
+    test_step.dependOn(&b.addRunArtifact(
+        b.addTest(.{ .root_module = pkg_config_writer.root_module }),
+    ).step);
 
     // And the header from the outside: a C program that includes it, links the
     // static library and exercises the API the way a consumer would. It is the
@@ -367,8 +394,9 @@ pub fn build(b: *std.Build) void {
     });
 
     const run_docs_server = b.addRunArtifact(docs_server);
-    run_docs_server.step.dependOn(&install_docs.step);
-    run_docs_server.addArg(b.getInstallPath(.prefix, "docs"));
+    // The emitted directory rather than the installed one: an install path
+    // cannot be asked for while the build is being configured.
+    run_docs_server.addDirectoryArg(library.getEmittedDocs());
     run_docs_server.addArg(b.fmt("{d}", .{docs_port}));
     // The server runs until interrupted, so its output has to reach the
     // terminal rather than being captured by the build runner.
@@ -396,7 +424,9 @@ fn parseVersion(text: []const u8) std.SemanticVersion {
     );
 }
 
-/// The pkg-config file, so that `pkg-config --cflags --libs fluent` answers.
+/// The pkg-config file, so that `pkg-config --cflags --libs fluent` answers --
+/// all of it but the first line, `prefix=`, which `tools/pkg_config.zig` writes
+/// once the prefix is known.
 ///
 /// Only `prefix` is a literal path; `libdir` and `includedir` are written in
 /// terms of it, which is the convention every consumer of a `.pc` file expects
@@ -404,16 +434,8 @@ fn parseVersion(text: []const u8) std.SemanticVersion {
 /// whole thing, and what lets a packaging tool rewrite one line rather than
 /// three. Nix already relies on that: it moves the header into a separate
 /// output and rewrites `includedir` to match.
-fn pkgConfig(b: *std.Build, target: std.Build.ResolvedTarget) []const u8 {
-    // `--prefix zig-out` is an ordinary thing to write and would put a
-    // relative path in a file that is read from anywhere but here.
-    const prefix = if (std.fs.path.isAbsolute(b.install_prefix))
-        b.install_prefix
-    else
-        b.pathFromRoot(b.install_prefix);
-
+fn pkgConfigBody(b: *std.Build, target: std.Build.ResolvedTarget) []const u8 {
     return b.fmt(
-        \\prefix={s}
         \\exec_prefix=${{prefix}}
         \\libdir=${{prefix}}/lib
         \\includedir=${{prefix}}/include
@@ -426,7 +448,7 @@ fn pkgConfig(b: *std.Build, target: std.Build.ResolvedTarget) []const u8 {
         \\Libs.private:{s}
         \\Cflags: -I${{includedir}}
         \\
-    , .{ prefix, manifest.version, privateLibs(target) });
+    , .{ manifest.version, privateLibs(target) });
 }
 
 /// What a **static** link additionally needs, for `Libs.private`.

@@ -20,10 +20,9 @@
 //! it runs the seeds beside it, so `zig build test` exercises the same
 //! properties on input that has already been interesting once.
 //!
-//! Note that Zig 0.16.0 cannot build a test executable in fuzz mode without a
-//! patched standard library, and leaves the fuzzer's coverage table empty even
-//! then; the flake in this repository says more, and `zig build fuzz-run` is
-//! the loop that does the work in the meantime.
+//! Each is also handed to `std.testing.fuzz` by a test of its own at the end of
+//! this file, which is what `zig build fuzz --fuzz` drives, and listed in `all`
+//! for `zig build fuzz-run`, the loop in `tools/fuzz.zig`.
 
 const builtin = @import("builtin");
 const std = @import("std");
@@ -936,16 +935,88 @@ pub const all = [_]Target{
     .{ .name = "affixes", .run = Driven(fuzzAffix).run, .corpus = &affix_seeds, .content_max = 128 },
 };
 
-test {
-    // Zig's fuzzer takes a test at a time, so each target needs one.
-    _ = fuzzParse;
-    _ = fuzzRoundTrip;
-    _ = fuzzResolve;
-    _ = fuzzNumber;
-    _ = fuzzOperands;
-    _ = fuzzLocale;
-    _ = fuzzDate;
-    _ = fuzzPattern;
-    _ = fuzzJson;
-    _ = fuzzAffix;
+// -- the entry points Zig's fuzzer drives ------------------------------------
+//
+// Zig's fuzzer takes a test at a time, so each target has one. Under `zig
+// build test` each replays its corpus and an empty input; under `zig build
+// fuzz --fuzz` it is what the fuzzer mutates from.
+
+test "fuzz: parse" {
+    try fuzzTarget("parse", fuzzParse);
+}
+
+test "fuzz: roundtrip" {
+    try fuzzTarget("roundtrip", fuzzRoundTrip);
+}
+
+test "fuzz: resolve" {
+    try fuzzTarget("resolve", fuzzResolve);
+}
+
+test "fuzz: numbers" {
+    try fuzzTarget("numbers", fuzzNumber);
+}
+
+test "fuzz: operands" {
+    try fuzzTarget("operands", fuzzOperands);
+}
+
+test "fuzz: locales" {
+    try fuzzTarget("locales", fuzzLocale);
+}
+
+test "fuzz: dates" {
+    try fuzzTarget("dates", fuzzDate);
+}
+
+test "fuzz: patterns" {
+    try fuzzTarget("patterns", fuzzPattern);
+}
+
+test "fuzz: json" {
+    try fuzzTarget("json", fuzzJson);
+}
+
+test "fuzz: affixes" {
+    try fuzzTarget("affixes", fuzzAffix);
+}
+
+/// Hand `one` to Zig's fuzzer, seeded with the corpus of the target in `all`
+/// named `name`.
+fn fuzzTarget(comptime name: []const u8, comptime one: fn (void, *Smith) anyerror!void) !void {
+    const target = comptime for (all) |t| {
+        if (std.mem.eql(u8, t.name, name)) break t;
+    } else @compileError("no fuzz target named " ++ name);
+    try testing.fuzz({}, one, .{ .corpus = comptime encoded(target) });
+}
+
+/// A target's corpus in the encoding `Smith` reads, which is what the fuzzer
+/// is seeded with.
+///
+/// The seeds are text, and handed over as they are they would be read as a
+/// length -- almost always too long, so every target would be given an empty
+/// slice. So each is written the way `tools/fuzz.zig` writes its inputs: as
+/// both of the slices a target may ask for, each with its length in front and
+/// cut to the target's buffer, then zeros for whatever it asks after them.
+fn encoded(comptime target: Target) []const []const u8 {
+    comptime {
+        var inputs: [target.corpus.len][]const u8 = undefined;
+        for (target.corpus, &inputs) |seed, *input| {
+            const content = seed[0..@min(seed.len, target.content_max)];
+            var length: [4]u8 = undefined;
+            std.mem.writeInt(u32, &length, content.len, .little);
+            const chunk = length ++ content[0..content.len].*;
+            const tail: [16]u8 = @splat(0);
+            input.* = &(chunk ++ chunk ++ tail);
+        }
+        const final = inputs;
+        return &final;
+    }
+}
+
+test encoded {
+    var smith: Smith = .{ .in = comptime encoded(all[0])[0] };
+    var buffer: [4096]u8 = undefined;
+    try testing.expectEqualStrings(source_seeds[0], buffer[0..smith.slice(&buffer)]);
+    try testing.expectEqualStrings(source_seeds[0], buffer[0..smith.slice(&buffer)]);
 }

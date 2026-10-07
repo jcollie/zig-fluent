@@ -5,7 +5,7 @@
     .name = .fluent_cldr,
     .version = "0.0.0",
     .fingerprint = 0x1cbfd5438e4a3d0d, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.16.0",
+    .minimum_zig_version = "0.17.0",
     .dependencies = .{
         // The Unicode CLDR, in the Unicode Consortium's JSON distribution,
         // and the whole reason this is a project of its own: the three of
