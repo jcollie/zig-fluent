@@ -14,7 +14,7 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "zig-fluent";
-  version = "0.1.0";
+  version = "0.2.0";
 
   # Named rather than filtered, so that editing something outside this list --
   # the flake, a scratch file, the plan -- does not rebuild the package.
