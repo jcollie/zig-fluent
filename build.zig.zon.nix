@@ -39,11 +39,11 @@ let
 
   # Every package, by the hash Zig knows it by, as Nix fetches it.
   packages = {
-    "datetime-0.0.1-6-va74jLRwBCQk8yIxYTiF2IK-Fq7540sW_vdm0OISwD" = fetchZigGit {
+    "datetime-0.0.1-6-va75PLRwCTakG5hoGcVabp39RTiiYy7ZZSTqeEFaPx" = fetchZigGit {
       name = "datetime";
       url = "https://git.jcollie.dev/jeff/zig-datetime.git";
-      rev = "f20a2aec6d8631f39a11d2e5453fa6400321de44";
-      hash = "sha256-Cwz3TzeWmZW2ODDG4lja8vKYwZal5wIuTrXYUwSOcXo=";
+      rev = "0df87931af9eecab4d0fab4f41feddea0852acb6";
+      hash = "sha256-sx3a7eW5DtJWlayIhK2xDZsZgB3yUMA7OR90puw2Oe0=";
     };
     "N-V-__8AAOahDwAlEd7gK5lS2fdbYfiJJecSd_RwR_omR_3I" = fetchurl {
       url = "https://data.iana.org/time-zones/releases/tzcode2026e.tar.gz";
@@ -53,11 +53,10 @@ let
       url = "https://data.iana.org/time-zones/releases/tzdata2026e.tar.gz";
       hash = "sha256-smiCgF8mqsWdWyIpeOZYBIS4NMzcmL6J3y8FptxTplI=";
     };
-    "win32-42.0.39-preview-mX5pFS564gPTezZn4v3TMxRnfJUrZNx1B_F2p2HKXOeG" = fetchZigGit {
+    "win32-42.0.39-preview-mX5pFc794wMcrMyFgsO1c4csBdowhpiqqwIyN_xjqI5z" = fetchzip {
       name = "zigwin32";
-      url = "https://github.com/marlersoft/zigwin32";
-      rev = "9f15c276b4e9d05afd34a10d8662a7dfc34647ea";
-      hash = "sha256-JCmUrieEnOKQViUGjPNrlGwJMMM4X/BjC3iur5fRbqA=";
+      url = "https://github.com/marlersoft/zigwin32/archive/fb2645891520f3e99931db17a7eba04057e87e89.tar.gz";
+      hash = "sha256-AHrMKAYCceE1V5PQHzdPnYljIzEQbDyyLvRVzRKGTn0=";
     };
   };
 
