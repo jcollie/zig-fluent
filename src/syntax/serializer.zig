@@ -140,12 +140,16 @@ const Out = struct {
 ///
 /// True for a standalone comment and for a message or term that has one
 /// attached, since an attached comment is written directly above its entry.
+///
+/// And for junk that begins with a hash, which is written back exactly and so
+/// looks like a comment line to whatever is above it, even though the parser
+/// could not read it as one: a bare `##` with nothing after it is junk.
 fn startsWithComment(entry: ast.Entry) bool {
     return switch (entry) {
         .comment => true,
         .message => |m| m.comment != null,
         .term => |t| t.comment != null,
-        .junk => false,
+        .junk => |j| std.mem.startsWith(u8, j.content, "#"),
     };
 }
 
@@ -513,6 +517,27 @@ test "a blank line already there is not doubled" {
     try serialize(again, &twice.writer, .{ .with_junk = true });
 
     try testing.expectEqualStrings(once.written(), twice.written());
+}
+
+test "junk that begins with a hash is kept apart from a comment above it" {
+    // A bare `##` at the end of the file is junk: a comment line needs a
+    // space or a line end after its hashes. Written flush beneath the group
+    // comment, it reads back as that comment's second line, which then fails
+    // to parse, and the comment is lost into the junk with it. Both fuzzers
+    // found this one.
+    var resource = try parse(testing.allocator, "## Group\n\n##");
+    defer resource.deinit();
+    try testing.expectEqual(@as(usize, 2), resource.body.len);
+
+    var out: std.Io.Writer.Allocating = .init(testing.allocator);
+    defer out.deinit();
+    try serialize(resource, &out.writer, .{ .with_junk = true });
+    try testing.expectEqualStrings("## Group\n\n##", out.written());
+
+    var again = try parse(testing.allocator, out.written());
+    defer again.deinit();
+    try testing.expect(again.body[0] == .comment);
+    try testing.expectEqualStrings("Group", again.body[0].comment.content);
 }
 
 test "a standalone comment is set off from what came before" {

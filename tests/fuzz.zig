@@ -55,6 +55,10 @@ const source_seeds = [_][]const u8{
     "multi =\n    first\n        indented\n    last\n",
     "m = a\r\nn = b\r\n",
     "broken = { $x\nafter = fine\n",
+    // Junk that begins with a hash, beneath a comment it must not be read as
+    // continuing. A bare `##` is junk, since a comment line needs a space or
+    // a line end after its hashes.
+    "## Group\n\n##",
     "m = }\n",
     "m = { 1.5 } { -2 } { 0 }\n",
     // An escape sequence whose body is not text. The parser rejects it and
