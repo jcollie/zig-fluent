@@ -202,6 +202,19 @@ pub fn preferredUiLanguages(buffer: []Locale) []Locale {
     return buffer[0..count];
 }
 
+test preferredUiLanguages {
+    var buffer: [8]Locale = undefined;
+    const found = preferredUiLanguages(&buffer);
+    // Off macOS this is empty; on macOS it is whatever the user has set, and
+    // all that can be asserted without knowing that is that every entry came
+    // back a usable locale.
+    if (!available) try std.testing.expectEqual(@as(usize, 0), found.len);
+    for (found) |locale| try std.testing.expect(locale.tag().len > 0);
+
+    // A buffer with no room is answered with nothing rather than refused.
+    try std.testing.expectEqual(@as(usize, 0), preferredUiLanguages(&.{}).len);
+}
+
 /// The locale the user's numbers, dates and money are written in.
 ///
 /// `AppleLocale` is the "Region" setting, which macOS keeps apart from the
@@ -218,6 +231,13 @@ pub fn userDefaultLocale() ?Locale {
     var name: [max_name_len]u8 = undefined;
     const text = stringInto(&name, value) orelse return null;
     return fromName(text);
+}
+
+test userDefaultLocale {
+    // Off macOS there is no answer. On it, there is one unless the Region
+    // preference is unset or not a locale, and whatever comes back is usable.
+    if (!available) try std.testing.expectEqual(@as(?Locale, null), userDefaultLocale());
+    if (userDefaultLocale()) |locale| try std.testing.expect(locale.tag().len > 0);
 }
 
 /// Parse an `AppleLocale`-shaped name.
@@ -270,6 +290,22 @@ pub fn categories() Categories {
         .time = region,
         .monetary = region,
     };
+}
+
+test categories {
+    const found = categories();
+    if (!available) {
+        try std.testing.expectEqual(@as(?Locale, null), found.messages);
+        try std.testing.expectEqual(@as(?Locale, null), found.numeric);
+    }
+    // One setting, the region, answers all three formatting categories.
+    const tag = struct {
+        fn of(locale: ?Locale) []const u8 {
+            return if (locale) |*l| l.tag() else "";
+        }
+    }.of;
+    try std.testing.expectEqualStrings(tag(found.numeric), tag(found.time));
+    try std.testing.expectEqualStrings(tag(found.numeric), tag(found.monetary));
 }
 
 // ---------------------------------------------------------------------------
@@ -348,6 +384,20 @@ pub fn overrides(storage: *OverrideStorage) Overrides {
         .hour12 = hour12(),
         .first_weekday = firstWeekday(),
     };
+}
+
+test overrides {
+    var storage: OverrideStorage = .{};
+    const over = overrides(&storage);
+    if (!available) {
+        try std.testing.expectEqual(@as(?[4][]const u8, null), over.date_formats);
+        try std.testing.expectEqual(@as(?bool, null), over.hour12);
+    }
+    // Whatever the user has set, every override points into `storage`.
+    if (over.decimal) |decimal| try std.testing.expect(decimal.len <= max_symbol_len);
+    if (over.date_formats) |formats| {
+        for (formats) |pattern| try std.testing.expect(pattern.len <= max_pattern_len);
+    }
 }
 
 /// `AppleICUDateFormatStrings`, reversed into this library's order.
