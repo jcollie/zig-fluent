@@ -627,8 +627,21 @@ pub const Formatter = struct {
             .long => 4,
         }) catch {};
         if (o.day) |width| w.splatByteAll('d', if (width == .@"2-digit") 2 else 1) catch {};
+        const twelve = o.hour12 orelse self.names.hour12;
+        // The flexible day period, which is what `dayPeriod` asks for: "in
+        // the afternoon" rather than "PM". It qualifies a twelve-hour clock,
+        // so with an hour on a twenty-four-hour clock there is nothing for it
+        // to do and `Intl` leaves it out -- French writes `14 h` either way.
+        // CLDR files it ahead of the hour, as `Bh` and `EBhm`, so it goes
+        // here for the key to match.
+        if (o.day_period) |width| if (o.hour == null or twelve) {
+            w.splatByteAll('B', switch (width) {
+                .short => 1,
+                .long => 4,
+                .narrow => 5,
+            }) catch {};
+        };
         if (o.hour) |width| {
-            const twelve = o.hour12 orelse self.names.hour12;
             w.splatByteAll(if (twelve) 'h' else 'H', if (width == .@"2-digit") 2 else 1) catch {};
         }
         if (o.minute) |width| w.splatByteAll('m', if (width == .@"2-digit") 2 else 1) catch {};

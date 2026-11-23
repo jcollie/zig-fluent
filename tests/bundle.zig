@@ -613,6 +613,16 @@ test "individual fields are arranged the way the locale arranges them" {
     try expectDate("ja", ", month: \"long\", day: \"numeric\"", "9月9日");
 }
 
+test "dayPeriod names the part of the day on a twelve-hour clock" {
+    // `moment` is 14:03 UTC.
+    try expectDate("en", ", hour: \"numeric\", dayPeriod: \"long\"", "2 in the afternoon");
+    try expectDate("en", ", hour: \"numeric\", minute: \"2-digit\", dayPeriod: \"short\"", "2:03 in the afternoon");
+    // On a twenty-four-hour clock there is no meridiem for it to replace,
+    // and `Intl` leaves it out: French writes the bare hour, as ICU 79 does
+    // for `H` (CLDR 49 dropped the `'h'` that 48 wrote after it).
+    try expectDate("fr", ", hour: \"numeric\", dayPeriod: \"long\"", "14");
+}
+
 test "a width the locale never listed is filled in" {
     // French lists `yMMMd` and no `yMMMdd`, so a two-digit day matches the
     // former and has its day widened afterwards.

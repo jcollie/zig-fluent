@@ -967,11 +967,11 @@ const period_widths = [3][]const u8{ "wide", "abbreviated", "narrow" };
 
 /// The field letters this implementation can put in a skeleton.
 ///
-/// CLDR lists formats for a good many more -- flexible day periods, week of
-/// year, quarters -- but `DATETIME()` has no option that asks for them, so
-/// keeping their entries would be carrying data nothing can reach. This cuts
-/// the table by roughly half.
-const skeleton_letters = "GyMEdhHms";
+/// `B` is the flexible day period, which `dayPeriod` asks for. CLDR lists
+/// formats for a good many more -- week of year, quarters -- but `DATETIME()`
+/// has no option that asks for them, so keeping their entries would be
+/// carrying data nothing can reach. This cuts the table by roughly half.
+const skeleton_letters = "GyMEBdhHms";
 
 const style_names = [4][]const u8{ "full", "long", "medium", "short" };
 const weekday_keys = [7][]const u8{ "sun", "mon", "tue", "wed", "thu", "fri", "sat" };

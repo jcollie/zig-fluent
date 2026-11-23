@@ -584,20 +584,21 @@ agreeing with it is the strongest claim available.
 in all, including two either side of an ISO week-year boundary and one before
 the epoch — compared against ICU 79.1, which is built from CLDR 49. ICU is given
 the style or skeleton `Intl` would give it, with Thai and Persian put on the
-Gregorian calendar. 2396 are identical byte for byte. The rest:
+Gregorian calendar. 2370 are identical byte for byte. The rest:
 
 - **`fractionalSecondDigits`** — 120 cases. `DATETIME()` accepts the option and
   does not yet write the fraction: `03:07` where ICU writes `03:07.250`.
-- **Where `Intl` adjusts ICU's pattern** — 4 cases, and in each this agrees with
-  `Intl` rather than with the bare skeleton: Korean and Vietnamese write a lone
-  `hour: "numeric"` without a leading zero, and Traditional Chinese says 晚上
-  rather than 下午 late in the evening.
+- **Where `Intl` adjusts ICU's pattern** — 30 cases, and in each this agrees
+  with `Intl` rather than with the bare skeleton. 28 are `dayPeriod`, which
+  `Intl` writes as the flexible day period — "2 in the afternoon" — where the
+  skeleton alone gives "2 PM"; the other two are Korean and Vietnamese writing a
+  lone `hour: "numeric"` without a leading zero.
 
 **Numbers.** All 1200 number cases identical, and all 560 percent cases, across
 forty locales.
 
 Against `Intl` in V8 itself (node 24, ICU 78.3, CLDR 48.0) the same 2520 date
-cases agree on 2035. No V8 release builds against ICU 79 yet, so that comparison
+cases agree on 2061. No V8 release builds against ICU 79 yet, so that comparison
 is a CLDR release behind, and the rest come down to five things:
 
 - **The narrow no-break space** — 172 cases. CLDR writes English's time as
@@ -609,15 +610,14 @@ is a CLDR release behind, and the rest come down to five things:
   calendar and Persian to its own, so `Intl` writes 2569 where this writes 2026.
   Only the Gregorian calendar is implemented.
 - **`fractionalSecondDigits`** — 112 cases, as above.
-- **`dayPeriod` and a bare `hour`** — 61 cases. `Intl` writes English's
-  `hour: "numeric", dayPeriod: "long"` as "2 in the afternoon" where this writes
-  "2 PM", and drops the leading zero from `hour: "numeric"` on a 24-hour clock,
-  "8:05" where this writes "08:05". This follows CLDR's pattern in both, as ICU
-  does when it is asked for the skeleton directly.
-- **CLDR 49 itself** — 23 cases, every one of which ICU 79.1 writes the same way
+- **A bare `hour` on a 24-hour clock** — 32 cases. `Intl` drops the leading
+  zero from `hour: "numeric"`, "8:05" where this writes the locale's "08:05",
+  because V8 asks ICU to match the hour's length to the request. This follows
+  CLDR's pattern, as ICU does when it is asked for the skeleton alone.
+- **CLDR 49 itself** — 26 cases, every one of which ICU 79.1 writes the same way
   this does: Turkish dates are no longer zero-padded, Korean's numeric date is
-  `y/M/d`, Hindi puts a comma before the year, Vietnamese drops one, and
-  Bengali's short era is `খ্রি.`.
+  `y/M/d`, Hindi puts a comma before the year, Vietnamese drops one, Bengali's
+  short era is `খ্রি.`, and French no longer writes `h` after a bare hour.
 
 ### What is deliberately not implemented
 
