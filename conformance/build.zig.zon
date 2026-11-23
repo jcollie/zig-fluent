@@ -42,8 +42,8 @@
             .lazy = true,
         },
         .fluent_rs = .{
-            .url = "https://github.com/projectfluent/fluent-rs/archive/b822cfe0ac5f35099ee71d3cf6f43b7c01d5fc6d.tar.gz",
-            .hash = "N-V-__8AADjcJwBHUNPdbcFrgdpIPAEYXMLlRB6MzPX1C11B",
+            .url = "https://github.com/projectfluent/fluent-rs/archive/0f87afbbc3fe7d20c61a3fc75cb5d0e123aefdda.tar.gz",
+            .hash = "N-V-__8AADHcJwBpkrEaqInrFd7xthhFNUchPOvf7fzL1j4C",
             .lazy = true,
         },
     },

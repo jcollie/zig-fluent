@@ -10,8 +10,8 @@
         // and `cldr/`, so that nothing here -- and nothing generated from
         // here -- carries 145 MB that a consumer of the library never reads.
         .datetime = .{
-            .url = "git+https://git.jcollie.dev/jeff/zig-datetime.git#0df87931af9eecab4d0fab4f41feddea0852acb6",
-            .hash = "datetime-0.0.1-6-va75PLRwCTakG5hoGcVabp39RTiiYy7ZZSTqeEFaPx",
+            .url = "git+https://git.jcollie.dev/jeff/zig-datetime.git#c7a7cb3926a981e296603f3c9b9fb760504cc87c",
+            .hash = "datetime-0.0.3-6-va7zEjSwDgpGiWVQB5DkvU53OrRKKoX-5486UCc7Ci",
         },
         .zigwin32 = .{
             .url = "https://github.com/marlersoft/zigwin32/archive/fb2645891520f3e99931db17a7eba04057e87e89.tar.gz",
