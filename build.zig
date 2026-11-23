@@ -59,12 +59,12 @@ pub fn build(b: *std.Build) void {
     const with_cldr = b.option(
         bool,
         "cldr",
-        "With `gen-cldr`: fetch the CLDR data packages (138 MB) rather than being given three directories",
+        "With `gen-cldr`: fetch the CLDR data packages (132 MB) rather than being given three directories",
     ) orelse false;
 
     // Regenerate the CLDR tables under src/cldr/, which is `cldr/`'s errand
     // rather than this build's: the three data packages it reads unpack to
-    // 138 MB, and a project that mentioned them would hand them to everything
+    // 132 MB, and a project that mentioned them would hand them to everything
     // generated from its manifest -- `build.zig.zon.nix`, and so every Nix
     // build of this library. They live in `cldr/build.zig.zon` instead, and
     // nothing here knows their names.

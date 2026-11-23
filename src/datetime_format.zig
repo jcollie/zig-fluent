@@ -252,9 +252,10 @@ pub const Names = struct {
     /// How an offset from UTC is wrapped when a zone has no name to give:
     /// `GMT{0}` in English, `UTC{0}` in French, `{0} گرینویچ` in Persian,
     /// with `{0}` standing for the offset itself.
+    /// A zero offset is wrapped the same way, as `GMT+00:00`, which is what
+    /// ICU writes; CLDR's separate zero form, `gmtZeroFormat`, was dropped in
+    /// CLDR 49.
     gmt_format: []const u8 = "GMT{0}",
-    /// What the locale writes for a zero offset with nothing after it.
-    gmt_zero_format: []const u8 = "GMT",
     /// How the offset itself is written east of UTC, as a miniature pattern
     /// of `H`, `HH`, `mm` and `ss` with the sign as a literal.
     hour_format_positive: []const u8 = "+HH:mm",
@@ -479,7 +480,6 @@ pub const Formatter = struct {
         const names: Names = .{
             .time_formats = @splat("HH:mm zzzz"),
             .gmt_format = "UTC{0}",
-            .gmt_zero_format = "UTC",
             .hour_format_positive = "+HH:mm",
             .hour_format_negative = "\u{2212}HH:mm",
         };
@@ -730,7 +730,6 @@ pub const Formatter = struct {
                 .date_time_at_time_formats = &names.datetime_at_formats,
                 .available_formats = names.available_formats,
                 .gmt_format = names.gmt_format,
-                .gmt_zero_format = names.gmt_zero_format,
                 .hour_format_positive = names.hour_format_positive,
                 .hour_format_negative = names.hour_format_negative,
                 .first_day = names.first_day,

@@ -8,7 +8,7 @@
         // this library is measured against and the CLDR data its tables are
         // generated from are each a project of their own, in `conformance/`
         // and `cldr/`, so that nothing here -- and nothing generated from
-        // here -- carries 145 MB that a consumer of the library never reads.
+        // here -- carries 139 MB that a consumer of the library never reads.
         .datetime = .{
             .url = "git+https://git.jcollie.dev/jeff/zig-datetime.git#c7a7cb3926a981e296603f3c9b9fb760504cc87c",
             .hash = "datetime-0.0.3-6-va7zEjSwDgpGiWVQB5DkvU53OrRKKoX-5486UCc7Ci",

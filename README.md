@@ -543,19 +543,19 @@ text.
 
 Every other mature implementation delegates the locale-sensitive part to ICU:
 `fluent.js` calls `Intl`, `fluent-rs` leaves number formatting to the host. This
-one carries its own tables, generated from CLDR 48.2 into `src/cldr/` and
+one carries its own tables, generated from CLDR 49 into `src/cldr/` and
 committed, so there is nothing to install and nothing to link.
 
 Each table is a separate declaration in a separate file, so you pay for what you
 reference and nothing else. Measured at `-OReleaseSmall` on x86-64 Linux: a
 program that parses a resource and reads the tree is **164 KB**; one that also
-formats a number and a date is **2.7 MB**, which is the CLDR data for all 766
+formats a number and a date is **2.5 MB**, which is the CLDR data for all 657
 locales.
 
-**Plural rules** are CLDR's, cardinal and ordinal, for the 224 and 108 locales
+**Plural rules** are CLDR's, cardinal and ordinal, for the 225 and 109 locales
 CLDR covers. They are compiled from CLDR's rule language into tables at
 generation time, so nothing parses anything at run time, and they are verified
-against the 15,041 sample values CLDR publishes.
+against the 15,231 sample values CLDR publishes.
 
 **Numbers** follow ECMA-402: digit and grouping options, significant figures,
 per-locale symbols, patterns and numbering systems. German swaps the separators,
@@ -570,7 +570,7 @@ the writing of CLDR patterns come from `zig-datetime`; what is here is the part
 that is Fluent's rather than a calendar's, turning `DATETIME()`'s ECMA-402
 options into a CLDR skeleton.
 
-**Flexible day periods** are CLDR's, for the 422 locales it gives rules for.
+**Flexible day periods** are CLDR's, for the 412 locales it gives rules for.
 Where the meridiem knows only morning and afternoon, these divide the day as the
 language does: Traditional Chinese writes 凌晨 before dawn, 中午 around noon and
 晚上 in the evening, and its own short time pattern asks for them.
@@ -580,27 +580,44 @@ language does: Traditional Chinese writes 凌晨 before dawn, 中午 around noon
 ICU is the reference implementation of the specifications this follows, so
 agreeing with it is the strongest claim available.
 
-**Dates.** A matrix of 30 locales against 17 option sets and 4 instants — 2312
+**Dates.** A matrix of 30 locales against 21 option sets and 4 instants — 2520
 in all, including two either side of an ISO week-year boundary and one before
-the epoch — compared against `Intl` in V8 (node 24, ICU 78.3, CLDR 48.0). 2128
-are identical byte for byte, another 80 differ only by the narrow no-break space
-below, and the remaining 104 are all the one divergence after it. **No case
-differs on formatting.**
+the epoch — compared against ICU 79.1, which is built from CLDR 49. ICU is given
+the style or skeleton `Intl` would give it, with Thai and Persian put on the
+Gregorian calendar. 2396 are identical byte for byte. The rest:
 
-**Numbers.** All 400 number cases identical, and all 280 percent cases across
+- **`fractionalSecondDigits`** — 120 cases. `DATETIME()` accepts the option and
+  does not yet write the fraction: `03:07` where ICU writes `03:07.250`.
+- **Where `Intl` adjusts ICU's pattern** — 4 cases, and in each this agrees with
+  `Intl` rather than with the bare skeleton: Korean and Vietnamese write a lone
+  `hour: "numeric"` without a leading zero, and Traditional Chinese says 晚上
+  rather than 下午 late in the evening.
+
+**Numbers.** All 1200 number cases identical, and all 560 percent cases, across
 forty locales.
 
-- **The narrow no-break space** — 80 cases. CLDR 48 writes English's time as
+Against `Intl` in V8 itself (node 24, ICU 78.3, CLDR 48.0) the same 2520 date
+cases agree on 2035. No V8 release builds against ICU 79 yet, so that comparison
+is a CLDR release behind, and the rest come down to five things:
+
+- **The narrow no-break space** — 172 cases. CLDR writes English's time as
   `h:mm:ss` U+202F `a`, and Russian's year as `y` U+202F `г.`. V8 substitutes an
   ordinary space. This library follows the data, so it emits U+202F; CLDR ships
   `-alt-ascii` variants for consumers who want otherwise, and they are not used
   here.
-- **Non-Gregorian calendars** — 104 cases, and the whole remainder. Thai
-  defaults to the Buddhist calendar and Persian to its own, so `Intl` writes
-  2568 where this writes 2025. Only the Gregorian calendar is implemented.
-  Forced to `-u-ca-gregory`, those two locales agree on 132 of 136 cases,
-  Persian digits and all; the four left over are Thai's `HH:mm น.`, where V8
-  ships CLDR 48.0 and this pins 48.2.
+- **Non-Gregorian calendars** — 117 cases. Thai defaults to the Buddhist
+  calendar and Persian to its own, so `Intl` writes 2569 where this writes 2026.
+  Only the Gregorian calendar is implemented.
+- **`fractionalSecondDigits`** — 112 cases, as above.
+- **`dayPeriod` and a bare `hour`** — 61 cases. `Intl` writes English's
+  `hour: "numeric", dayPeriod: "long"` as "2 in the afternoon" where this writes
+  "2 PM", and drops the leading zero from `hour: "numeric"` on a 24-hour clock,
+  "8:05" where this writes "08:05". This follows CLDR's pattern in both, as ICU
+  does when it is asked for the skeleton directly.
+- **CLDR 49 itself** — 23 cases, every one of which ICU 79.1 writes the same way
+  this does: Turkish dates are no longer zero-padded, Korean's numeric date is
+  `y/M/d`, Hindi puts a comma before the year, Vietnamese drops one, and
+  Bengali's short era is `খ্রি.`.
 
 ### What is deliberately not implemented
 
@@ -649,7 +666,7 @@ ones, and the macOS and Windows runners build the Swift and Win32 ones.
 
 Two things are projects of their own, in `conformance/` and `cldr/`, each with a
 manifest of its own. What they depend on is heavy — two monorepos and a spec
-repository in the first, 138 MB of Unicode data in the second — and none of it
+repository in the first, 132 MB of Unicode data in the second — and none of it
 is anything a consumer of this library reads. Keeping those dependencies in
 their own manifests keeps them out of this one, and so out of anything
 generated from it. `zig build conformance` and `zig build gen-cldr` run them
@@ -762,13 +779,13 @@ $ zig build gen-cldr -Dcldr
 
 The generator and the data it reads are a project of their own, in `cldr/`;
 that step runs it there. `-Dcldr` fetches the three CLDR packages, which unpack
-to 138 MB. Without it they are not fetched at all, and the three directories can
+to 132 MB. Without it they are not fetched at all, and the three directories can
 be named by hand instead — which is how to regenerate against a CLDR release
 that manifest does not pin:
 
 ```console
 $ for p in core numbers-full dates-full; do
-    curl -sSL "https://registry.npmjs.org/cldr-$p/-/cldr-$p-48.2.0.tgz" |
+    curl -sSL "https://registry.npmjs.org/cldr-$p/-/cldr-$p-49.0.0.tgz" |
       tar xz && mv package "cldr-$p"
   done
 $ zig build gen-cldr -- cldr-core cldr-numbers-full cldr-dates-full
@@ -782,7 +799,7 @@ Note that `.lazy = true` is not what makes a dependency optional. What makes it
 optional is whether `b.lazyDependency` is *called*, and `build()` runs in full
 during the configure phase of every `zig build`, whatever step was named on the
 command line — so `-Dcldr` is what keeps `cldr/`'s own `zig build check`, which
-type-checks the generator and runs nothing, from fetching all 138 MB to do it.
+type-checks the generator and runs nothing, from fetching all 132 MB to do it.
 
 A declared dependency is heavier still than a called one. Anything reading a
 manifest reads every entry in it, lazy or not, which is why moving these
@@ -818,7 +835,7 @@ copying them in here is the one thing that would let what this library is
 measured against drift. They are in `conformance/`'s manifest rather than this
 one so that the cost falls on whoever runs that step.
 
-`zig build gen-cldr -Dcldr` adds the three CLDR packages, 138 MB unpacked, from
+`zig build gen-cldr -Dcldr` adds the three CLDR packages, 132 MB unpacked, from
 `cldr/`'s manifest for the same reason.
 
 ## References cited
@@ -833,14 +850,18 @@ one so that the cost falls on whoever runs that step.
   <https://github.com/projectfluent/fluent-rs>
 - Carr, S. F., and other CLDR committee members. *Unicode Technical Standard
   #35: Unicode Locale Data Markup Language (LDML) Part 3: Numbers* (Version
-  48.2). Unicode Consortium.
+  49). Unicode Consortium.
   <https://www.unicode.org/reports/tr35/tr35-numbers.html>
 - Edberg, P., and other CLDR committee members. *Unicode Technical Standard
   #35: Unicode Locale Data Markup Language (LDML) Part 4: Dates* (Version
-  48.2). Unicode Consortium.
+  49). Unicode Consortium.
   <https://www.unicode.org/reports/tr35/tr35-dates.html>
-- Unicode Consortium. (2025, August 4). *Unicode Common Locale Data Repository
-  (CLDR)* (Release 48.2). <https://cldr.unicode.org/>
+- Unicode Consortium. (2026, October 22). *Unicode Common Locale Data Repository
+  (CLDR)* (Release 49). <https://cldr.unicode.org/>
+- Unicode Consortium. (2026, October 22). *CLDR 49 Release Note*.
+  <https://cldr.unicode.org/downloads/cldr-49>
+- Unicode Consortium. *ICU: International Components for Unicode* (Version
+  79.1, built from CLDR 49). <https://icu.unicode.org/>
 - Unicode Consortium. *ICU: International Components for Unicode* (Version
   78.3). <https://icu.unicode.org/>
 - Ecma International. (2026, June). *ECMAScript 2026 Internationalization API
@@ -882,11 +903,12 @@ explained in. `fluent.js` is the reference implementation, and the source of the
 `fluent-rs` holds the 180 resolver fixtures, which are the only thing anywhere
 that says what a bundle must *do* rather than what a parser must build.
 
-The next five are the formatting. Parts 3 and 4 of UTS #35 define the pattern
+The next seven are the formatting. Parts 3 and 4 of UTS #35 define the pattern
 vocabulary the CLDR tables are read through — the field letters, the widths, the
-plural operands `n`, `i`, `v`, `w`, `f`, `t` and `e` — and CLDR 48.2 is the data
-itself. ICU is the oracle the date and number matrices are compared against.
-ECMA-402 is where the option names came from, because they are what `NUMBER()`
+plural operands `n`, `i`, `v`, `w`, `f`, `t` and `e` — and CLDR 49 is the data
+itself, with its release note saying what changed from the release before. ICU
+is the oracle the date and number matrices are compared against: 79.1 for
+CLDR 49 itself, and 78.3 as it ships inside V8. ECMA-402 is where the option names came from, because they are what `NUMBER()`
 and `DATETIME()` are given in an FTL file.
 
 The next four are how a locale is found: BCP 47 for the tag syntax and the case

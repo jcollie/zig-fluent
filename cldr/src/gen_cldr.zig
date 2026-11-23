@@ -926,7 +926,6 @@ const DateLocale = struct {
     day_periods_flexible: ?[3][12][]const u8,
     day_period_rules: []const DayPeriodRule,
     gmt_format: []const u8,
-    gmt_zero_format: []const u8,
     hour_format_positive: []const u8,
     hour_format_negative: []const u8,
     eras: [2][]const u8,
@@ -1067,7 +1066,6 @@ fn generateDates(
                 .values()[0].object.get("dates").?.object
                 .get("timeZoneNames").?.object;
             locale.gmt_format = zone_names.get("gmtFormat").?.string;
-            locale.gmt_zero_format = zone_names.get("gmtZeroFormat").?.string;
             // One string holding both signs, e.g. `+HH:mm;-HH:mm`. The sign
             // is not always a hyphen -- French writes U+2212 -- which is why
             // CLDR carries the negative form rather than deriving it.
@@ -1428,7 +1426,6 @@ fn writeDatesFile(arena: Allocator, io: std.Io, out_dir: std.Io.Dir, locales: []
         try writeNameArray(w, "datetime_formats", &locale.datetime_formats);
         try writeNameArray(w, "datetime_at_formats", &locale.datetime_at_formats);
         try w.print("        .gmt_format = \"{f}\",\n", .{escaped(locale.gmt_format)});
-        try w.print("        .gmt_zero_format = \"{f}\",\n", .{escaped(locale.gmt_zero_format)});
         try w.print("        .hour_format_positive = \"{f}\",\n", .{escaped(locale.hour_format_positive)});
         try w.print("        .hour_format_negative = \"{f}\",\n", .{escaped(locale.hour_format_negative)});
         try w.print("        .hour12 = {},\n", .{locale.hour12});

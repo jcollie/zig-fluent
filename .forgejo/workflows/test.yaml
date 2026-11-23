@@ -38,7 +38,7 @@ jobs:
       - name: Compile everything else
         run: nix develop -c zig build check
 
-      # And the CLDR generator, which is in `cldr/` with the 138 MB of Unicode
+      # And the CLDR generator, which is in `cldr/` with the 132 MB of Unicode
       # data it reads. Type-checked rather than run -- regenerating the tables
       # is a maintainer's errand -- and without `-Dcldr` it fetches none of
       # that data to do it.

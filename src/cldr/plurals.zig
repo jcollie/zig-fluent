@@ -40,10 +40,11 @@ pub const cardinal: Table = .{
         "sgs", "sh",  "shi",      "si",  "sk",  "sl",  "sma", "smi",
         "smj", "smn", "sms",      "sn",  "so",  "sq",  "sr",  "ss",
         "ssy", "st",  "su",       "sv",  "sw",  "syr", "ta",  "te",
-        "teo", "th",  "ti",       "tig", "tk",  "tl",  "tn",  "to",
-        "tpi", "tr",  "ts",       "tzm", "ug",  "uk",  "und", "ur",
-        "uz",  "ve",  "vec",      "vi",  "vo",  "vun", "wa",  "wae",
-        "wo",  "xh",  "xog",      "yi",  "yo",  "yue", "zh",  "zu",
+        "teo", "tg",  "th",       "ti",  "tig", "tk",  "tl",  "tn",
+        "to",  "tpi", "tr",       "ts",  "tzm", "ug",  "uk",  "und",
+        "ur",  "uz",  "ve",       "vec", "vi",  "vo",  "vun", "wa",
+        "wae", "wo",  "xh",       "xog", "yi",  "yo",  "yue", "zh",
+        "zu",
     },
     .rules = &.{
         // af
@@ -326,7 +327,7 @@ pub const cardinal: Table = .{
         },
         // fr
         &.{
-            .{ .category = .one, .condition = &.{&.{.{ .operand = .i, .ranges = &.{ .{ .low = 0, .high = 0 }, .{ .low = 1, .high = 1 } } }}} },
+            .{ .category = .one, .condition = &.{&.{.{ .operand = .i, .ranges = &.{.{ .low = 0, .high = 1 }} }}} },
             .{ .category = .many, .condition = &.{ &.{ .{ .operand = .e, .ranges = &.{.{ .low = 0, .high = 0 }} }, .{ .operand = .i, .negated = true, .ranges = &.{.{ .low = 0, .high = 0 }} }, .{ .operand = .i, .modulus = 1000000, .ranges = &.{.{ .low = 0, .high = 0 }} }, .{ .operand = .v, .ranges = &.{.{ .low = 0, .high = 0 }} } }, &.{.{ .operand = .e, .negated = true, .ranges = &.{.{ .low = 0, .high = 5 }} }} } },
             .{ .category = .other, .condition = &.{} },
         },
@@ -358,6 +359,7 @@ pub const cardinal: Table = .{
         // gl
         &.{
             .{ .category = .one, .condition = &.{&.{ .{ .operand = .i, .ranges = &.{.{ .low = 1, .high = 1 }} }, .{ .operand = .v, .ranges = &.{.{ .low = 0, .high = 0 }} } }} },
+            .{ .category = .many, .condition = &.{ &.{ .{ .operand = .e, .ranges = &.{.{ .low = 0, .high = 0 }} }, .{ .operand = .i, .negated = true, .ranges = &.{.{ .low = 0, .high = 0 }} }, .{ .operand = .i, .modulus = 1000000, .ranges = &.{.{ .low = 0, .high = 0 }} }, .{ .operand = .v, .ranges = &.{.{ .low = 0, .high = 0 }} } }, &.{.{ .operand = .e, .negated = true, .ranges = &.{.{ .low = 0, .high = 5 }} }} } },
             .{ .category = .other, .condition = &.{} },
         },
         // gsw
@@ -1068,6 +1070,11 @@ pub const cardinal: Table = .{
             .{ .category = .one, .condition = &.{&.{.{ .operand = .n, .ranges = &.{.{ .low = 1, .high = 1 }} }}} },
             .{ .category = .other, .condition = &.{} },
         },
+        // tg
+        &.{
+            .{ .category = .one, .condition = &.{ &.{.{ .operand = .i, .ranges = &.{.{ .low = 0, .high = 0 }} }}, &.{.{ .operand = .n, .ranges = &.{.{ .low = 1, .high = 1 }} }} } },
+            .{ .category = .other, .condition = &.{} },
+        },
         // th
         &.{
             .{ .category = .other, .condition = &.{} },
@@ -1159,6 +1166,7 @@ pub const cardinal: Table = .{
         },
         // vi
         &.{
+            .{ .category = .one, .condition = &.{ &.{.{ .operand = .i, .ranges = &.{.{ .low = 0, .high = 0 }} }}, &.{.{ .operand = .n, .ranges = &.{.{ .low = 1, .high = 1 }} }} } },
             .{ .category = .other, .condition = &.{} },
         },
         // vo
@@ -1223,24 +1231,25 @@ pub const cardinal: Table = .{
 /// Rules for ranking things: "the 3rd file".
 pub const ordinal: Table = .{
     .keys = &.{
-        "af", "am",  "an",  "ar", "as",  "ast", "az",       "bal",
-        "be", "bg",  "blo", "bn", "bs",  "ca",  "ce",       "cs",
-        "cv", "cy",  "da",  "de", "dsb", "el",  "en",       "es",
-        "et", "eu",  "fa",  "fi", "fil", "fr",  "fy",       "ga",
-        "gd", "gl",  "gsw", "gu", "he",  "hi",  "hr",       "hsb",
-        "hu", "hy",  "ia",  "id", "ie",  "is",  "it",       "ja",
-        "ka", "kk",  "km",  "kn", "ko",  "kok", "kok-Latn", "kw",
-        "ky", "lij", "lld", "lo", "lt",  "lv",  "mk",       "ml",
-        "mn", "mo",  "mr",  "ms", "my",  "nb",  "ne",       "nl",
-        "no", "or",  "pa",  "pl", "prg", "ps",  "pt",       "ro",
-        "ru", "sc",  "scn", "sd", "sh",  "si",  "sk",       "sl",
-        "sq", "sr",  "sv",  "sw", "ta",  "te",  "th",       "tk",
-        "tl", "tpi", "tr",  "uk", "und", "ur",  "uz",       "vec",
-        "vi", "yue", "zh",  "zu",
+        "af",  "am",  "an",  "ar", "as",  "ast", "az",       "bal",
+        "be",  "bg",  "blo", "bn", "bs",  "ca",  "ce",       "cs",
+        "cv",  "cy",  "da",  "de", "dsb", "el",  "en",       "es",
+        "et",  "eu",  "fa",  "fi", "fil", "fr",  "fy",       "ga",
+        "gd",  "gl",  "gsw", "gu", "he",  "hi",  "hr",       "hsb",
+        "hu",  "hy",  "ia",  "id", "ie",  "is",  "it",       "ja",
+        "ka",  "kk",  "km",  "kn", "ko",  "kok", "kok-Latn", "kw",
+        "ky",  "lij", "lld", "lo", "lt",  "lv",  "mk",       "ml",
+        "mn",  "mo",  "mr",  "ms", "my",  "nb",  "ne",       "nl",
+        "no",  "or",  "pa",  "pl", "prg", "ps",  "pt",       "ro",
+        "ru",  "sc",  "scn", "sd", "sh",  "si",  "sk",       "sl",
+        "sq",  "sr",  "sv",  "sw", "ta",  "te",  "tg",       "th",
+        "tk",  "tl",  "tpi", "tr", "uk",  "und", "ur",       "uz",
+        "vec", "vi",  "yue", "zh", "zu",
     },
     .rules = &.{
         // af
         &.{
+            .{ .category = .few, .condition = &.{&.{.{ .operand = .i, .modulus = 100, .ranges = &.{.{ .low = 2, .high = 19 }} }}} },
             .{ .category = .other, .condition = &.{} },
         },
         // am
@@ -1286,6 +1295,9 @@ pub const ordinal: Table = .{
         },
         // bg
         &.{
+            .{ .category = .one, .condition = &.{&.{ .{ .operand = .i, .modulus = 10, .ranges = &.{.{ .low = 1, .high = 1 }} }, .{ .operand = .i, .modulus = 100, .negated = true, .ranges = &.{.{ .low = 11, .high = 11 }} } }} },
+            .{ .category = .two, .condition = &.{&.{ .{ .operand = .i, .modulus = 10, .ranges = &.{.{ .low = 2, .high = 2 }} }, .{ .operand = .i, .modulus = 100, .negated = true, .ranges = &.{.{ .low = 12, .high = 12 }} } }} },
+            .{ .category = .few, .condition = &.{&.{ .{ .operand = .i, .modulus = 10, .ranges = &.{ .{ .low = 3, .high = 3 }, .{ .low = 4, .high = 4 } } }, .{ .operand = .i, .modulus = 100, .negated = true, .ranges = &.{ .{ .low = 13, .high = 13 }, .{ .low = 14, .high = 14 } } } }} },
             .{ .category = .other, .condition = &.{} },
         },
         // blo
@@ -1360,6 +1372,7 @@ pub const ordinal: Table = .{
         },
         // es
         &.{
+            .{ .category = .one, .condition = &.{&.{ .{ .operand = .n, .modulus = 10, .ranges = &.{ .{ .low = 1, .high = 1 }, .{ .low = 3, .high = 3 } } }, .{ .operand = .n, .modulus = 100, .negated = true, .ranges = &.{.{ .low = 11, .high = 11 }} } }} },
             .{ .category = .other, .condition = &.{} },
         },
         // et
@@ -1689,6 +1702,10 @@ pub const ordinal: Table = .{
             .{ .category = .other, .condition = &.{} },
         },
         // te
+        &.{
+            .{ .category = .other, .condition = &.{} },
+        },
+        // tg
         &.{
             .{ .category = .other, .condition = &.{} },
         },

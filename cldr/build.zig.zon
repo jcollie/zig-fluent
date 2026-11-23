@@ -9,23 +9,23 @@
     .dependencies = .{
         // The Unicode CLDR, in the Unicode Consortium's JSON distribution,
         // and the whole reason this is a project of its own: the three of
-        // them unpack to 138 MB, and nothing that merely builds the library
+        // them unpack to 132 MB, and nothing that merely builds the library
         // should have to know they exist. Keeping them here keeps them out of
         // the library's manifest, and so out of `build.zig.zon.nix` and
         // anything else generated from it.
         .cldr_core = .{
-            .url = "https://registry.npmjs.org/cldr-core/-/cldr-core-48.2.0.tgz",
-            .hash = "N-V-__8AAJ77GgCr4jV_q5d8vuaUZIWMrHbXUMYV7il4sgLB",
+            .url = "https://registry.npmjs.org/cldr-core/-/cldr-core-49.0.0.tgz",
+            .hash = "N-V-__8AAILYNQD4kL2E2hqrJ1h2FbwM0fnSlI-7zBwMevxn",
             .lazy = true,
         },
         .cldr_numbers_full = .{
-            .url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz",
-            .hash = "N-V-__8AAP5iTQJ7vhRS_dLVKhpakujqxJsIbu89VYJgXryk",
+            .url = "https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-49.0.0.tgz",
+            .hash = "N-V-__8AAGP0OALJBJRQDwByYTt8ByM1lunMVUxlNqas7MGB",
             .lazy = true,
         },
         .cldr_dates_full = .{
-            .url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-48.2.0.tgz",
-            .hash = "N-V-__8AAGszqAU24FLBIkgdecxizqeniOtXvaJyJNhnerSV",
+            .url = "https://registry.npmjs.org/cldr-dates-full/-/cldr-dates-full-49.0.0.tgz",
+            .hash = "N-V-__8AAJ90OgUNPX1VM8Liw8V38VPsQOhantYPA5Y98dZH",
             .lazy = true,
         },
     },

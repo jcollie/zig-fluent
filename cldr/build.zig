@@ -3,7 +3,7 @@
 
 //! The CLDR table generator, and the CLDR data it reads.
 //!
-//! Its own project, so that 138 MB of Unicode data is its own project's
+//! Its own project, so that 132 MB of Unicode data is its own project's
 //! business. The tables under `../src/cldr/` are committed, so an ordinary
 //! build of the library reads them and needs none of this; regenerating them
 //! is a maintainer's errand, run about twice a year when CLDR makes a
@@ -33,11 +33,11 @@ pub fn build(b: *std.Build) void {
     // whether `b.lazyDependency` is *called*, and `build()` runs in full
     // during the configure phase of every `zig build`, whatever step was
     // named. Without this guard `zig build check` below -- which compiles the
-    // generator and runs nothing -- would fetch all 138 MB to do it.
+    // generator and runs nothing -- would fetch all 132 MB to do it.
     const fetch = b.option(
         bool,
         "cldr",
-        "Fetch the CLDR data packages (138 MB), rather than being given three directories",
+        "Fetch the CLDR data packages (132 MB), rather than being given three directories",
     ) orelse false;
 
     const run = b.addRunArtifact(generator);
