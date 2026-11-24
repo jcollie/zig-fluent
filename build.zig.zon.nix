@@ -39,11 +39,11 @@ let
 
   # Every package, by the hash Zig knows it by, as Nix fetches it.
   packages = {
-    "datetime-0.0.4-6-va75uBTAAVliQ4Zq0s_saVqDO2k84J4IDPH3Cvoj44" = fetchZigGit {
+    "datetime-0.0.5-6-va77oNSQBdEKJDQz9ZcVAXaSsP1koIrmVhVDVpAg62" = fetchZigGit {
       name = "datetime";
       url = "https://git.jcollie.dev/jeff/zig-datetime.git";
-      rev = "1cc8ec1ee79fed203d21c75ce338709f74c62514";
-      hash = "sha256-QTXksODoPSStOKHuVKyJbzV3EZyCR0JhY120SO1Y8/M=";
+      rev = "0a14c1e324c9dd7aaf4e290eb71c37316f4aa281";
+      hash = "sha256-3nua7grFZTqks2NFvbNLe5WIM54o4n7BR9pbpn4o6XQ=";
     };
     "N-V-__8AAIOpDwArTWlivKjXIyxeLWkhCG3-bxprFW6tb094" = fetchurl {
       url = "https://data.iana.org/time-zones/releases/tzcode2026f.tar.gz";
