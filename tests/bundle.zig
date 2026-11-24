@@ -623,6 +623,44 @@ test "dayPeriod names the part of the day on a twelve-hour clock" {
     try expectDate("fr", ", hour: \"numeric\", dayPeriod: \"long\"", "14");
 }
 
+test "fractionalSecondDigits writes the fraction after the seconds" {
+    // `moment` is 14:03:07.250 UTC. No locale files a pattern with a
+    // fraction in it, so it is appended after the seconds with the locale's
+    // own decimal separator, in the locale's own digits.
+    try expectDate("en", ", minute: \"2-digit\", second: \"2-digit\", fractionalSecondDigits: 3", "03:07.250");
+    try expectDate("de", ", minute: \"2-digit\", second: \"2-digit\", fractionalSecondDigits: 2", "03:07,25");
+    try expectDate("ar-EG", ", minute: \"2-digit\", second: \"2-digit\", fractionalSecondDigits: 1", "٠٣:٠٧٫٢");
+}
+
+test "a numeric hour is written as wide as it was asked for" {
+    // British English and German file `HH:mm` under `Hm`. `Intl` asks ICU to
+    // match the hour's length to the request, so `hour: "numeric"` drops the
+    // leading zero the pattern has and `"2-digit"` keeps it.
+    for ([_]struct { []const u8, []const u8, []const u8 }{
+        .{ "en-GB", "numeric", "8:05" },
+        .{ "en-GB", "2-digit", "08:05" },
+        .{ "de", "numeric", "8:05" },
+    }) |case| {
+        const tag, const width, const expected = case;
+        const source = try std.fmt.allocPrint(
+            testing.allocator,
+            "d = {{ DATETIME($t, hour: \"{s}\", minute: \"2-digit\") }}\n",
+            .{width},
+        );
+        defer testing.allocator.free(source);
+        var bundle = try bundleFor(tag, source);
+        defer bundle.deinit();
+        // 2026-09-09 08:05 UTC.
+        try expectMessage(&bundle, "d", &.{.{ .name = "t", .value = .time(1788941100000) }}, expected);
+    }
+}
+
+test "a short era is the short one, whatever width the locale files" {
+    // Russian files its era-and-weekday date with a narrow `GGGGG`, and a
+    // short era asked for is still the short one, as in `Intl`.
+    try expectDate("ru", ", era: \"short\", year: \"numeric\", month: \"numeric\", day: \"numeric\", weekday: \"short\"", "ср, 09.09.2026 н. э.");
+}
+
 test "a width the locale never listed is filled in" {
     // French lists `yMMMd` and no `yMMMdd`, so a two-digit day matches the
     // former and has its day widened afterwards.

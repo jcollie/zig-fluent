@@ -910,6 +910,7 @@ pub const Bundle = struct {
             .options = options,
             .zone = self.time_zone,
             .digits = self.number_symbols.digits,
+            .decimal = self.number_symbols.decimal,
         };
     }
 

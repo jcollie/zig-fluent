@@ -300,6 +300,11 @@ pub const Formatter = struct {
     /// Arabic-Indic digits writes the day of the month in them too: Egyptian
     /// Arabic's ninth of September is `٩ سبتمبر ٢٠٢٦`, not `9 سبتمبر 2026`.
     digits: []const u8 = "0123456789",
+    /// The decimal separator of that same numbering system. A date pattern
+    /// has no use for one, except that `fractionalSecondDigits` on a pattern
+    /// without a fraction appends one after the seconds: `05.123` in English,
+    /// `05,123` in German.
+    decimal: []const u8 = ".",
 
     /// Write the moment `epoch_ms` the way this locale writes dates.
     ///
@@ -321,7 +326,8 @@ pub const Formatter = struct {
         const moment = if (zone) |z| fromEpochMilliIn(epoch_ms, z.*) else fromEpochMilli(epoch_ms);
 
         const tables: Tables = .init(self.names, self.digits);
-        const locale = tables.locale(self.names);
+        var locale = tables.locale(&self.names);
+        locale.decimal = self.decimal;
 
         // A pattern that came out of CLDR is a pattern, and a `Names` a
         // consumer wrote by hand may not be. Neither is worth failing a
@@ -376,7 +382,12 @@ pub const Formatter = struct {
         // ECMA-402's default when nothing at all was asked for.
         if (skeleton.len == 0) skeleton = "yMd";
 
-        return cldr.formatSkeleton(moment, skeleton, flexible, w);
+        // ECMA-402 asks for the hour at the width it was requested -- `hour:
+        // "numeric"` is "8:05", not the "08:05" an en-GB pattern would give
+        // -- and V8 gets that by telling ICU to match the hour field's
+        // length. The minutes and seconds keep the pattern's widths, as they
+        // do in V8.
+        return cldr.formatSkeletonWith(moment, skeleton, flexible, .{ .match_hour_field_length = true }, w);
     }
 
     /// `Options.Style` and `cldr.Length` are the same four lengths in the
@@ -498,12 +509,11 @@ pub const Formatter = struct {
         try testing.expectEqualStrings("1970-01-01", w.buffered());
     }
 
-    test "an abbreviated weekday is a single E in a skeleton key" {
+    test "an abbreviated weekday reaches the key filed as a single E" {
         // CLDR files both `yMMMEd` and `yMMMEEEEd`, and they are not the same
         // pattern with a different weekday in it: Japanese parenthesises the
-        // weekday in the first and not the second. Asking for an abbreviated
-        // weekday has to build `E` to match the first, because `EEE` matches
-        // neither and the nearest entry by score is the wide one.
+        // weekday in the first and not the second. The skeleton built for an
+        // abbreviated weekday is V8's `EEE`, and it has to land on the first.
         const names: Names = .{ .available_formats = &.{
             .{ .skeleton = "yMMMEd", .pattern = "y-M-d(E)" },
             .{ .skeleton = "yMMMEEEEd", .pattern = "y-M-d EEEE" },
@@ -600,9 +610,15 @@ pub const Formatter = struct {
         var w = std.Io.Writer.fixed(buffer);
         const o = self.options;
 
+        // The text fields are spelled as V8 spells them: three letters for
+        // short, four for long, five for narrow. The length matters for the
+        // era. CLDR keys every era as a single `G` whatever width its pattern
+        // writes, and ICU keeps the pattern's width when the request's length
+        // equals the key's -- so `G` would get Russian's narrow `GGGGG` from
+        // `GyMEd`, and `GGG` gets the short era that was asked for.
         if (o.era) |width| w.splatByteAll('G', switch (width) {
             .narrow => 5,
-            .short => 1,
+            .short => 3,
             .long => 4,
         }) catch {};
         if (o.year) |width| w.splatByteAll('y', if (width == .@"2-digit") 2 else 1) catch {};
@@ -613,17 +629,9 @@ pub const Formatter = struct {
             .long => 4,
             .narrow => 5,
         }) catch {};
-        // CLDR spells an abbreviated weekday as a *single* `E` in a skeleton
-        // key -- `yMMMEd` -- and the wide one as four. Writing three here
-        // matched neither, so the scorer fell through to the nearest entry it
-        // could find, which for Japanese and Korean is the wide-weekday one:
-        // `yMMMEEEEd` is filed as `y年M月d日EEEE`, where `yMMMEd` is
-        // `y年M月d日(E)`, and the parentheses went missing along with the
-        // exact match. `E`, `EE` and `EEE` are all the abbreviated name, so
-        // the rendered width is unchanged either way; only the key differs.
         if (o.weekday) |width| w.splatByteAll('E', switch (width) {
             .narrow => 5,
-            .short => 1,
+            .short => 3,
             .long => 4,
         }) catch {};
         if (o.day) |width| w.splatByteAll('d', if (width == .@"2-digit") 2 else 1) catch {};
@@ -723,7 +731,7 @@ pub const Formatter = struct {
             return self;
         }
 
-        fn locale(self: *const Tables, names: Names) datetime.cldr.Locale {
+        fn locale(self: *const Tables, names: *const Names) datetime.cldr.Locale {
             return .{
                 .tag = "",
                 .months = &self.months,

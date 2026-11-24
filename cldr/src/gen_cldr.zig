@@ -1127,6 +1127,14 @@ fn generateDates(
                 .pattern = patternText(format_entry.value_ptr.*),
             });
         }
+        // Sorted by skeleton, because between two entries a request is
+        // equally near, the earlier wins, and ICU reads CLDR's keys in
+        // sorted order. JSON object order is CLDR's file order, not that.
+        std.mem.sort(DateLocale.Available, available.items, {}, struct {
+            fn lessThan(_: void, a: DateLocale.Available, b: DateLocale.Available) bool {
+                return std.mem.lessThan(u8, a.skeleton, b.skeleton);
+            }
+        }.lessThan);
         locale.available_formats = try available.toOwnedSlice(arena);
 
         try locales.append(arena, locale);
